@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf8">
+	<title>Base title</title>
+	<script type="text/javascript" src="/static/medialist.js"></script>
+	<link rel="stylesheet" type="text/css" href="/static/medialist.css">
+</head>
+<body>
+	<menu>
+	{% block navigation %}
+	{% endblock %}
+	</menu>
+	<header>
+	{% block header %}
+	{% endblock %}
+	</header>
+	<section>
+	{% block menu %}
+	{% endblock %}
+	</section>
+	{% block content %}
+	{% endblock %}
+</body>
+</html>

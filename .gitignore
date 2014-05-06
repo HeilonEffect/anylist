@@ -1,2 +1,4 @@
 virt/*
 *.pyc
+*/__pycache__/*
+*/*sqlite3
