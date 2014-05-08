@@ -247,3 +247,11 @@ header input:focus {
 header input:hover {
 	border-color: rgba(255, 100, 100, 0.5);
 }
+.global-menu {
+	background-color: rgba(100, 100, 100, .3);
+	position: fixed;
+	top: 3em;
+	right: 3em;
+	width: 3em;
+	height: 3em;
+}

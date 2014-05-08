@@ -1,30 +1,17 @@
 from django.db import models
-from django.contrib import admin
-
-# Create your models here.
-class NavigationItem(models.Model):
-	url = models.CharField(max_length=60)
-	name = models.CharField(max_length=20)
-
-	def __str__(self):
-		return self.name
+from anylist.settings import MEDIA_ROOT
 
 
-class NavigationSubItem(models.Model):
-	head = models.ForeignKey(NavigationItem)
-	url = models.CharField(max_length=60)
-	name = models.CharField(max_length=20)
-
-	def __str__(self):
-		return self.name
+class Genre(models.Model):
+	name = models.CharField(max_length=50, unique=True)
+	description = models.CharField(max_length=255)
 
 
-# Admin interface
-class NavigationItemAdmin(admin.ModelAdmin):
-	fields = ('name', 'url',)
+class Anime(models.Model):
+	jp_name = models.CharField(max_length=255)
+	ru_name = models.CharField(max_length=255, blank=True)
+	en_name = models.CharField(max_length=255, blank=True)
 
-class NavigationSubItemAdmin(admin.ModelAdmin):
-	fields = ('head', 'name', 'url',)
-
-admin.site.register(NavigationItem, NavigationItemAdmin)
-admin.site.register(NavigationSubItem, NavigationSubItemAdmin)
+	description = models.TextField(blank=True)
+	genres = models.ManyToManyField(Genre)
+	
