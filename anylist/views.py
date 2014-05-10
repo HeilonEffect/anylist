@@ -1,25 +1,38 @@
 from django.shortcuts import render_to_response
 from django.views.generic import TemplateView, ListView
 
-#from content.models import *
-from menues.models import *
+from content.models import *
 
 
 class BasePageMixin(object):
-
+	header = ''
 	def get_context_data(self, **kwargs):
 		context = super(BasePageMixin, self).get_context_data(**kwargs)
-		context['headers'] = NavigationMenu.objects.all()
+		context['header'] = self.header
 		return context
 
 
-def index(request):
-	return render_to_response('base.html')
+class PaginateMixin(object):
+	''' Делает выборку ограниченного полем count числа элементов
+	из каждой из нескольких	указанных таблиц '''
+	count = 5
+	db = []
+
+	def get_context_data(self, **kwargs):
+		context = super(PaginateMixin, self).get_context_data(**kwargs)
+		context['object_list'] = []
+		for item in self.db:
+			context['object_list'].append(item.objects.all()[:self.count])
 
 
-class CatalogView(BasePageMixin, TemplateView):
-	template_name = 'base.html'
+class MainView(ListView):
+	''' Главная страница '''
+	header = '''Здесь вы можете хранить списки книг и фильмов,
+		которые смотрели или планируете посмотреть'''
+	template_name = 'index.html'
+	model = Categories
 
 
-class CardView(BasePageMixin, TemplateView):
-	tempalte_name = 'card.html'
+class JapView(PaginateMixin, TemplateView):
+	template_name = 'japanese.html'
+	db = [Anime]

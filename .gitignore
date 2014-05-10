@@ -3,3 +3,4 @@ virt/*
 */__pycache__/*
 */*sqlite3
 */migratioins/*
+*/static/*

@@ -7,22 +7,14 @@
 	<link rel="stylesheet" type="text/css" href="/static/medialist.css">
 </head>
 <body>
-	<div class="global-menu"></div>
-	<menu>
-	{% block navigation %}
-		{% include "components/top.html" %}
-	{% endblock %}
-	</menu>
+
 	<header>
-	{% block header %}
-		{% include "components/header.html" %}
-	{% endblock %}
+		<h1>{% block header %}{{ header }}{% endblock %}</h1>
+		<hr>
 	</header>
-	<section>
-	{% block menu %}
-	{% endblock %}
-	</section>
+	<main>
 	{% block content %}
 	{% endblock %}
+	</main>
 </body>
 </html>

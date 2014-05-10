@@ -1,0 +1,4 @@
+Django (1.6.4)
+pip (1.5.4)
+setuptools (2.2)
+South (0.8.4)
