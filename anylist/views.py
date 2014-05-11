@@ -8,7 +8,7 @@ class BasePageMixin(object):
 	header = ''
 	def get_context_data(self, **kwargs):
 		context = super(BasePageMixin, self).get_context_data(**kwargs)
-		context['header'] = self.header
+		context['header'] = self.header.objects.all()
 		return context
 
 
