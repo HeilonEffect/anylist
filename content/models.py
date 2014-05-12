@@ -4,7 +4,8 @@ from anylist.settings import MEDIA_ROOT
 
 class Raiting(models.Model):
 	''' Возрастные ограничения '''
-	name = models.CharField(max_length=10)
+	name = models.CharField(max_length=5)
+	tooltip = models.CharField(max_length=45)
 
 
 #-----------------------------
@@ -120,7 +121,17 @@ class AMW(models.Model):
 	anime = models.ManyToManyField(Anime)
 
 
+# Две таблицы ниже - меню стартовой страницы
 class Categories(models.Model):
 	name = models.CharField(max_length=40, unique=True)
-	img = models.CharField(max_length=100, unique=True)
+
+	def _values(self):
+		return SubCategories.objects.filter(categories=self.id)
+	values = property(_values)
+
+
+class SubCategories(models.Model):
+	name = models.CharField(max_length=30, unique=True)
+	img = models.CharField(max_length=100, unique=True)	# ccылка на картинку
 	url = models.CharField(max_length=50, unique=True)
+	categories = models.ForeignKey(Categories)

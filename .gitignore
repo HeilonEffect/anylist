@@ -4,3 +4,5 @@ virt/*
 */*sqlite3
 */migratioins/*
 */static/*
+*.jpg
+*.png

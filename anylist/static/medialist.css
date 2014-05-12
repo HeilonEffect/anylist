@@ -31,34 +31,6 @@ header > hr {
 	right: 2%;
 }
 
-/* Grid для коллекций */
-main {
-	position: absolute;
-	top: 5em;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	padding: .5em;
-	overflow: auto;
-	background-color: rgba(200, 200, 200, .3);
-}
-
-main > ul {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-}
-main  li {
-	display: inline-block;
-	margin: 0;
-	padding: 0;
-}
-
-li > figure {
-	padding: .1em;
-	margin: .1em;
-}
-
 figure {
 	border: .8px solid rgba(0, 0, 0, .8);
 	min-width: 5em;
@@ -76,7 +48,58 @@ figcaption {
 	margin-bottom: .3em;
 	margin-left: .4em;
 }
-/* Случай, когда имеется несколько списков, ограниченных шириной страницы
-На каждый список - по section */
-main > section {
+
+/* Grid для коллекций */
+main {
+	position: absolute;
+	top: 5em;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: .5em;
+	overflow: auto;
+	background-color: rgba(200, 200, 200, .3);
+}
+main article > header {
+	background-color: gray;
+	padding-left: 0.3em;
+}
+nav a {
+	display: inline-block;
+}
+a > figure {
+	padding: .3em;
+	margin: .3em;
+}
+main li {
+	list-style-type: none;
+	display: inline-block;
+}
+/* Случаи не-ajax формы */
+main > form {
+	margin-left: 5%;
+	width: 90%;
+	height: 100%;
+}
+.form-title {
+	height: 2em;
+	border: none;
+	width: 70%;
+}
+.form-textarea {
+	border: none;
+	max-width: 40%;
+	min-width: 40%;
+	display: inline;
+}
+.form-header {
+	width: 100%;
+}
+.form-menu {
+	margin-top: 1em;
+	width: 100%;
+	display: block;
+}
+.form-upload-image {
+	background-color: gray;
 }
