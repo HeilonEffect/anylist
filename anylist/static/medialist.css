@@ -103,3 +103,79 @@ main > form {
 .form-upload-image {
 	background-color: gray;
 }
+/* Поиск для добавления студий */
+.select-list {
+	border: 1px solid black;
+	margin-left: 0;
+	font-size: 20px;
+	padding: .2em;
+}
+.select-list:focus + .popup {
+	visibility: visible;
+}
+.popup {
+	visibility: hidden;
+	display: block;
+	width: 5em;
+	margin-top: 0;
+	margin-left: -1.6em;
+	width: 13em;
+	position: absolute;
+}
+.popup > li {
+	display: block;
+	border: 1px solid black;
+	background-color: white;
+}
+.popup > li:hover {
+	background-color: rgb(100, 100, 100);
+}
+/* Лайтбокс для добавления жанра */
+.lightbox {
+	visibility: hidden;
+	opacity: 0;
+	position: fixed;
+	height: 100%;
+	background-color: rgba(0, 0, 0, .75);
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+#add_genre:target {
+	visibility: visible;
+	opacity: 1;
+}
+.lightbox .content {
+	background-color: white;
+	position: inherit;
+	top: 5%;
+	bottom: 3%;
+	left: 15%;
+	right: 15%;
+}
+.ligh-close {
+	float: right;
+	font-size: 19px;
+}
+button {
+	height: 2.3em;
+	width: 5em;
+	background-color: white;
+	border: .6px solid rgba(0, 0, 0, .5);
+}
+.lightbox .save {
+	bottom: 2em;
+	position: absolute;
+	right: 3em;
+}
+.genre-list {
+}
+.genre-list > li {
+	display: block;
+	margin: -.5em;
+	padding: 0;
+}
+.genre-cloud {
+
+}

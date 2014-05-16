@@ -1,0 +1,17 @@
+<ul>
+<li>
+<a href="{{ category }}/add">
+	<figure>
+		<img src="/static/add.svg">
+		<figcaption>Добавить {{ category }}</figcaption>
+	</figure>
+</a></li>
+{% for value in object_list %}
+	<li><a href="{{ value.url }}">
+		<figure>
+			<img src="{{ value.img }}">
+			<figcaption>{{ value.name }}</figcaption>
+		</figure>
+	</a></li>
+{% endfor %}
+</ul>

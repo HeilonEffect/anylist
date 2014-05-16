@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+	<form>
+		<div class="form-header">
+			<input name="name" type="text" placeholder="Enter title here" class="form-title">
+		</div>
+		<div class="form-menu">
+			<textarea class="form-textarea" rows="15"></textarea>
+			<input type="file">
+		</div>
+		<div class="form-other">
+		<!--Формочка добавления жанров___________________-->
+			<div class="genre-cloud">
+				<ul></ul>
+			</div>
+			<a href="#add_genre">Добавить жанр</a>
+			<div class="lightbox" id="add_genre">
+				<div class="content">
+					<a href="#" class="ligh-close">Закрыть</a>
+					{% for genres in category_genres %}
+						{% for genre in genres.genres %}
+						<ul class="genre-list">
+							<li>
+								<label for="{{ genre }}">{{ genre }}</label>
+								<input id="{{ genre }}" type="checkbox">
+							</li>
+						</ul>
+						{% endfor %}
+					{% endfor %}
+					<button class="save">Save</button>
+				</div>
+			</div>
+			<!--_____Формочка для выбора из списка________-->
+			<div>
+				<label for="studios">Добавьте студию: </label>
+				<div>
+					<input id="studios" type="text" class="select-list" placeholder="Введите студию">
+					<ul class="popup">
+					{% for studio in studies %}
+						<li>{{ studio }}</li>
+					{% endfor %}
+					</ul>
+				</div>
+			</div>
+			<!---->
+			<p></p>
+			<input type="text" placeholder="Enter start date (optional)" id="datetimepick1" class="select-list">
+			<script type="text/javascript">
+				$("#datetimepick1").datetimepicker();
+			</script>
+			<input type="text" placeholder="Введите число серий" class="select-list">
+			<input type="text" placeholder="Enter episode length (default=24)" class="select-list">
+			<input type="text" placeholder="Введите тип (сериал, фильм)" class="select-list">
+			<div>
+				<input type="text" class="select-list" placeholder="Введите возрастное ограничение">
+				<ul class="popup">
+				{% for item in raiting %}
+					<li>{{ item }}</li>
+				{% endfor %}
+				</ul>
+			</div>
+		</div>
+		<div>
+			<button type="submit">Save</button>
+		</div>
+	</form>
+{% endblock %}

@@ -11,6 +11,10 @@ class BasePageMixin(object):
 		context = super(BasePageMixin, self).get_context_data(**kwargs)
 		context['header'] = self.header
 		context['category'] = self.category
+		#context['genres'] = Genre.objects.all()
+		context['category_genres'] = Category.objects.all()
+		context['studies'] = Studio.objects.all()
+		context['raiting'] = Raiting.objects.all()
 		return context
 
 

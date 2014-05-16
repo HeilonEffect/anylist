@@ -1,0 +1,133 @@
+[
+  {
+    "model": "content.raiting",
+    "pk": 1,
+    "fields": {
+      "name": "G",
+      "tooltip": "Для всех возрастов"
+    }
+  },
+  {
+    "model": "content.raiting",
+    "pk": 2,
+    "fields": {
+      "name": "PG",
+      "tooltip": "Рекомендуется присутсвие родителей"
+    }
+  },
+  {
+    "model": "content.raiting",
+    "pk": 3,
+    "fields": {
+      "name": "PG-13",
+      "tooltip": "До 13 лет просмотр с родителями"
+    }
+  },
+  {
+    "model": "content.raiting",
+    "pk": 4,
+    "fields": {
+      "name": "R",
+      "tooltip": "До 17 лет просмотр с родителями"
+    }
+  },
+  {
+    "model": "content.raiting",
+    "pk": 5,
+    "fields": {
+      "name": "NC-17",
+      "tooltip": "Запрет на просмотр до 17 лет"
+    }
+  },
+  {
+    "model": "content.imgtype",
+    "pk": 1,
+    "fields": {
+      "name": "Avatar"
+    }
+  },
+  {
+    "model": "content.imgtype",
+    "pk": 2,
+    "fields": {
+      "name": "Art"
+    }
+  },
+  {
+    "model": "content.imgtype",
+    "pk": 3,
+    "fields": {
+      "name": "Cosplay"
+    }
+  },
+  {
+    "model": "content.categories",
+    "pk": 1,
+    "fields": {
+      "name": "Japanese"
+    }
+  },
+  {
+    "model": "content.subcategories",
+    "pk": 1,
+    "fields": {
+      "name": "Anime",
+      "img": "/static/Anime.png",
+      "url": "/anime",
+      "categories": 1
+    }
+  },
+  {
+    "model": "content.animetype",
+    "pk": 1,
+    "fields": {
+      "name": "OVA"
+    }
+  },
+  {
+    "model": "content.animetype",
+    "pk": 2,
+    "fields": {
+      "name": "Сериал"
+    }
+  },
+  {
+    "model": "content.animetype",
+    "pk": 3,
+    "fields": {
+      "name": "Special"
+    }
+  },
+  {
+    "model": "content.category",
+    "pk": 1,
+    "fields": {
+      "name": "pron"
+    }
+  },
+  {
+    "model": "content.category",
+    "pk": 2,
+    "fields": {
+      "name": "standart"
+    }
+  },
+  {
+    "model": "content.genre",
+    "pk": 1,
+    "fields": {
+      "name": "Этти",
+      "description": "Эротика",
+      "category": 1
+    }
+  },
+  {
+    "model": "content.genre",
+    "pk": 1,
+    "fields": {
+      "name": "Научная фантастика",
+      "description": "Роботы, космос и задолбавший киберпанк",
+      "category": 2
+    }
+  }
+]

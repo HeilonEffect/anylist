@@ -7,6 +7,9 @@ class Raiting(models.Model):
 	name = models.CharField(max_length=5)
 	tooltip = models.CharField(max_length=45)
 
+	def __str__(self):
+		return self.name
+
 
 #-----------------------------
 class ImgType(models.Model):
@@ -29,11 +32,21 @@ class Category(models.Model):
 	''' Примеры - <for man>, <crime>, <pron>, <fantastic>, <life> '''
 	name = models.CharField(max_length=30, unique=True)
 
+	def _genres(self):
+		return Genre.objects.filter(category=self.id)
+	genres = property(_genres)
+
+	def __str__(self):
+		return self.name
+
 
 class Genre(models.Model):
 	name = models.CharField(max_length=50, unique=True)
 	description = models.CharField(max_length=255, blank=True)
 	category = models.ForeignKey(Category)
+
+	def __str__(self):
+		return self.name
 
 
 #----------------------------------
@@ -53,6 +66,9 @@ class Employer(models.Model):
 class Studio(models.Model):
 	name = models.CharField(max_length=140)
 	foundation_date = models.DateField(blank=True)
+
+	def __str__(self):
+		return self.name
 #------------------------------
 
 
@@ -89,7 +105,7 @@ class Anime(models.Model):
 
 	typ = models.ForeignKey(AnimeType)
 
-	heroes = models.ManyToManyField(Hero)
+	heroes = models.ManyToManyField(Hero, blank=True)
 
 
 class Opening(models.Model):

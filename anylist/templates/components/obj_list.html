@@ -1,0 +1,19 @@
+{% for category in object_list %}
+	<article>
+		<header>
+			<h2>{{ category.name }}</h2>
+		</header>
+		<section>
+			<nav role="navigation">
+			{% for value in category.values %}
+				<a href="{{ value.url }}">
+					<figure>
+						<img src="{{ value.img }}">
+						<figcaption>{{ value.name }}</figcaption>
+					</figure>
+				</a>
+			{% endfor %}
+			</nav>
+		</section>
+	</article>
+{% endfor %}
