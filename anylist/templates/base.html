@@ -5,6 +5,7 @@
 	<title>Base title</title>
 	<link rel="stylesheet" type="text/css" href="/static/medialist.css">
 	<link rel="stylesheet" type="text/css" href="/static/jquery.datetimepicker.css">
+	<link rel="stylesheet" type="text/css" href="/static/avatars.css">
 	<script type="text/javascript" src="/static/jquery.min.js"></script>
 	<script type="text/javascript" src="/static/jquery.datetimepicker.js"></script>
 	<script type="text/javascript" src="/static/medialist.js"></script>
@@ -12,8 +13,8 @@
 <body>
 
 	<header>
-		<h1>{{ header }}</h1>
-		<hr>
+	{% block header %}
+	{% endblock %}
 	</header>
 	<main>
 	{% block content %}

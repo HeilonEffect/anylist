@@ -10,25 +10,29 @@ sup {
 	font-style: italic;
 	color: blue;
 }
+sub {
+	font-size: 14px;
+
+}
 body > header {
 	position: absolute;
-	height: 4.8em;
+	min-height: 4.8em;
+	max-height: 10em;
+	min-width: 15em;
 	top: 0;
 	left: 0;
 	right: 0;
 }
 header > h1 {
-	position: inherit;
 	max-width: 100%;
 	max-height: 100%;
-	margin-top: 0;
-	text-indent: 1em;
+	margin-top: .3em;
+	text-indent: 1.4em;
 }
-header > hr {
+header > span {
 	position: inherit;
-	top: 4.1em;
-	left: 2%;
-	right: 2%;
+	margin-top: -1.1em;
+	left: 1em;
 }
 
 figure {
@@ -57,13 +61,36 @@ main {
 	left: 0;
 	right: 0;
 	padding: .5em;
-	overflow: auto;
-	background-color: rgba(200, 200, 200, .3);
+	background-color: rgba(200, 200, 200, .1);
 }
-main article > header {
-	background-color: gray;
-	padding-left: 0.3em;
+/* Детальное описание карточки */
+main > article {
+	position: inherit;
+	left: 3em;
+	top: 1em;
+	right: 11em;
 }
+article > p {
+	text-indent: 1em;
+}
+article > p > a {
+	color: rgb(0, 0, 160);
+	cursor: pointer;
+}
+.avatars {
+	float: right;
+	margin: 7px 0 7px 7px;
+	width: 11em;
+}
+article img {
+	float: right;
+	margin: 7px 0 7px 7px;
+	width: 11em;
+}
+
+/*Конец детального описания карточки*/
+
+
 nav a {
 	display: inline-block;
 }
@@ -132,19 +159,13 @@ main > form {
 }
 /* Лайтбокс для добавления жанра */
 .lightbox {
-	visibility: hidden;
-	opacity: 0;
 	position: fixed;
 	height: 100%;
-	background-color: rgba(0, 0, 0, .75);
 	top: 0;
 	left: 0;
+	border: .5px solid rgba(0, 0, 0, .5);
 	right: 0;
 	bottom: 0;
-}
-#add_genre:target {
-	visibility: visible;
-	opacity: 1;
 }
 .lightbox .content {
 	background-color: white;
@@ -153,10 +174,6 @@ main > form {
 	bottom: 3%;
 	left: 15%;
 	right: 15%;
-}
-.ligh-close {
-	float: right;
-	font-size: 19px;
 }
 button {
 	height: 2.3em;

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-	<form>
+	<form enctype="multipart/form-data" method="post">
 		<div class="form-header">
 			<input name="name" type="text" placeholder="Enter title here" class="form-title">
 		</div>
@@ -13,10 +13,9 @@
 			<div class="genre-cloud">
 				<ul></ul>
 			</div>
-			<a href="#add_genre">Добавить жанр</a>
-			<div class="lightbox" id="add_genre">
+			<div class="lightbox">
+				<p>Укажите жанры</p>
 				<div class="content">
-					<a href="#" class="ligh-close">Закрыть</a>
 					{% for genres in category_genres %}
 						{% for genre in genres.genres %}
 						<ul class="genre-list">
@@ -27,7 +26,6 @@
 						</ul>
 						{% endfor %}
 					{% endfor %}
-					<button class="save">Save</button>
 				</div>
 			</div>
 			<!--_____Формочка для выбора из списка________-->
@@ -48,8 +46,6 @@
 			<script type="text/javascript">
 				$("#datetimepick1").datetimepicker();
 			</script>
-			<input type="text" placeholder="Введите число серий" class="select-list">
-			<input type="text" placeholder="Enter episode length (default=24)" class="select-list">
 			<input type="text" placeholder="Введите тип (сериал, фильм)" class="select-list">
 			<div>
 				<input type="text" class="select-list" placeholder="Введите возрастное ограничение">
