@@ -1,14 +1,20 @@
+import re
+
 from django.db import models
 from django.core.exceptions import ValidationError
 
+from anylist.settings import MEDIA_ROOT
+
 
 class GenreGroup(models.Model):
-    ''' Группа жанров, объединенная одним признаком '''
-    group_name = models.CharField(unique=True)
+    name = models.CharField(max_length=50, unique=True)
 
     def _genres(self):
-        return Genre.objects.filter(id=self.id)
+        return Genre.objects.filter(group=self.id)
     genres = property(_genres)
+
+    def __str__(self):
+        return self.name
 
 
 class Genre(models.Model):
@@ -19,27 +25,36 @@ class Genre(models.Model):
         return self.name
 
 
-class Copyrighter(models.Model):
-    ''' Описывает производителя '''
-    name = models.CharField(max_length=255, unique=True)
-    logotype = models.ImageField(blank=True)
-    start_date = models.DateField(blank=True)
+class Category(models.Model):
+    name = models.CharField(max_length=40, unique=True)
 
-    class Meta:
-        abstract = True
+
+def validate_old_limit(value):
+    if value > 21 or value < 0:
+        raise ValidationError(
+            "Old limit don't mutch great, then 21 and small, then 0")
+
+
+def validate_genres(value):
+    if value in Genre.objects.all():
+        pass
 
 
 class Product(models.Model):
-    ''' Описывает одиночный объект '''
+    ''' Description single product '''
     title = models.CharField(max_length=255, unique=True)
     description = models.TextField()
     genres = models.ManyToManyField(Genre)
-    url = models.CharField(max_length=255, unique=True)
 
-    avatar = models.ImageField()
+    avatar = models.FileField(upload_to=MEDIA_ROOT)
 
-    start_date = models.DateField(blank=True)   # если пусто - то анонс
-    old_limit = models.SmallInteger(validators=[validate_old_limit])
+    start_date = models.DateField(blank=True)   # if emty - then it is anounce
+    old_limit = models.PositiveSmallIntegerField(validators=[validate_old_limit])
+
+#    category = models.ForeignKey(Category, blank=True)
+
+    def get_absolute_url(self):
+        return ''.join(re.split(r'[ :_]', self.title))
     
     class Meta:
         abstract = True
@@ -49,7 +64,5 @@ class Product(models.Model):
         return self.title
     
 
-def validate_old_limit(value):
-    if value > 21 or value < 0:
-        raise ValidationError(
-            "Old limit don't mutch great, then 21 and small, then 0")
+class Anime(Product):
+    pass

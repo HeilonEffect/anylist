@@ -6,63 +6,40 @@ from django.shortcuts import render_to_response
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView
 
-from content.models import *
-from content.models import UploadForm
-
-from pymongo import Connection
-
-
-db = connection.test_database
-
-title_to_path =lambda title, hub:
-	'%s/%s' % (hub, ''.join(re.split(r'[ -_:]', title.lower())))
+from apps.models import *
+from apps.forms import AddForm
 
 
 class BasePageMixin(object):
 	''' Содержит одинаковые для всех классов приложения операции '''
-	category = ''
 	def get_context_data(self, **kwargs):
 		context = super(BasePageMixin, self).get_context_data(**kwargs)
-		#context['header'] = self.header
-		context['category'] = self.category
-		#context['genres'] = Genre.objects.all()
-		context['category_genres'] = Category.objects.all()
-		context['studies'] = Studio.objects.all()
-		context['raiting'] = Raiting.objects.all()
+		context['header'] = self.header
+		context['genres'] = Genre.objects.all()
 		return context
 
 
 
-class MainView(BasePageMixin, ListView):
-	''' Главная страница '''
-	header = '''Здесь вы можете хранить списки книг и фильмов,
-		которые смотрели или планируете посмотреть'''
-	template_name = 'index.html'
-	model = Categories
-
-
-class JapView(BasePageMixin, ListView):
-	template_name = 'japanese.html'
+class MainPage(BasePageMixin, ListView):
 	model = Anime
-	header = 'Anime'
-	category = 'Anime'
+	template_name = 'list.html'
+	header = 'Welcome'
 
 
-class AnimeView(BasePageMixin, CreateView):
+class AddAnime(BasePageMixin, CreateView):
+	model = Anime
+	form_class = AddForm
 	template_name = 'forms/add_form.html'
-	model = Anime
-	header = 'Add New Anime'
-	category = 'Anime'
+	header = 'Добавление продукта'
 
 	def post(self, request):
-		js = json.load(request.POST['data'])
-
-		# загрузка картинки
-		avatar = request.FILES['avatar']
-		with open(, 'wb+') as f:
-			for chunk in avatar.chunks:
-				f.write(chunk)
+		form = AddForm(request.POST, request.FILES)
+		if form.is_valid():
+			form.save()
+			return HttpResponse('Valid Form')
+		return HttpResponse('Invalid Form')
 
 
-class TmpView(BasePageMixin, TemplateView):
-	template_name = 'detail.html'
+def save_anime(request):
+	print(request.POST)
+	return HttpResponse()

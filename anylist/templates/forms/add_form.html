@@ -1,63 +1,83 @@
 {% extends "base.html" %}
 {% block content %}
-	<form enctype="multipart/form-data" method="post">
+	<form enctype="multipart/form-data" method="post" action="/anime/add" id="add_form">
 		<div class="form-header">
-			<input name="name" type="text" placeholder="Enter title here" class="form-title">
+			<input name="title" type="text" placeholder="Enter title here" class="form-title">
 		</div>
 		<div class="form-menu">
-			<textarea class="form-textarea" rows="15"></textarea>
-			<input type="file">
+			<textarea class="form-textarea" rows="15" name="description"></textarea>
+			<input type="file" name="avatar">
 		</div>
 		<div class="form-other">
-		<!--Формочка добавления жанров___________________-->
-			<div class="genre-cloud">
-				<ul></ul>
-			</div>
+			<!--<select name="genres" size="10" multiple>
+				{% for genre in genres %}
+				<option value="{{ genre }}">{{ genre }}</option>
+				{% endfor %}
+			</select>-->
 			<div class="lightbox">
 				<p>Укажите жанры</p>
+
 				<div class="content">
-					{% for genres in category_genres %}
-						{% for genre in genres.genres %}
-						<ul class="genre-list">
+					<ul class="genre-list">
+					{% for genre in genres %}
 							<li>
 								<label for="{{ genre }}">{{ genre }}</label>
-								<input id="{{ genre }}" type="checkbox">
+								<input id="{{ genre }}" type="checkbox" name="genres">
 							</li>
-						</ul>
-						{% endfor %}
-					{% endfor %}
-				</div>
-			</div>
-			<!--_____Формочка для выбора из списка________-->
-			<div>
-				<label for="studios">Добавьте студию: </label>
-				<div>
-					<input id="studios" type="text" class="select-list" placeholder="Введите студию">
-					<ul class="popup">
-					{% for studio in studies %}
-						<li>{{ studio }}</li>
 					{% endfor %}
 					</ul>
 				</div>
 			</div>
-			<!---->
 			<p></p>
-			<input type="text" placeholder="Enter start date (optional)" id="datetimepick1" class="select-list">
+			<input type="text" placeholder="Enter start date (optional)" id="datetimepick1" class="select-list" name="start_date">
 			<script type="text/javascript">
-				$("#datetimepick1").datetimepicker();
+				$("#datetimepick1").datetimepicker({
+					timepicker: false,
+					format: 'd/m/Y'
+				});
 			</script>
-			<input type="text" placeholder="Введите тип (сериал, фильм)" class="select-list">
-			<div>
-				<input type="text" class="select-list" placeholder="Введите возрастное ограничение">
-				<ul class="popup">
-				{% for item in raiting %}
-					<li>{{ item }}</li>
-				{% endfor %}
-				</ul>
-			</div>
+			<input type="text" class="select-list" placeholder="Введите возрастное ограничение" name="old_limit">
 		</div>
 		<div>
-			<button type="submit">Save</button>
+			{% csrf_token %}
+			<button type="submit">Next Step</button>
 		</div>
 	</form>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+	function is_checked(element, index, array) {
+		console.log(keys[element]);
+		return true;
+	}
+
+	/*$("#add_form").submit(function (event) {
+		// Эта жуть - процесс подстановки жанров
+		var v = $("input[name='genre']");
+		var elements = Object.keys(v).filter(function (element) {
+			return Number.parseInt(element);
+		}).filter(function (element) {
+			return v[element].checked;
+		}).map(function (element) {
+			return v[element].id;
+		});
+		var data = $("#add_form").serialize();
+		elements.forEach(function (element, index, array) {
+			data = data.replace("&genre=on", "&genre_set=" + element);
+		});
+
+		var res = $("#add_form").serialize().replace("&genre=on", "","gi");
+
+		// посылаем жанры отдельно (ибо х.з как это сделать вместе)
+		$.ajax({
+			type: "POST",
+			url: "add/genre",
+			data: data,
+			success: function(data) {
+				console.log(data);
+			}
+		});
+		return false;
+	});*/
+</script>
 {% endblock %}

@@ -58,10 +58,20 @@ main {
 	position: absolute;
 	top: 5em;
 	bottom: 0;
-	left: 0;
-	right: 0;
+	left: 1em;
+	right: 10em;
 	padding: .5em;
+	min-width: 10em;
 	background-color: rgba(200, 200, 200, .1);
+}
+nav {
+	position: absolute;
+	top: 5em;
+	right: 0;
+	width: 10em;
+}
+nav > input {
+	margin-left: 1.5em;
 }
 /* Детальное описание карточки */
 main > article {
@@ -90,10 +100,6 @@ article img {
 
 /*Конец детального описания карточки*/
 
-
-nav a {
-	display: inline-block;
-}
 a > figure {
 	padding: .3em;
 	margin: .3em;
@@ -189,9 +195,8 @@ button {
 .genre-list {
 }
 .genre-list > li {
-	display: block;
-	margin: -.5em;
-	padding: 0;
+	display: inline-block;
+	width: 10em;
 }
 .genre-cloud {
 

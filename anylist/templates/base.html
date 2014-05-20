@@ -9,9 +9,22 @@
 	<script type="text/javascript" src="/static/jquery.min.js"></script>
 	<script type="text/javascript" src="/static/jquery.datetimepicker.js"></script>
 	<script type="text/javascript" src="/static/medialist.js"></script>
+	<script type="text/javascript">
+	function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    crossDomain: false, // obviates need for sameOrigin test
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type)) {
+            xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+        }
+    }
+});
+</script>
 </head>
 <body>
-
 	<header>
 	{% block header %}
 	{% endblock %}
@@ -20,5 +33,11 @@
 	{% block content %}
 	{% endblock %}
 	</main>
+	<nav>
+	{% block navigation %}
+	{% endblock %}
+	</nav>
+	{% block script %}
+	{% endblock %}
 </body>
 </html>
