@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 import json
 import re
 
@@ -34,12 +35,8 @@ class AddAnime(BasePageMixin, CreateView):
 
 	def post(self, request):
 		form = AddForm(request.POST, request.FILES)
+		print(request.POST)
 		if form.is_valid():
 			form.save()
 			return HttpResponse('Valid Form')
 		return HttpResponse('Invalid Form')
-
-
-def save_anime(request):
-	print(request.POST)
-	return HttpResponse()

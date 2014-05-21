@@ -1,7 +1,13 @@
 import re
 
 from django.db import models
+from django.db.models import Q
 from django.core.exceptions import ValidationError
+
+import select2.fields
+import select2.models
+import floppyforms as forms
+from select2light.models import Select2ModelChoiceField, Select2ModelMultipleChoiceField
 
 from anylist.settings import MEDIA_ROOT
 
@@ -13,43 +19,43 @@ class GenreGroup(models.Model):
         return Genre.objects.filter(group=self.id)
     genres = property(_genres)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.name
 
 
+
+class GenreManager(models.Manager):
+    def as_choices(self):
+        for genre in self.all():
+            yield (genre.pk, unicode(genre))
+    
+
 class Genre(models.Model):
     name = models.CharField(max_length=140, unique=True)
+    objects = GenreManager()
     group = models.ForeignKey(GenreGroup)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.name
 
 
 class Category(models.Model):
     name = models.CharField(max_length=40, unique=True)
 
-
-def validate_old_limit(value):
-    if value > 21 or value < 0:
-        raise ValidationError(
-            "Old limit don't mutch great, then 21 and small, then 0")
-
-
-def validate_genres(value):
-    if value in Genre.objects.all():
-        pass
+    def __unicode__(self):
+        return self.name
 
 
 class Product(models.Model):
     ''' Description single product '''
     title = models.CharField(max_length=255, unique=True)
     description = models.TextField()
-    genres = models.ManyToManyField(Genre)
+    genres = Select2ModelMultipleChoiceField(Genre)
 
     avatar = models.FileField(upload_to=MEDIA_ROOT)
 
     start_date = models.DateField(blank=True)   # if emty - then it is anounce
-    old_limit = models.PositiveSmallIntegerField(validators=[validate_old_limit])
+    old_limit = models.PositiveSmallIntegerField()
 
 #    category = models.ForeignKey(Category, blank=True)
 
@@ -60,9 +66,9 @@ class Product(models.Model):
         abstract = True
         ordering = ['title']
 
-    def __str__(self):
+    def __unicode__(self):
         return self.title
-    
+
 
 class Anime(Product):
     pass

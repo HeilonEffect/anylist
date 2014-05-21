@@ -9,25 +9,11 @@
 			<input type="file" name="avatar">
 		</div>
 		<div class="form-other">
-			<!--<select name="genres" size="10" multiple>
+			<select name="genres" id="genres" style="width:10em;" multiple>
 				{% for genre in genres %}
 				<option value="{{ genre }}">{{ genre }}</option>
 				{% endfor %}
-			</select>-->
-			<div class="lightbox">
-				<p>Укажите жанры</p>
-
-				<div class="content">
-					<ul class="genre-list">
-					{% for genre in genres %}
-							<li>
-								<label for="{{ genre }}">{{ genre }}</label>
-								<input id="{{ genre }}" type="checkbox" name="genres">
-							</li>
-					{% endfor %}
-					</ul>
-				</div>
-			</div>
+			</select>
 			<p></p>
 			<input type="text" placeholder="Enter start date (optional)" id="datetimepick1" class="select-list" name="start_date">
 			<script type="text/javascript">
@@ -46,38 +32,9 @@
 {% endblock %}
 {% block script %}
 <script type="text/javascript">
-	function is_checked(element, index, array) {
-		console.log(keys[element]);
-		return true;
-	}
-
-	/*$("#add_form").submit(function (event) {
-		// Эта жуть - процесс подстановки жанров
-		var v = $("input[name='genre']");
-		var elements = Object.keys(v).filter(function (element) {
-			return Number.parseInt(element);
-		}).filter(function (element) {
-			return v[element].checked;
-		}).map(function (element) {
-			return v[element].id;
-		});
-		var data = $("#add_form").serialize();
-		elements.forEach(function (element, index, array) {
-			data = data.replace("&genre=on", "&genre_set=" + element);
-		});
-
-		var res = $("#add_form").serialize().replace("&genre=on", "","gi");
-
-		// посылаем жанры отдельно (ибо х.з как это сделать вместе)
-		$.ajax({
-			type: "POST",
-			url: "add/genre",
-			data: data,
-			success: function(data) {
-				console.log(data);
-			}
-		});
-		return false;
-	});*/
+	$("#genres").select2({
+		width: 400,
+		placeholder: "Выберите жанры"
+	});
 </script>
 {% endblock %}

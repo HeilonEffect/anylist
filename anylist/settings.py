@@ -39,7 +39,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apps',
-    'south',
+    'select2light',
+    'floppyforms',
+    'tastypie',
 )
 
 MIDDLEWARE_CLASSES = (
