@@ -1,7 +1,8 @@
 from django.contrib import admin
-from .models import Genre, GenreGroup, Category
+from .models import Genre, GenreGroup, Category, Raiting
 
 # Register your models here.
 admin.site.register(Genre)
 admin.site.register(GenreGroup)
 admin.site.register(Category)
+admin.site.register(Raiting)

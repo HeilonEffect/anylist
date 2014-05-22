@@ -11,7 +11,7 @@
 		<div class="form-other">
 			<select name="genres" id="genres" style="width:10em;" multiple>
 				{% for genre in genres %}
-				<option value="{{ genre }}">{{ genre }}</option>
+				<option value="{{ genre.id }}">{{ genre }}</option>
 				{% endfor %}
 			</select>
 			<p></p>
@@ -22,7 +22,13 @@
 					format: 'd/m/Y'
 				});
 			</script>
-			<input type="text" class="select-list" placeholder="Введите возрастное ограничение" name="old_limit">
+			<label>Укажите возрастное ограничение:</label>
+			<select name="old_limit" style="width:10em">
+			{% for item in raiting %}
+				<option value="{{ item.id }}">{{ item }}</option>
+			{% endfor %}
+			</select>
+			<!--<input type="text" class="select-list" placeholder="Введите возрастное ограничение" name="old_limit">-->
 		</div>
 		<div>
 			{% csrf_token %}
@@ -36,5 +42,8 @@
 		width: 400,
 		placeholder: "Выберите жанры"
 	});
+	$("select[name='old_limit']").select2({
+		width: 100
+	})
 </script>
 {% endblock %}

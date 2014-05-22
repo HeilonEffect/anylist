@@ -36,13 +36,14 @@ header > span {
 }
 
 figure {
-	border: .8px solid rgba(0, 0, 0, .8);
+/*	border: .4px solid rgba(0, 0, 0, .8);*/
 	min-width: 5em;
 	background-color: white;
 	max-width: 10em;
 }
 figure img {
-	max-width: 9.6em;
+	width: 8.6em;
+	height: 11em;
 	margin: 0;
 	padding: 0;
 	max-height: 15em;
@@ -58,17 +59,19 @@ main {
 	position: absolute;
 	top: 5em;
 	bottom: 0;
-	left: 1em;
+	left: 0;
+/*	left: 1em;*/
 	right: 10em;
 	padding: .5em;
 	min-width: 10em;
-	background-color: rgba(200, 200, 200, .1);
+/*	background-color: rgba(200, 200, 200, .1);*/
 }
 nav {
+	font-size: 22px;
 	position: absolute;
 	top: 5em;
 	right: 0;
-	width: 10em;
+	width: 11.5em;
 }
 nav > input {
 	margin-left: 1.5em;
@@ -78,7 +81,7 @@ main > article {
 	position: inherit;
 	left: 3em;
 	top: 1em;
-	right: 11em;
+	right: 3em;
 }
 article > p {
 	text-indent: 1em;
@@ -94,7 +97,7 @@ article > p > a {
 }
 article img {
 	float: right;
-	margin: 7px 0 7px 7px;
+	margin: 0px 0 7px 7px;
 	width: 11em;
 }
 
@@ -104,9 +107,15 @@ a > figure {
 	padding: .3em;
 	margin: .3em;
 }
+main ul {
+	padding: 0;
+	margin: 0;
+}
 main li {
 	list-style-type: none;
 	display: inline-block;
+	margin: 0;
+	padding: 0;
 }
 /* Случаи не-ajax формы */
 main > form {

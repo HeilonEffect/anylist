@@ -5,7 +5,7 @@ import re
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.views.generic import TemplateView, ListView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, FormView
 from django.views.generic.detail import DetailView
 
 from apps.models import *
@@ -18,6 +18,7 @@ class BasePageMixin(object):
 		context = super(BasePageMixin, self).get_context_data(**kwargs)
 		context['header'] = self.header
 		context['genres'] = Genre.objects.all()
+		context['raiting'] = Raiting.objects.all()
 		return context
 
 
@@ -45,20 +46,28 @@ class MainPage(BasePageMixin, ListView):
 class AnimeListView(ListPageMixin, ListView):
 	template_name = 'list.html'
 	model = Anime
-	genre_groups = ['Japanese Male', 'Japanese Female']
+	genre_groups =\
+		['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
 
 
-class AddAnime(BasePageMixin, CreateView):
+class AddAnime(BasePageMixin, FormView):
 	model = Anime
 	form_class = AddForm
 	template_name = 'forms/add_form.html'
 	header = 'Добавление продукта'
+	success_url = '/anime'
+
+	def form_invalid(self, form):
+		print(form)
+		return super(AddAnime, self).form_invalid(form)
 
 	def post(self, request):
 		form = AddForm(request.POST, request.FILES)
 		if form.is_valid():
 			form.save()
-			return HttpResponseRedirect('/anime')
+			return HttpResponseRedirect('/')
+		else:
+			print(form)
 		return HttpResponse('Invalid Form')
 
 

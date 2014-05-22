@@ -4,8 +4,10 @@
 	<!--<span>Следующая глава: 17 мая 2014 | Оценка: 8 из 10 <sub>5 голосов</sub> | Добавить в список | Редактировать</span>-->
 {% endblock %}
 {% block content %}
-	<div class="ava">
-		<img src="{{ object.avatar_path}}">
-	</div>
-	<p>{{ object.description }}</p>
+	<article>
+		<p>
+			<img src="{{ object.avatar_path }}">
+			{{ object.description }}
+		</p>
+	</article>
 {% endblock %}

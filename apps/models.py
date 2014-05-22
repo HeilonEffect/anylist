@@ -25,16 +25,19 @@ class GenreGroup(models.Model):
         return self.name
 
 
-class GenreManager(models.Manager):
-    def as_choices(self):
-        for genre in self.all():
-            yield (genre.pk, unicode(genre))
-    
+class Raiting(models.Model):
+    name = models.CharField(max_length=8, unique=True)
+
+    def __unicode__(self):
+        return self.name
+
 
 class Genre(models.Model):
     name = models.CharField(max_length=140, unique=True)
-#    objects = GenreManager()
     group = models.ForeignKey(GenreGroup)
+
+    class Meta:
+        ordering = ['name']
 
     def __unicode__(self):
         return self.name
@@ -50,13 +53,13 @@ class Category(models.Model):
 class Product(models.Model):
     ''' Description single product '''
     title = models.CharField(max_length=255, unique=True)
-    description = models.TextField()
+    description = models.TextField(null=True)
     genres = Select2ModelMultipleChoiceField(Genre)
 
     avatar = models.FileField(upload_to=MEDIA_ROOT)
 
-    start_date = models.DateField(blank=True)   # if emty - then it is anounce
-    old_limit = models.PositiveSmallIntegerField()
+    start_date = models.DateField(null=True)   # if emty - then it is anounce
+    old_limit = Select2ModelChoiceField(Raiting)
 
     def get_absolute_url(self):
         return '%i-%s' % (self.id, ''.join(re.split(r'[ :_]', self.title)))
