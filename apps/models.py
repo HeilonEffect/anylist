@@ -1,15 +1,17 @@
 import re
+import sys
 
 from django.db import models
 from django.db.models import Q
-from django.core.exceptions import ValidationError
 
-import select2.fields
-import select2.models
 import floppyforms as forms
 from select2light.models import Select2ModelChoiceField, Select2ModelMultipleChoiceField
 
-from anylist.settings import MEDIA_ROOT
+from anylist.settings import MEDIA_ROOT, MEDIA_URL, STATICFILES_DIRS
+
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 class GenreGroup(models.Model):
@@ -23,7 +25,6 @@ class GenreGroup(models.Model):
         return self.name
 
 
-
 class GenreManager(models.Manager):
     def as_choices(self):
         for genre in self.all():
@@ -32,7 +33,7 @@ class GenreManager(models.Manager):
 
 class Genre(models.Model):
     name = models.CharField(max_length=140, unique=True)
-    objects = GenreManager()
+#    objects = GenreManager()
     group = models.ForeignKey(GenreGroup)
 
     def __unicode__(self):
@@ -57,10 +58,11 @@ class Product(models.Model):
     start_date = models.DateField(blank=True)   # if emty - then it is anounce
     old_limit = models.PositiveSmallIntegerField()
 
-#    category = models.ForeignKey(Category, blank=True)
-
     def get_absolute_url(self):
-        return ''.join(re.split(r'[ :_]', self.title))
+        return '%i-%s' % (self.id, ''.join(re.split(r'[ :_]', self.title)))
+
+    def avatar_path(self):
+        return '/static/' + str(self.avatar).split('/')[-1]
     
     class Meta:
         abstract = True
@@ -71,4 +73,10 @@ class Product(models.Model):
 
 
 class Anime(Product):
+    def get_absolute_url(self):
+        res = 'anime/' + super(Anime, self).get_absolute_url()
+        return res
+
+
+class Manga(Product):
     pass

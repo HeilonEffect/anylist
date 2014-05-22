@@ -1,72 +1,11 @@
 {% extends "base.html" %}
 {% block header %}
-	<h1>Fairy Tail | Сказка о хвосте феи<sup>Онгоинг</sup></h1>
-	<span>Тип: манга | Следующая глава: 17 мая 2014 | Оценка: 8 из 10 <sub>5 голосов</sub> | Добавить в список | Редактировать</span>
+	<h1>{{ object.title }}</h1>
+	<!--<span>Следующая глава: 17 мая 2014 | Оценка: 8 из 10 <sub>5 голосов</sub> | Добавить в список | Редактировать</span>-->
 {% endblock %}
 {% block content %}
 	<div class="ava">
-		<ul class="tabs">
-			<li onclick="select_tab(this)" id="one"><a href="#avatar">Avatar</a></li>
-			<li onclick="select_tab(this)"><a href="#cosplay">Cosplay</a></li>
-			<li onclick="select_tab(this)"><a href="#art">Art</a></li>
-		</ul>
-		<div class="tabs-content">
-			<ul>
-				<li id="avatar">
-					<div class="lightbox">
-						<div id="next"></div>
-						<div id="back"></div>
-						<img src="/static/22043.jpg">
-						<div class="counter">
-							<ul>
-								<li><a href="#art"><div></div></a></li>
-								<li><a href="#cosplay"><div></div></a></li>
-							</ul>
-						</div>
-					</div>
-				</li>
-				<li id="cosplay">
-					<div class="lightbox">
-						<div id="next"></div>
-						<div id="back"></div>
-						<img src="/static/6702.jpg">
-						<div class="counter">
-							<ul>
-								<li><a href="#avatar"><div></div></a></li>
-								<li><a href="#art"><div></div></a></li>
-							</ul>
-						</div>
-					</div>
-				</li>
-				<li id="art">
-					<div class="lightbox">
-						<div id="next"></div>
-						<div id="back"></div>
-						<img src="/static/929_o.png">
-						<div class="counter">
-							<ul>
-								<li><a href="#avatar"><div></div></a></li>
-								<li><a href="#cosplay"><div></div></a></li>
-							</ul>
-						</div>
-					</div>
-				</li>
-			</ul>
-		</div>
+		<img src="{{ object.avatar_path}}">
 	</div>
-	<script type="text/javascript">
-	// Табы для аватарки
-		var tab_active = document.getElementById("one");
-		tab_active.style.background = "white";
-		function select_tab(elem) {
-			if (tab_active)
-				tab_active.style.background = "gray";
-			tab_active = elem;
-			elem.style.background = "white";
-		}
-	</script>
-<!--	<p>Маг - почетная профессия. Для выполнения своей работы волшебники собираются в группы и основывают Гильдии. Магическая гильдия <a>"Хвост феи"</a>, управляемая мастером <a>Макаровым</a> является сильнейшей в городке Магнолия, находящемся в стране Фиоре.</p>
-
-<p><a>Люси Хартфилия</a> - семнадцатилетняя девушка, владеющая магией звездных духов, которая хочет вступить в самую престижную Гильдию в мире - <a>Хвост феи</a>. Однажды, по чистой случайности, она встречает паренька <a>Нацу Драгнила</a>, веселого, но совершенно не переносящего поездки на транспорте. После того как Нацу спас ее от продажи как рабыни лживым магом, выдававшим себя за члена гильдии <a>Хвост феи</a>, она отправляется в путь вместе с ним. После путешествия они оказываются у ворот гильдии - <a>Нацу</a> оказался магом <a>Хвоста феи</a>! Вот тут-то и начинаются бесконечные приключения <a>Нацу</a>, <a>Люси</a> и других магов, ведь это же самая бесшабашная и веселая гильдия в мире - <a>Хвост Феи</a>!</p>
--->
+	<p>{{ object.description }}</p>
 {% endblock %}
