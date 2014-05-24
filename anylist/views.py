@@ -2,6 +2,7 @@
 import json
 import re
 
+from django.core.cache import cache
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.views.generic import TemplateView, ListView
@@ -19,12 +20,14 @@ class BasePageMixin(object):
 		context['header'] = self.header
 		context['genres'] = Genre.objects.all()
 		context['raiting'] = Raiting.objects.all()
+		context['nav_groups'] = ThematicGroup.objects.all()
 		return context
 
 
 class DetailPageMixin(object):
 	def get_context_data(self, **kwargs):
 		context = super(DetailPageMixin, self).get_context_data(**kwargs)
+		context['nav_groups'] = ThematicGroup.objects.all()
 		return context
 
 
@@ -32,22 +35,50 @@ class ListPageMixin(object):
 	def get_context_data(self, **kwargs):
 		context = super(ListPageMixin, self).get_context_data(**kwargs)
 		context['genre_groups'] = []
+		context['nav_groups'] = ThematicGroup.objects.all()
+		
+		# вычисляем, сколько раз встретился каждый жанр
+		# на данной странице (фича аля яндекс.маркет)
+		num_genres = {}
+		for genre in Genre.objects.all():
+			num_genres[genre.name] = 0
+		
+		for item in self.model.objects.all():
+			genres = item.genres.all()
+			for genre in genres:
+				num_genres[genre.name] += 1
+		
+		# число жанров будет пересчитываться,
+		# ибо содержимое страницы непостоянно в реальном времени
+		# здесь мы добавляем
 		for group in self.genre_groups:
-			context['genre_groups'].append(GenreGroup.objects.get(name=group))
+			p = GenreGroup.objects.get(name=group)
+
+			g = []
+			for item in p.genres:
+				g.append({'name': item, 'count': num_genres[item.name]})
+			d = {'name': p.name, 'genres': g}
+			context['genre_groups'].append(d)
 		return context
 
 
 class MainPage(BasePageMixin, ListView):
-	model = Anime
-	template_name = 'list.html'
+	model = ThematicGroup
+	template_name = 'index.html'
 	header = 'Welcome'
 
 #------- views for anime ---------
 class AnimeListView(ListPageMixin, ListView):
 	template_name = 'list.html'
 	model = Anime
+	#queryset = Anime.objects.all()
 	genre_groups =\
 		['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
+
+
+class AnimeGenres(ListPageMixin, ListView):
+	template_name = 'components/obj_list.html'
+	#queryset = Anime.objects.filter(genres_name=[])
 
 
 class AddAnime(BasePageMixin, FormView):
@@ -71,6 +102,10 @@ class AddAnime(BasePageMixin, FormView):
 		return HttpResponse('Invalid Form')
 
 
-class AnimeDetail(DetailView):
+class AnimeDetail(DetailPageMixin, DetailView):
 	template_name = 'detail.html'
 	model = Anime
+
+
+class AnimeGenres(ListView):
+	pass

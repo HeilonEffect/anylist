@@ -1,19 +1,20 @@
-{% for category in object_list %}
-	<article>
-		<header>
-			<h2>{{ category.name }}</h2>
-		</header>
-		<section>
-			<nav role="navigation">
-			{% for value in category.values %}
-				<a href="{{ value.url }}">
-					<figure>
-						<img src="{{ value.img }}">
-						<figcaption>{{ value.name }}</figcaption>
-					</figure>
-				</a>
-			{% endfor %}
-			</nav>
-		</section>
-	</article>
-{% endfor %}
+<ul>
+	<li>
+		<a href="anime/add">
+			<figure>
+				<img src="/static/add.svg">
+				<figcaption>Добавить Аниме</figcaption>
+			</figure>
+		</a>
+	</li>
+	{% for value in object_list %}
+		<li>
+			<a href="{{ value.get_absolute_url }}">
+				<figure>
+					<img src="{{ value.avatar_path }}">
+					<figcaption>{{ value }}</figcaption>
+				</figure>
+			</a>
+		</li>
+	{% endfor %}
+</ul>

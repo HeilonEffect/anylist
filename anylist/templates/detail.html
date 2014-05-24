@@ -1,12 +1,20 @@
 {% extends "base.html" %}
 {% block header %}
 	<h1>{{ object.title }}</h1>
+	{{ block.super }}
 	<!--<span>Следующая глава: 17 мая 2014 | Оценка: 8 из 10 <sub>5 голосов</sub> | Добавить в список | Редактировать</span>-->
 {% endblock %}
 {% block content %}
 	<article>
 		<p>
 			<img src="{{ object.avatar_path }}">
+			Жанры: {% for genre in object.genres.all %}
+				{{ genre }}
+			{% endfor %}
+		</p>
+		<p>Возраст: {{ object.old_limit }}
+			<br>
+			<br>
 			{{ object.description }}
 		</p>
 	</article>

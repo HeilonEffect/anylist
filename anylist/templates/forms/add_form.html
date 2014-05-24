@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 	<form enctype="multipart/form-data" method="post" action="/anime/add" id="add_form">
-		<div class="form-header">
+<!--		<div class="form-header">-->
 			<input name="title" type="text" placeholder="Enter title here" class="form-title">
-		</div>
+<!--		</div>-->
 		<div class="form-menu">
 			<textarea class="form-textarea" rows="15" name="description"></textarea>
 			<input type="file" name="avatar">
@@ -16,12 +16,6 @@
 			</select>
 			<p></p>
 			<input type="text" placeholder="Enter start date (optional)" id="datetimepick1" class="select-list" name="start_date">
-			<script type="text/javascript">
-				$("#datetimepick1").datetimepicker({
-					timepicker: false,
-					format: 'd/m/Y'
-				});
-			</script>
 			<label>Укажите возрастное ограничение:</label>
 			<select name="old_limit" style="width:10em">
 			{% for item in raiting %}
@@ -38,12 +32,16 @@
 {% endblock %}
 {% block script %}
 <script type="text/javascript">
+	$("#datetimepick1").datetimepicker({
+		timepicker: false,
+		format: 'd/m/Y'
+	});
 	$("#genres").select2({
 		width: 400,
 		placeholder: "Выберите жанры"
 	});
 	$("select[name='old_limit']").select2({
 		width: 100
-	})
+	});
 </script>
 {% endblock %}

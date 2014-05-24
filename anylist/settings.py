@@ -39,9 +39,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apps',
-    'select2light',
-    'floppyforms',
-    'tastypie',
+#    'rest_framework',
+    'south',
+#    'mptt',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -99,4 +99,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 
-DJANGORESIZED_DEFAULT_SIZE = [800, 600]
+#CACHES = {
+#    "default": {
+#        "BACKEND": "redis_cache.cache.RedisCache",
+#        "LOCATION": "127.0.0.1:6379:1",
+#        "OPTIONS": {
+#            "CLIENT_CLASS": "redis_cache.client.DefaultClient",
+#        }
+#    }
+#}

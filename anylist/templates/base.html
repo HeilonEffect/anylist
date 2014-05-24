@@ -29,6 +29,9 @@ $.ajaxSetup({
 <body>
 	<header>
 	{% block header %}
+		<img src="/static/glyphicons_156_show_thumbnails.png" class="nav_display" onclick="show_menu()">
+		<hr>
+		{% include "components/nav.html" %}
 	{% endblock %}
 	</header>
 	<main>

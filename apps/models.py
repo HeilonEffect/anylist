@@ -1,17 +1,9 @@
 import re
-import sys
 
 from django.db import models
 from django.db.models import Q
 
-import floppyforms as forms
-from select2light.models import Select2ModelChoiceField, Select2ModelMultipleChoiceField
-
 from anylist.settings import MEDIA_ROOT, MEDIA_URL, STATICFILES_DIRS
-
-
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 
 class GenreGroup(models.Model):
@@ -43,23 +35,44 @@ class Genre(models.Model):
         return self.name
 
 
-class Category(models.Model):
-    name = models.CharField(max_length=40, unique=True)
+class ThematicGroup(models.Model):
+    ''' Разделы сайта, объединенниые в группы '''
+    name = models.CharField(max_length=50, unique=True)
+    
+    def _children(self):
+        return Category.objects.filter(group=self.id)
+    children = property(_children)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
+
+
+class Category(models.Model):
+    ''' Здесь мы перечисляем названия разделов сайта '''
+    name = models.CharField(max_length=40, unique=True) # на английском
+    avatar = models.FileField(upload_to=MEDIA_ROOT)
+    group = models.ForeignKey(ThematicGroup)
+
+    def get_absolute_url(self):
+        return self.name.lower()
+
+    def __str__(self):
+        return self.name
+
+    def avatar_path(self):
+        return '/static/' + str(self.avatar).split('/')[-1]
 
 
 class Product(models.Model):
     ''' Description single product '''
     title = models.CharField(max_length=255, unique=True)
     description = models.TextField(null=True)
-    genres = Select2ModelMultipleChoiceField(Genre)
+    genres = models.ManyToManyField(Genre)
 
     avatar = models.FileField(upload_to=MEDIA_ROOT)
 
-    start_date = models.DateField(null=True)   # if emty - then it is anounce
-    old_limit = Select2ModelChoiceField(Raiting)
+    start_date = models.DateField(null=True, blank=True)   # if emty - then it is anounce
+    old_limit = models.ForeignKey(Raiting)
 
     def get_absolute_url(self):
         return '%i-%s' % (self.id, ''.join(re.split(r'[ :_]', self.title)))
