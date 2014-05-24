@@ -36,6 +36,7 @@ class ListPageMixin(object):
 		context = super(ListPageMixin, self).get_context_data(**kwargs)
 		context['genre_groups'] = []
 		context['nav_groups'] = ThematicGroup.objects.all()
+		context['raiting'] = Raiting.objects.all()
 		
 		# вычисляем, сколько раз встретился каждый жанр
 		# на данной странице (фича аля яндекс.маркет)
@@ -59,6 +60,12 @@ class ListPageMixin(object):
 				g.append({'name': item, 'count': num_genres[item.name]})
 			d = {'name': p.name, 'genres': g}
 			context['genre_groups'].append(d)
+		
+		for item in context['raiting']:
+			item.count = 0
+			for val in self.model.objects.all():
+				if val.old_limit == item:
+					item.count += 1
 		return context
 
 

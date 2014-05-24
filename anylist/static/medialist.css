@@ -77,10 +77,13 @@ main {
 	bottom: 0;
 	left: 1em;
 /*	left: 1em;*/
-/*	right: 10em;*/
+	right: 0;
 	padding: .5em;
 	min-width: 10em;
-	width: 95%;
+/*	width: 95%;*/
+}
+nav p {
+	margin-left: 1em;
 }
 nav {
 	font-size: 22px;
@@ -159,27 +162,12 @@ main > form {
 	font-size: 20px;
 	padding: .2em;
 }
-.spoiler > input + .box {
-	display: none;
-}
-.spoiler > input {
-	display: none;
-}
-.spoiler > label {
-	cursor: pointer;
-}
-.spoiler > label:hover {
-	text-decoration: underline;
-}
-.spoiler > input:checked + .box {
-	display: block;
-}
 label:hover {
 	background-color: rgba(200, 200, 255, .5);
 }
 .nav_display {
 	position: absolute;
-	right: 1em;
+	right: 4em;
 	top: 1em;
 	border: .5px solid rgba(0, 0, 0, 0);
 	padding: .7em;
@@ -204,4 +192,23 @@ label:hover {
 }
 .global_nav li {
 	display: inline;
+}
+.panel_display {
+	position: absolute;
+	top: 1em;
+	background-color: white;
+	padding: .7em;
+	right: 1em;
+}
+.panel_display:hover {
+	border: .5px solid rgba(0, 0, 0, .3);
+}
+#left_menu {
+	display: none;
+	z-index: 1000;
+	background-color: white;
+	border: 1px solid black;
+}
+.box {
+	margin-left: .7em;
 }

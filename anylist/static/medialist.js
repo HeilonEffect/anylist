@@ -3,13 +3,19 @@ function select_genre (element) {
 	$.load();
 }
 function show_menu () {
-	var display = document.getElementById("global_menu").style.display;
-	var opacity = document.getElementById("global_menu").style.opacity;
-	if (display == 'none') {
-		document.getElementById("global_menu").style.display = 'block';
-		document.getElementById("global_menu").style.opacity = 1;
+	var global_menu = $("#global_menu");
+	if (global_menu.css("display") == "none")
+		global_menu.css("display", "block");
+	else
+		global_menu.css("display", "none");
+}
+function show_panel() {
+	var left_menu = $("#left_menu");
+	if (left_menu.css("display") == 'none') {
+		left_menu.css("display", 'block');
+		$("main").css("right", "11.6em");
 	} else {
-		document.getElementById("global_menu").style.display = 'none';
-		document.getElementById("global_menu").style.opacity = 0;
+		left_menu.css("display", "none");
+		$("main").css("right", "0");
 	}
 }
