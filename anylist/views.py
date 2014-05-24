@@ -37,6 +37,7 @@ class ListPageMixin(object):
 		context['genre_groups'] = []
 		context['nav_groups'] = ThematicGroup.objects.all()
 		context['raiting'] = Raiting.objects.all()
+		context['header'] = self.header
 		
 		# вычисляем, сколько раз встретился каждый жанр
 		# на данной странице (фича аля яндекс.маркет)
@@ -78,41 +79,28 @@ class MainPage(BasePageMixin, ListView):
 class AnimeListView(ListPageMixin, ListView):
 	template_name = 'list.html'
 	model = Anime
-	#queryset = Anime.objects.all()
+	header = 'Список аниме'
 	genre_groups =\
 		['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
 
 
-class AnimeGenres(ListPageMixin, ListView):
-	template_name = 'components/obj_list.html'
-	#queryset = Anime.objects.filter(genres_name=[])
-
-
-class AddAnime(BasePageMixin, FormView):
+class AddAnime(BasePageMixin, CreateView):
 	model = Anime
 	form_class = AddForm
 	template_name = 'forms/add_form.html'
 	header = 'Добавление продукта'
 	success_url = '/anime'
 
-	def form_invalid(self, form):
-		print(form)
-		return super(AddAnime, self).form_invalid(form)
-
-	def post(self, request):
-		form = AddForm(request.POST, request.FILES)
-		if form.is_valid():
-			form.save()
-			return HttpResponseRedirect('/')
-		else:
-			print(form)
-		return HttpResponse('Invalid Form')
-
 
 class AnimeDetail(DetailPageMixin, DetailView):
 	template_name = 'detail.html'
 	model = Anime
 
-
-class AnimeGenres(ListView):
-	pass
+#----------views for manga------------
+class MangaListView(ListPageMixin, ListView):
+	template_name = 'list.html'
+	model = Manga
+	header = 'Список манги'
+	genre_groups =\
+		['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
+#TODO - сделать миграцию

@@ -1,32 +1,3 @@
-<div class="menu-block">
-	<p>Жанр</p>
-	<ul>
-	{% for genre in genres %}
-		<li>{{ genre }}</li>
-	{% endfor %}
-	</ul>
-</div>
-<div class="menu-block">
-	<p>Статус</p>
-	<ul>
-	{% for item in status %}
-		<li>{{ item }}</li>
-	{% endfor %}
-	</ul>
-</div>
-<div class="menu-block">
-	<p>Тип</p>
-	<ul>
-	{% for type in types %}
-		<li>{{ type }}</li>
-	{% endfor %}
-	</ul>
-</div>
-<div class="menu-block">
-	<p>Длина эпизода</p>
-	<ul>
-	{% for len in lengths %}
-		<li>{{ len }}</li>
-	{% endfor %}
-	</ul>
-</div>
+<span class="orderable">
+	Сортировка: <a href="#">По алфавиту</a>, <a href="#">По дате году выхода</a>
+</span>

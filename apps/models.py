@@ -1,7 +1,7 @@
 import re
 
 from django.db import models
-from django.db.models import Q
+from django.contrib.auth.models import User
 
 from anylist.settings import MEDIA_ROOT, MEDIA_URL, STATICFILES_DIRS
 
@@ -88,6 +88,11 @@ class Product(models.Model):
         return self.title
 
 
+class Profile(models.Model):
+    user = models.OneToOneField(User)
+    avatar = models.FileField(upload_to=MEDIA_ROOT, blank=True, null=True)
+
+
 class Anime(Product):
     def get_absolute_url(self):
         res = 'anime/' + super(Anime, self).get_absolute_url()
@@ -95,4 +100,6 @@ class Anime(Product):
 
 
 class Manga(Product):
-    pass
+    def get_absolute_url(self):
+        res = 'manga/' + super(Manga, self).get_absolute_url()
+        return res
