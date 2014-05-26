@@ -20,8 +20,8 @@ class GenreGroup(models.Model):
 class Raiting(models.Model):
     name = models.CharField(max_length=8, unique=True)
 
-    def __unicode__(self):
-        return self.name
+    def __str__(self):
+        return '%i-%s' % (self.id, self.name.replace('-', ""))
 
 
 class Genre(models.Model):
@@ -29,10 +29,10 @@ class Genre(models.Model):
     group = models.ForeignKey(GenreGroup)
 
     class Meta:
-        ordering = ['name']
+        ordering = ['id']
 
-    def __unicode__(self):
-        return self.name
+    def __str__(self):
+        return '%i-%s' % (self.id, self.name)
 
 
 class ThematicGroup(models.Model):

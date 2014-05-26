@@ -9,6 +9,8 @@ from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, FormView
 from django.views.generic.detail import DetailView
 
+import django_filters
+
 from apps.models import *
 from apps.forms import AddForm
 
@@ -32,10 +34,15 @@ class DetailPageMixin(object):
 
 
 class ListPageMixin(object):
+	def get_queryset(self):
+		self.queryset = self.model.objects.all()
+		return self.queryset
+
 	def get_context_data(self, **kwargs):
 		context = super(ListPageMixin, self).get_context_data(**kwargs)
 		context['genre_groups'] = []
 		context['nav_groups'] = ThematicGroup.objects.all()
+		# c рейтингом повторить фичу жанров
 		context['raiting'] = Raiting.objects.all()
 		context['header'] = self.header
 		
@@ -57,8 +64,9 @@ class ListPageMixin(object):
 			p = GenreGroup.objects.get(name=group)
 
 			g = []
+			# переделать через __setattr__
 			for item in p.genres:
-				g.append({'name': item, 'count': num_genres[item.name]})
+				g.append({'name': item.name, 'count': num_genres[item.name], 'id': item})
 			d = {'name': p.name, 'genres': g}
 			context['genre_groups'].append(d)
 		
@@ -96,6 +104,37 @@ class AnimeDetail(DetailPageMixin, DetailView):
 	template_name = 'detail.html'
 	model = Anime
 
+
+class AnimeChoiceView(ListPageMixin, ListView):
+	''' Кастомный фильтр '''
+	model = Anime
+	template_name = 'list.html'
+	header = 'Выборка'
+	genre_groups =\
+		['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
+	
+	def get_queryset(self):
+		# ВАЖНО: учесть ситуацию, когда указываются два возрастных ограничения
+		# извлекаем параметры запроса из url'a
+		qs = {}
+		tmp = self.args[0].split('/')
+		print(tmp)
+		
+		# избавляемся от пустых значений
+		tmp = list(filter(lambda item: item, tmp))
+		
+		for i, key in enumerate(tmp[::2]):
+			buf = tmp[i * 2 + 1].split(',')
+			qs[key] = [int(item.split('-')[0]) for item in buf]
+		query = Anime.objects
+
+		# создаём цепочку методов
+		for key in qs:
+			for val in qs[key]:
+				query = query.filter(**{key:val})
+		return query
+
+
 #----------views for manga------------
 class MangaListView(ListPageMixin, ListView):
 	template_name = 'list.html'
@@ -103,4 +142,3 @@ class MangaListView(ListPageMixin, ListView):
 	header = 'Список манги'
 	genre_groups =\
 		['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
-#TODO - сделать миграцию
