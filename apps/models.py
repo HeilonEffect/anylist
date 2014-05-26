@@ -6,11 +6,6 @@ from django.contrib.auth.models import User
 from anylist.settings import MEDIA_ROOT, MEDIA_URL, STATICFILES_DIRS
 
 
-class GenreManager(models.Manager):
-    def get_query_set(self):
-        return super(GenreManager, self).get_query_set()
-
-
 class GenreGroup(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
@@ -26,8 +21,7 @@ class Raiting(models.Model):
     name = models.CharField(max_length=8, unique=True)
 
     def __str__(self):
-        return '%i-%s' % (self.id, self.name.replace('-', ""))
-
+        return self.name
 
 class Genre(models.Model):
     name = models.CharField(max_length=140, unique=True)
@@ -37,7 +31,7 @@ class Genre(models.Model):
         ordering = ['id']
 
     def __str__(self):
-        return '%i-%s' % (self.id, self.name)
+        return self.name
 
 
 class ThematicGroup(models.Model):

@@ -147,47 +147,28 @@ class AnimeChoiceView(ListPageMixin, ListView):
 		
 		# избавляемся от пустых значений
 		tmp = list(filter(lambda item: item, tmp))
-		
-		for i, key in enumerate(tmp[::2]):
-			buf = tmp[i * 2 + 1].split(',')
-			qs[key] = [int(item.split('-')[0]) for item in buf]
-		self.queryset = self.model.objects.filter(
-			Q(old_limit__name='PG-13')|Q(old_limit__name='NC-17')).filter(
-				genres__name='Школа'
-			)
+		keys = tmp[::2]
+		values = [item.split(',') for item in tmp[1::2]]
+
+		qs = dict(zip(keys, values))
+
+		query = self.model.objects.all()
+
+		q = []
+		if qs.get('old_limit'):
+			q = Q(old_limit__name=qs['old_limit'][0])
+			if len(qs['old_limit']) > 1:
+				for i in range(1, len(qs['old_limit'])):
+					q = q.__or__(Q(old_limit__name=qs['old_limit'][i]))
+
+		self.queryset = self.model.objects.filter(q)
+		if qs.get('genres'):
+			self.queryset = self.queryset.filter(genres__name=qs['genres'][0])
+			if len(qs['genres']) > 1:
+				for i in range(1, len(qs['genres'])):
+					self.queryset = self.queryset.filter(
+						genres__name=qs['genres'][i])
 		return self.queryset
-
-
-class AnimeChoiceView1(ListPageMixin, ListView):
-	''' Кастомный фильтр '''
-	model = Anime
-	template_name = 'list.html'
-	header = 'Выборка'
-	genre_groups =\
-		['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
-	
-	def get_queryset(self):
-		# ВАЖНО: учесть ситуацию, когда указываются два возрастных ограничения
-		# извлекаем параметры запроса из url'a
-		qs = {}
-		tmp = self.args[0].split('/')
-		
-		# избавляемся от пустых значений
-		tmp = list(filter(lambda item: item, tmp))
-		
-		for i, key in enumerate(tmp[::2]):
-			buf = tmp[i * 2 + 1].split(',')
-			qs[key] = [int(item.split('-')[0]) for item in buf]
-		query = Anime.objects
-
-		# создаём цепочку методов
-		for key in qs:
-			if key == 'genres':
-				for val in qs[key]:
-					query = query.filter(**{key:val})
-		# ограничим отбражаемую выборку жанрами
-		self.queryset = query
-		return query
 
 
 #----------views for manga------------
