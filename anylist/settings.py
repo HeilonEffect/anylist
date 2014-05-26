@@ -42,7 +42,6 @@ INSTALLED_APPS = (
 #    'rest_framework',
     'south',
 #    'mptt',
-    'django_filters',
 )
 
 MIDDLEWARE_CLASSES = (

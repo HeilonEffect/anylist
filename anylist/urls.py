@@ -12,14 +12,8 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^anime/add/?$', AddAnime.as_view()),
     url(r'anime/add/\d', AddAnime.as_view()),
-    url(r'^anime$', AnimeListView.as_view()),
+    url(r'^anime/?$', AnimeListView.as_view()),
     url(r'^anime/(?P<pk>[\d]+)-\w+', AnimeDetail.as_view()),
-    url(r'^manga$', MangaListView.as_view()),
-    url(r'^anime/filter/(.+)', AnimeChoiceView.as_view()),
+    url(r'^manga/?$', MangaListView.as_view()),
+    url(r'^anime/filter/(.+)/?', AnimeChoiceView.as_view()),
 )
-
-if settings.DEBUG:
-    urlpatterns += patterns('',
-        (r'^media/(?P<path>.*)$', 'django.views.static.serve',
-            {'document_root': settings.MEDIA_ROOT, 'show_indexes': True }),
-    )

@@ -10,8 +10,6 @@ from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, FormView
 from django.views.generic.detail import DetailView
 
-import django_filters
-
 from apps.models import *
 from apps.forms import AddForm
 
@@ -46,6 +44,12 @@ class ListPageMixin(object):
 		# c рейтингом повторить фичу жанров
 		context['raiting'] = Raiting.objects.all()
 		context['header'] = self.header
+
+#		context['genre_groups'] = []
+#		for item in self.genre_groups:
+#			p = GenreGroup.objects.get(name=group)
+#			for genre in p.genres:
+#				genre.__setattr__()
 		
 		# вычисляем, сколько раз встретился каждый жанр
 		# на данной странице (фича аля яндекс.маркет)
@@ -73,7 +77,7 @@ class ListPageMixin(object):
 		
 		for item in context['raiting']:
 			item.count = 0
-			for val in self.queryset.iterator():
+			for val in self.queryset:
 				if val.old_limit == item:
 					item.count += 1
 		return context
@@ -106,34 +110,6 @@ class AnimeDetail(DetailPageMixin, DetailView):
 	model = Anime
 
 
-class AnimeFilter(django_filters.FilterSet):
-	genres = django_filters.ModelMultipleChoiceFilter(
-		name='genres', lookup_type=list, distinct=True
-	)
-
-	class Meta:
-		model = Anime
-		fields = ['title', 'genres', 'old_limit']
-
-
-#class AnimeChoiceView(ListPageMixin, ListView):
-#	template_name = 'list.html'
-#	def get_queryset(self):
-#		return AnimeFilter(request.GET, queryset=Anime.objects.all())
-def filter_view(request, url):
-	qs = {}
-	tmp = url.split('/')
-
-	# избавляемся от пустых значений
-	tmp = list(filter(lambda item: item, tmp))
-	
-	for i, key in enumerate(tmp[::2]):
-		buf = tmp[i * 2 + 1].split(',')
-		qs[key] = [int(item.split('-')[0]) for item in buf]
-
-	return render_to_response(request, 'list.html', {'object_list': qs})
-
-
 class AnimeChoiceView(ListPageMixin, ListView):
 	model = Anime
 	template_name = 'list.html'
@@ -147,12 +123,10 @@ class AnimeChoiceView(ListPageMixin, ListView):
 		
 		# избавляемся от пустых значений
 		tmp = list(filter(lambda item: item, tmp))
+		
 		keys = tmp[::2]
 		values = [item.split(',') for item in tmp[1::2]]
-
 		qs = dict(zip(keys, values))
-
-		query = self.model.objects.all()
 
 		q = []
 		if qs.get('old_limit'):
@@ -161,7 +135,11 @@ class AnimeChoiceView(ListPageMixin, ListView):
 				for i in range(1, len(qs['old_limit'])):
 					q = q.__or__(Q(old_limit__name=qs['old_limit'][i]))
 
-		self.queryset = self.model.objects.filter(q)
+		if q:
+			self.queryset = self.model.objects.filter(q)
+		else:
+			self.queryset = self.model.objects
+
 		if qs.get('genres'):
 			self.queryset = self.queryset.filter(genres__name=qs['genres'][0])
 			if len(qs['genres']) > 1:

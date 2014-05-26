@@ -16,15 +16,11 @@ function select_genre (element) {
 	window.location.href = construct_url(dict);
 }
 function update_checkboxes(dict) {
-	console.log(dict);
 	for (var i in dict['old_limit']) {
-		console.log("#old_limit:" + dict['old_limit'][i]);
 		$("#old_limit:" + dict['old_limit'][i]).attr("checked", true);
 	}
 	for (var i in dict['genres']) {
-		console.log("#genres:" + dict['genres'][i]);
-		$("#genres:" + dict['genres'][i]).attr("checked", true);
-		console.log(dict['genres'][i]);
+		$("input[id='genres:" + dict['genres'][i] + "']").attr("checked", true);
 	}
 }
 function url_resolve() {
@@ -52,9 +48,9 @@ function url_resolve() {
 				dict[keys[i]] = [];
 		}
 	}
-	console.log(dict);
 	return dict;
 }
+
 function construct_url(dict) {
 	// конструируем новый url (позже сделать его универсальным)
 	// на основе старого + изменения
