@@ -6,6 +6,11 @@ from django.contrib.auth.models import User
 from anylist.settings import MEDIA_ROOT, MEDIA_URL, STATICFILES_DIRS
 
 
+class GenreManager(models.Manager):
+    def get_query_set(self):
+        return super(GenreManager, self).get_query_set()
+
+
 class GenreGroup(models.Model):
     name = models.CharField(max_length=50, unique=True)
 

@@ -24,7 +24,7 @@
         		}
     		}
 		});
-	</script>)
+	</script>
 </head>
 <body>
 	<header>
@@ -44,5 +44,8 @@
 	</nav>
 	{% block script %}
 	{% endblock %}
+	<script type="text/javascript">
+		update_checkboxes(url_resolve());
+	</script>
 </body>
 </html>

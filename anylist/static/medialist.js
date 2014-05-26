@@ -1,4 +1,33 @@
 function select_genre (element) {
+	var dict = url_resolve();
+	// если мы отметили ранее не отмеченный элемент, то
+	// добавляем в словарь новое значение, иначе - удаляем старое
+	if (element.checked) {
+		var elem = element.id.split(":");
+		if (dict[elem[0]].indexOf(elem[1]) == -1)
+			dict[elem[0]].push(elem[1]);
+	} else {
+		var elem = element.id.split(":");
+		// удаляем элемент, с которого снято выделение
+		dict[elem[0]] = dict[elem[0]].filter(function(element) {
+			return element != elem[1];
+		});
+	}
+	window.location.href = construct_url(dict);
+}
+function update_checkboxes(dict) {
+	console.log(dict);
+	for (var i in dict['old_limit']) {
+		console.log("#old_limit:" + dict['old_limit'][i]);
+		$("#old_limit:" + dict['old_limit'][i]).attr("checked", true);
+	}
+	for (var i in dict['genres']) {
+		console.log("#genres:" + dict['genres'][i]);
+		$("#genres:" + dict['genres'][i]).attr("checked", true);
+		console.log(dict['genres'][i]);
+	}
+}
+function url_resolve() {
 	// сначала получаем в форме словаря текущий урл
 	// (в словарь проще добавить в нужное место изменения)
 	var keys = ['old_limit', 'genres'];	// добавлять по мере надобности новые категории
@@ -23,20 +52,12 @@ function select_genre (element) {
 				dict[keys[i]] = [];
 		}
 	}
-	// если мы отметили ранее не отмеченный элемент, то
-	// добавляем в словарь новое значение, иначе - удаляем старое
-	if (element.checked) {
-		var elem = element.id.split(":");
-		if (dict[elem[0]].indexOf(elem[1]) == -1)
-			dict[elem[0]].push(elem[1]);
-	} else {
-		var elem = element.id.split(":");
-		// удаляем элемент, с которого снято выделение
-		dict[elem[0]] = dict[elem[0]].filter(function(element) {
-			return element != elem[1];
-		});
-	}
+	console.log(dict);
+	return dict;
+}
+function construct_url(dict) {
 	// конструируем новый url (позже сделать его универсальным)
+	// на основе старого + изменения
 	var new_url = '/anime/filter/';
 	for (var key in dict) {
 		if (dict[key].length) {
@@ -44,13 +65,10 @@ function select_genre (element) {
 			for (var i in dict[key]) {
 				new_url +=  dict[key][i] + ','
 			}
-			console.log(new_url[new_url.length - 1]);
 			new_url = new_url.slice(0, new_url.length - 1) + '/';
-			//new_url[new_url.length - 1] = '/';
 		}
 	}
-	console.log(new_url);
-	window.location.href = new_url;
+	return new_url;
 }
 function show_menu () {
 	var global_menu = $("#global_menu");

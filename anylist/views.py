@@ -3,6 +3,7 @@ import json
 import re
 
 from django.core.cache import cache
+from django.db.models import F, Q
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.views.generic import TemplateView, ListView
@@ -52,7 +53,7 @@ class ListPageMixin(object):
 		for genre in Genre.objects.all():
 			num_genres[genre.name] = 0
 		
-		for item in self.model.objects.all():
+		for item in self.queryset:
 			genres = item.genres.all()
 			for genre in genres:
 				num_genres[genre.name] += 1
@@ -72,7 +73,7 @@ class ListPageMixin(object):
 		
 		for item in context['raiting']:
 			item.count = 0
-			for val in self.model.objects.all():
+			for val in self.queryset.iterator():
 				if val.old_limit == item:
 					item.count += 1
 		return context
@@ -105,7 +106,59 @@ class AnimeDetail(DetailPageMixin, DetailView):
 	model = Anime
 
 
+class AnimeFilter(django_filters.FilterSet):
+	genres = django_filters.ModelMultipleChoiceFilter(
+		name='genres', lookup_type=list, distinct=True
+	)
+
+	class Meta:
+		model = Anime
+		fields = ['title', 'genres', 'old_limit']
+
+
+#class AnimeChoiceView(ListPageMixin, ListView):
+#	template_name = 'list.html'
+#	def get_queryset(self):
+#		return AnimeFilter(request.GET, queryset=Anime.objects.all())
+def filter_view(request, url):
+	qs = {}
+	tmp = url.split('/')
+
+	# избавляемся от пустых значений
+	tmp = list(filter(lambda item: item, tmp))
+	
+	for i, key in enumerate(tmp[::2]):
+		buf = tmp[i * 2 + 1].split(',')
+		qs[key] = [int(item.split('-')[0]) for item in buf]
+
+	return render_to_response(request, 'list.html', {'object_list': qs})
+
+
 class AnimeChoiceView(ListPageMixin, ListView):
+	model = Anime
+	template_name = 'list.html'
+	header = 'Выборка'
+	genre_groups =\
+		['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
+
+	def get_queryset(self):
+		qs = {}
+		tmp = self.args[0].split('/')
+		
+		# избавляемся от пустых значений
+		tmp = list(filter(lambda item: item, tmp))
+		
+		for i, key in enumerate(tmp[::2]):
+			buf = tmp[i * 2 + 1].split(',')
+			qs[key] = [int(item.split('-')[0]) for item in buf]
+		self.queryset = self.model.objects.filter(
+			Q(old_limit__name='PG-13')|Q(old_limit__name='NC-17')).filter(
+				genres__name='Школа'
+			)
+		return self.queryset
+
+
+class AnimeChoiceView1(ListPageMixin, ListView):
 	''' Кастомный фильтр '''
 	model = Anime
 	template_name = 'list.html'
@@ -118,7 +171,6 @@ class AnimeChoiceView(ListPageMixin, ListView):
 		# извлекаем параметры запроса из url'a
 		qs = {}
 		tmp = self.args[0].split('/')
-		print(tmp)
 		
 		# избавляемся от пустых значений
 		tmp = list(filter(lambda item: item, tmp))
@@ -130,8 +182,11 @@ class AnimeChoiceView(ListPageMixin, ListView):
 
 		# создаём цепочку методов
 		for key in qs:
-			for val in qs[key]:
-				query = query.filter(**{key:val})
+			if key == 'genres':
+				for val in qs[key]:
+					query = query.filter(**{key:val})
+		# ограничим отбражаемую выборку жанрами
+		self.queryset = query
 		return query
 
 

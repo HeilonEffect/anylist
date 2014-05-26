@@ -2,6 +2,9 @@ from django.conf.urls import patterns, include, url
 from anylist.views import *
 
 from django.contrib import admin
+
+import anylist.settings as settings
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -14,3 +17,9 @@ urlpatterns = patterns('',
     url(r'^manga$', MangaListView.as_view()),
     url(r'^anime/filter/(.+)', AnimeChoiceView.as_view()),
 )
+
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        (r'^media/(?P<path>.*)$', 'django.views.static.serve',
+            {'document_root': settings.MEDIA_ROOT, 'show_indexes': True }),
+    )
