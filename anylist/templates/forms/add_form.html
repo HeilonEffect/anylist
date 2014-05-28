@@ -1,9 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-	<form enctype="multipart/form-data" method="post" action="/anime/add" id="add_form">
-<!--		<div class="form-header">-->
+	<form enctype="multipart/form-data" method="post" action="/{{ category.get_absolute_url }}/add" id="add_form">
 			<input name="title" type="text" placeholder="Enter title here" class="form-title">
-<!--		</div>-->
 		<div class="form-menu">
 			<textarea class="form-textarea" rows="15" name="description"></textarea>
 			<input type="file" name="avatar">

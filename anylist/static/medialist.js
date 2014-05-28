@@ -20,7 +20,10 @@ function update_checkboxes(dict) {
 		$("#old_limit:" + dict['old_limit'][i]).attr("checked", true);
 	}
 	for (var i in dict['genres']) {
-		$("input[id='genres:" + dict['genres'][i] + "']").attr("checked", true);
+		var selector = 'genres:' + dict['genres'][i];
+		var obj = document.getElementById(selector);
+		console.log(obj);
+		$("#genres:" + dict['genres'][i]).attr("checked", true);
 	}
 }
 function url_resolve() {
@@ -49,22 +52,6 @@ function url_resolve() {
 		}
 	}
 	return dict;
-}
-
-function construct_url(dict) {
-	// конструируем новый url (позже сделать его универсальным)
-	// на основе старого + изменения
-	var new_url = '/anime/filter/';
-	for (var key in dict) {
-		if (dict[key].length) {
-			new_url += key + '/';
-			for (var i in dict[key]) {
-				new_url +=  dict[key][i] + ','
-			}
-			new_url = new_url.slice(0, new_url.length - 1) + '/';
-		}
-	}
-	return new_url;
 }
 function show_menu () {
 	var global_menu = $("#global_menu");

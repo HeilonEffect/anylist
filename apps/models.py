@@ -12,6 +12,9 @@ class GenreGroup(models.Model):
     def _genres(self):
         return Genre.objects.filter(group=self.id)
     genres = property(_genres)
+    @genres.setter
+    def set_genres(self, value):
+        self.genres = value
 
     def __unicode__(self):
         return self.name

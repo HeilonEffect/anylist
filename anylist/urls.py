@@ -13,7 +13,13 @@ urlpatterns = patterns('',
     url(r'^anime/add/?$', AddAnime.as_view()),
     url(r'anime/add/\d', AddAnime.as_view()),
     url(r'^anime/?$', AnimeListView.as_view()),
-    url(r'^anime/(?P<pk>[\d]+)-\w+', AnimeDetail.as_view()),
-    url(r'^manga/?$', MangaListView.as_view()),
+    url(r'^anime/(?P<pk>[\d]+)-\w+/?$', AnimeDetail.as_view()),
+    url(r'^anime/(?P<pk>[\d]+)-\w+/series', AnimeSeriesView.as_view()),
+
+
     url(r'^anime/filter/(.+)/?', AnimeChoiceView.as_view()),
+    url(r'^manga/?$', MangaListView.as_view()),
+    url(r'^manga/add/?$', AddManga.as_view()),
+    url(r'^manga/(?P<pk>[\d]+)-\w+', MangaDetailView.as_view()),
+    url(r'^manga/filter/(.+)/?', MangaChoiceView.as_view()),
 )

@@ -24,6 +24,23 @@
         		}
     		}
 		});
+
+
+	function construct_url(dict) {
+		// конструируем новый url (позже сделать его универсальным)
+		// на основе старого + изменения
+		var new_url = '/{{ category.get_absolute_url }}/filter/';
+		for (var key in dict) {
+			if (dict[key].length) {
+				new_url += key + '/';
+				for (var i in dict[key]) {
+					new_url +=  dict[key][i] + ','
+				}
+				new_url = new_url.slice(0, new_url.length - 1) + '/';
+			}
+		}
+		return new_url;
+	}
 	update_checkboxes(url_resolve());
 	</script>
 </head>
