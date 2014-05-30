@@ -220,3 +220,29 @@ label:hover {
 	right: 2em;
 	float: right;
 }
+.add_series_button {
+	position: fixed;
+	top: 2em;
+	left: 1em;
+}
+#add_serie_form {
+	position: fixed;
+	display: none;
+}
+.series_list {
+	width: 75%;
+}
+.series_list td {
+	border-bottom: 1px solid black;
+	/*border: 1px solid black;*/
+}
+.num_ser {
+	text-align: right;
+	width: 2em;
+}
+.name_ser {
+	text-indent: 1em;
+}
+.pub_ser {
+	width: 11em;
+}

@@ -11,8 +11,10 @@ from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, FormView
 from django.views.generic.detail import DetailView
 
+from braces.views import FormValidMessageMixin
+
 from apps.models import *
-from apps.forms import AddForm, AddMangaForm
+from apps.forms import *
 
 
 class BasePageMixin(object):
@@ -68,12 +70,12 @@ class ListPageMixin(object):
 		num_genres = {}
 		for genre in Genre.objects.all():
 			num_genres[genre.name] = 0
-		
+
 		for item in self.queryset:
 			genres = item.genres.all()
 			for genre in genres:
 				num_genres[genre.name] += 1
-		
+
 		# число жанров будет пересчитываться,
 		# ибо содержимое страницы непостоянно в реальном времени
 		for group in self.genre_groups:
@@ -85,7 +87,7 @@ class ListPageMixin(object):
 				g.append(item)
 			d = {'name': p.name, 'genres': g}
 			context['genre_groups'].append(d)
-		
+
 		for item in context['raiting']:
 			item.count = 0
 			for val in self.queryset:
@@ -95,37 +97,35 @@ class ListPageMixin(object):
 
 
 class BaseChoiceMixin(ListPageMixin):
-	
+
 	def get_queryset(self):
 		qs = {}
 		tmp = self.args[0].split('/')
-		
+
 		# избавляемся от пустых значений
 		tmp = list(filter(lambda item: item, tmp))
-		
+
 		keys = tmp[::2]
 		values = [item.split(',') for item in tmp[1::2]]
 		qs = dict(zip(keys, values))
 
+		# пробная реализация
+		tmp = qs.get('old_limit')
 		q = []
-		if qs.get('old_limit'):
-			q = Q(old_limit__name=qs['old_limit'][0])
-			if len(qs['old_limit']) > 1:
-				for i in range(1, len(qs['old_limit'])):
-					q = q.__or__(Q(old_limit__name=qs['old_limit'][i]))
+		if tmp:
+			q, *rest = tmp
+			q = Q(old_limit__name=q)
+			for item in rest:
+				q = q.__or__(Q(old_limit__name=item))
 
-		if q:
-			self.queryset = self.model.objects.filter(q)
-		else:
-			self.queryset = self.model.objects
+		q = self.model.objects.filter(q)
+		
+		tmp = qs.get('genres')
+		if tmp:
+			for item in tmp:
+				q = q.filter(genres__name=item)
+		self.queryset = q
 
-		if qs.get('genres'):
-			self.queryset = self.queryset.filter(genres__name=qs['genres'][0])
-			if len(qs['genres']) > 1:
-				for i in range(1, len(qs['genres'])):
-					self.queryset = self.queryset.filter(
-						genres__name=qs['genres'][i]
-					)
 		return self.queryset
 
 
@@ -159,8 +159,20 @@ class AnimeDetail(DetailPageMixin, DetailView):
 	category = 'Anime'
 
 
-class AnimeSeriesView(ListView):
+class AnimeSeriesView(DetailPageMixin, ListView):
 	template_name = 'components/series.html'
+	model = AnimeSeries
+	category = "Anime"
+
+
+class AnimeSeriesAdd(CreateView):
+	model = AnimeSeries
+	form_class = AddAnimeSeriesForm
+	success_url = '/anime'
+	template_name = 'forms/add_serie.html'
+
+	def form_invalid(self, form):
+		print(form)
 
 
 class AnimeChoiceView(BaseChoiceMixin, ListView):
@@ -203,4 +215,3 @@ class MangaChoiceView(ListPageMixin, BasePageMixin, ListView):
 	category = 'Manga'
 	genre_groups =\
 		['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
-

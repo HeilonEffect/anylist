@@ -40,7 +40,7 @@ class Genre(models.Model):
 class ThematicGroup(models.Model):
     ''' Разделы сайта, объединенниые в группы '''
     name = models.CharField(max_length=50, unique=True)
-    
+
     def _children(self):
         return Category.objects.filter(group=self.id)
     children = property(_children)
@@ -81,24 +81,33 @@ class Product(models.Model):
 
     def avatar_path(self):
         return '/static/' + str(self.avatar).split('/')[-1]
-    
+
     class Meta:
         abstract = True
         ordering = ['title']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 
-class Profile(models.Model):
-    user = models.OneToOneField(User)
-    avatar = models.FileField(upload_to=MEDIA_ROOT, blank=True, null=True)
+#class Profile(models.Model):
+ #   user = models.OneToOneField(User)
+  #  avatar = models.FileField(upload_to=MEDIA_ROOT, blank=True, null=True)
 
 
 class Anime(Product):
     def get_absolute_url(self):
         res = 'anime/' + super(Anime, self).get_absolute_url()
         return res
+
+
+class AnimeSeries(models.Model):
+    ''' Описывает одну серию аниме '''
+    number = models.PositiveSmallIntegerField()
+    name = models.CharField(max_length=255)
+    pub_date = models.DateTimeField(null=True)
+
+    anime = models.ForeignKey(Anime)
 
 
 class Manga(Product):
