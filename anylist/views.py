@@ -37,6 +37,21 @@ class DetailPageMixin(object):
 		context = super(DetailPageMixin, self).get_context_data(**kwargs)
 		context['nav_groups'] = ThematicGroup.objects.all()
 		context['category'] = Category.objects.get(name=self.category)
+		context['url'] = self.model.objects.get(
+			id=self.kwargs['pk']).get_absolute_url()
+		return context
+
+
+class ChildDetailPageMixin(object):
+	def get_queryset(self):
+		return self.model.objects.filter(anime=self.kwargs['pk'])
+	
+	def get_context_data(self, **kwargs):
+		context = super(ChildDetailPageMixin, self).get_context_data(**kwargs)
+		context['nav_groups'] = ThematicGroup.objects.all()
+		context['category'] = Category.objects.get(name=self.category)
+		context['url'] = self.parent_model.objects.get(
+			id=self.kwargs['pk']).get_absolute_url()
 		return context
 
 
@@ -159,10 +174,11 @@ class AnimeDetail(DetailPageMixin, DetailView):
 	category = 'Anime'
 
 
-class AnimeSeriesView(DetailPageMixin, ListView):
+class AnimeSeriesView(ChildDetailPageMixin, ListView):
 	template_name = 'components/series.html'
 	model = AnimeSeries
 	category = "Anime"
+	parent_model = Anime
 
 
 class AnimeSeriesAdd(CreateView):
@@ -170,9 +186,6 @@ class AnimeSeriesAdd(CreateView):
 	form_class = AddAnimeSeriesForm
 	success_url = '/anime'
 	template_name = 'forms/add_serie.html'
-
-	def form_invalid(self, form):
-		print(form)
 
 
 class AnimeChoiceView(BaseChoiceMixin, ListView):
@@ -182,6 +195,12 @@ class AnimeChoiceView(BaseChoiceMixin, ListView):
 	category = 'Anime'
 	genre_groups =\
 		['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
+
+
+#class AnimeHeroesView(ChildDetailPageMixin, ListView):
+#	template_name = 'components/heroes.html'
+#	model = Hero
+#	category = 'Anime'
 
 
 #----------views for manga------------

@@ -77,7 +77,7 @@ class Product(models.Model):
     old_limit = models.ForeignKey(Raiting)
 
     def get_absolute_url(self):
-        return '%i-%s' % (self.id, ''.join(re.split(r'[ :_]', self.title)))
+        return '%i-%s' % (self.id, ''.join(re.split(r'[ :_!]', self.title)))
 
     def avatar_path(self):
         return '/static/' + str(self.avatar).split('/')[-1]
@@ -93,6 +93,13 @@ class Product(models.Model):
 #class Profile(models.Model):
  #   user = models.OneToOneField(User)
   #  avatar = models.FileField(upload_to=MEDIA_ROOT, blank=True, null=True)
+
+# Таблица персонажей одна для всех, уникальные черты
+# будут доступны через связи с ней
+class Hero(models.Model):
+    full_name = models.CharField(max_length=255)
+    avatar = models.FileField(upload_to=MEDIA_ROOT)
+    description = models.TextField()
 
 
 class Anime(Product):
