@@ -2,6 +2,7 @@ function select_genre (element) {
 	var dict = url_resolve();
 	// если мы отметили ранее не отмеченный элемент, то
 	// добавляем в словарь новое значение, иначе - удаляем старое
+	console.log(dict);
 	if (element.checked) {
 		var elem = element.id.split(":");
 		if (dict[elem[0]].indexOf(elem[1]) == -1)
@@ -16,14 +17,16 @@ function select_genre (element) {
 	window.location.href = construct_url(dict);
 }
 function update_checkboxes(dict) {
+	//var elements = $("");
 	for (var i in dict['old_limit']) {
-		$("#old_limit:" + dict['old_limit'][i]).attr("checked", true);
+		var selector = "old_limit:" + dict['old_limit'][i];
+		document.getElementById(selector).checked = true;
+		//$("#old_limit:" + dict['old_limit'][i]).attr("checked", true);
 	}
 	for (var i in dict['genres']) {
-		var selector = 'genres:' + dict['genres'][i];
-		var obj = document.getElementById(selector);
-		console.log(obj);
-		$("#genres:" + dict['genres'][i]).attr("checked", true);
+		var selector = '#genres:' + dict['genres'][i];
+		selector = "genres:" + dict['genres'][i];
+		document.getElementById(selector).checked = true;
 	}
 }
 function url_resolve() {

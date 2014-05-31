@@ -14,8 +14,8 @@ urlpatterns = patterns('',
     url(r'anime/add/\d', AddAnime.as_view()),
     url(r'^anime/?$', AnimeListView.as_view()),
     url(r'^anime/(?P<pk>[\d]+)-\w+/?$', AnimeDetail.as_view()),
-    url(r'^anime/(?P<pk>[\d]+)-\w+/series', AnimeSeriesView.as_view()),
-    url(r'^anime/series/add', AnimeSeriesAdd.as_view()),
+#    url(r'^anime/(?P<pk>[\d]+)-\w+/series', AnimeSeriesView.as_view()),
+ #   url(r'^anime/series/add', AnimeSeriesAdd.as_view()),
 
 
     url(r'^anime/filter/(.+)/?', AnimeChoiceView.as_view()),

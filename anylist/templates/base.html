@@ -41,7 +41,8 @@
 		}
 		return new_url;
 	}
-//	update_checkboxes(url_resolve());
+	var genres_translate = { {% for group in genre_groups %} {% for genre in group.genres %}"{{ genre.name }}":"{{ genre.id }}",{% endfor %}{% endfor %} };
+	
 	</script>
 </head>
 <body>
@@ -62,5 +63,8 @@
 	</nav>
 	{% block script %}
 	{% endblock %}
+	<script type="text/javascript">
+		update_checkboxes(url_resolve());
+	</script>
 </body>
 </html>

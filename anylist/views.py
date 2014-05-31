@@ -124,7 +124,6 @@ class BaseChoiceMixin(ListPageMixin):
 		values = [item.split(',') for item in tmp[1::2]]
 		qs = dict(zip(keys, values))
 
-		# пробная реализация
 		tmp = qs.get('old_limit')
 		q = []
 		if tmp:
@@ -133,12 +132,15 @@ class BaseChoiceMixin(ListPageMixin):
 			for item in rest:
 				q = q.__or__(Q(old_limit__name=item))
 
-		q = self.model.objects.filter(q)
+		if isinstance(q, list):
+			q = self.model.objects
+		else:
+			q = self.model.objects.filter(q)
 		
 		tmp = qs.get('genres')
 		if tmp:
 			for item in tmp:
-				q = q.filter(genres__name=item)
+				q = q.filter(genres__eng_name=item)
 		self.queryset = q
 
 		return self.queryset
@@ -174,18 +176,18 @@ class AnimeDetail(DetailPageMixin, DetailView):
 	category = 'Anime'
 
 
-class AnimeSeriesView(ChildDetailPageMixin, ListView):
-	template_name = 'components/series.html'
-	model = AnimeSeries
-	category = "Anime"
-	parent_model = Anime
+#class AnimeSeriesView(ChildDetailPageMixin, ListView):
+#	template_name = 'components/series.html'
+#	model = AnimeSeries
+#	category = "Anime"
+#	parent_model = Anime
 
 
-class AnimeSeriesAdd(CreateView):
-	model = AnimeSeries
-	form_class = AddAnimeSeriesForm
-	success_url = '/anime'
-	template_name = 'forms/add_serie.html'
+#class AnimeSeriesAdd(CreateView):
+#	model = AnimeSeries
+#	form_class = AddAnimeSeriesForm
+#	success_url = '/anime'
+#	template_name = 'forms/add_serie.html'
 
 
 class AnimeChoiceView(BaseChoiceMixin, ListView):

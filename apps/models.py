@@ -29,6 +29,7 @@ class Raiting(models.Model):
 class Genre(models.Model):
     name = models.CharField(max_length=140, unique=True)
     group = models.ForeignKey(GenreGroup)
+    eng_name = models.CharField(max_length=140, null=True)
 
     class Meta:
         ordering = ['id']
@@ -108,13 +109,21 @@ class Anime(Product):
         return res
 
 
-class AnimeSeries(models.Model):
-    ''' Описывает одну серию аниме '''
-    number = models.PositiveSmallIntegerField()
-    name = models.CharField(max_length=255)
-    pub_date = models.DateTimeField(null=True)
+#class AnimeSeason(Season):
+ #   link = models.ForeignKey(Anime)
 
-    anime = models.ForeignKey(Anime)
+
+#class AnimeSeries(Serie):
+ #   season = models.ForeignKey(AnimeSeason)
+
+
+#class AnimeSeries(models.Model):
+ #   ''' Описывает одну серию аниме '''
+#    number = models.PositiveSmallIntegerField()
+#    name = models.CharField(max_length=255)
+#    pub_date = models.DateTimeField(null=True)
+
+#    anime = models.ForeignKey(Anime)
 
 
 class Manga(Product):
