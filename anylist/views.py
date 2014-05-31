@@ -44,23 +44,17 @@ class DetailPageMixin(object):
 
 class ChildDetailPageMixin(object):
 	def get_queryset(self):
-		return self.model.objects.filter(anime=self.kwargs['pk'])
+		return self.model.objects.filter(link__id=self.kwargs['pk'])
 	
 	def get_context_data(self, **kwargs):
 		context = super(ChildDetailPageMixin, self).get_context_data(**kwargs)
 		context['nav_groups'] = ThematicGroup.objects.all()
 		context['category'] = Category.objects.get(name=self.category)
+		context['num_season'] = self.get_queryset().count()
+		
 		context['url'] = self.parent_model.objects.get(
 			id=self.kwargs['pk']).get_absolute_url()
 		return context
-
-
-# TODO
-class AddWizard(SessionWizardView):
-	def done(self, form_list, **kwargs):
-		return render_to_response('done.html', {
-			'form_data': [form.cleaned_data for form in form_list],
-		})
 
 
 class ListPageMixin(object):
@@ -108,6 +102,7 @@ class ListPageMixin(object):
 			for val in self.queryset:
 				if val.old_limit == item:
 					item.count += 1
+		print(context['genre_groups'])
 		return context
 
 
@@ -140,7 +135,7 @@ class BaseChoiceMixin(ListPageMixin):
 		tmp = qs.get('genres')
 		if tmp:
 			for item in tmp:
-				q = q.filter(genres__eng_name=item)
+				q = q.filter(genres__name=item)
 		self.queryset = q
 
 		return self.queryset
@@ -176,18 +171,35 @@ class AnimeDetail(DetailPageMixin, DetailView):
 	category = 'Anime'
 
 
-#class AnimeSeriesView(ChildDetailPageMixin, ListView):
-#	template_name = 'components/series.html'
-#	model = AnimeSeries
-#	category = "Anime"
-#	parent_model = Anime
+class AnimeSeriesView(ChildDetailPageMixin, ListView):
+	template_name = 'components/series.html'
+	model = AnimeSeason
+	category = "Anime"
+	parent_model = Anime
 
 
-#class AnimeSeriesAdd(CreateView):
-#	model = AnimeSeries
-#	form_class = AddAnimeSeriesForm
-#	success_url = '/anime'
-#	template_name = 'forms/add_serie.html'
+def add_season(request):
+	form = AddAnimeSeasonsForm(request.POST)
+	if form.is_valid():
+		form.save()
+		return HttpResponse('Ok')
+
+
+def anime_series(request):
+	data = request.POST.copy()
+	q = AnimeSeason.objects.filter(link=data['anime'])
+	if not q:
+		AnimeSeason.objects.create(
+			number=1, link=Anime.objects.get(id=data['anime']))
+	
+	data['season'] = AnimeSeason.objects.filter(
+		link=data['anime']
+	)
+	form = AddAnimeSeriesForm(data)
+	if form.is_valid():
+		form.save()
+		return HttpResponse()
+	return HttpResponse('Invalid Form')
 
 
 class AnimeChoiceView(BaseChoiceMixin, ListView):
@@ -197,12 +209,6 @@ class AnimeChoiceView(BaseChoiceMixin, ListView):
 	category = 'Anime'
 	genre_groups =\
 		['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
-
-
-#class AnimeHeroesView(ChildDetailPageMixin, ListView):
-#	template_name = 'components/heroes.html'
-#	model = Hero
-#	category = 'Anime'
 
 
 #----------views for manga------------

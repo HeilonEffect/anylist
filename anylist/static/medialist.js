@@ -4,6 +4,7 @@ function select_genre (element) {
 	// добавляем в словарь новое значение, иначе - удаляем старое
 	console.log(dict);
 	if (element.checked) {
+		console.log(element.id);
 		var elem = element.id.split(":");
 		if (dict[elem[0]].indexOf(elem[1]) == -1)
 			dict[elem[0]].push(elem[1]);
@@ -26,7 +27,7 @@ function update_checkboxes(dict) {
 	for (var i in dict['genres']) {
 		var selector = '#genres:' + dict['genres'][i];
 		selector = "genres:" + dict['genres'][i];
-		document.getElementById(selector).checked = true;
+		document.getElementById(decodeURIComponent(selector)).checked = true;
 	}
 }
 function url_resolve() {

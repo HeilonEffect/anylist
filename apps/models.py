@@ -109,21 +109,21 @@ class Anime(Product):
         return res
 
 
-#class AnimeSeason(Season):
- #   link = models.ForeignKey(Anime)
+class AnimeSeason(models.Model):
+    number = models.PositiveSmallIntegerField()
+    link = models.ForeignKey(Anime)
+    
+    def _series(self):
+        return AnimeSeries.objects.filter(season=self.id)
+    series = property(_series)
 
 
-#class AnimeSeries(Serie):
- #   season = models.ForeignKey(AnimeSeason)
+class AnimeSeries(models.Model):
+    number = models.IntegerField()
+    name = models.CharField(max_length=255)
+    pub_date = models.DateTimeField(null=True)
 
-
-#class AnimeSeries(models.Model):
- #   ''' Описывает одну серию аниме '''
-#    number = models.PositiveSmallIntegerField()
-#    name = models.CharField(max_length=255)
-#    pub_date = models.DateTimeField(null=True)
-
-#    anime = models.ForeignKey(Anime)
+    season = models.ForeignKey(AnimeSeason)
 
 
 class Manga(Product):
