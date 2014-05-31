@@ -191,10 +191,10 @@ def anime_series(request):
 	if not q:
 		AnimeSeason.objects.create(
 			number=1, link=Anime.objects.get(id=data['anime']))
-	
 	data['season'] = AnimeSeason.objects.filter(
 		link=data['anime']
-	)
+	).last().id
+	print(data)
 	form = AddAnimeSeriesForm(data)
 	if form.is_valid():
 		form.save()
