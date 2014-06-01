@@ -18,6 +18,7 @@ class BasePageMixin(object):
 
 
 class DetailPageMixin(object):
+	model = Production
 	def get_context_data(self, **kwargs):
 		context = super(DetailPageMixin, self).get_context_data(**kwargs)
 		context['nav_groups'] = ThematicGroup.objects.all()

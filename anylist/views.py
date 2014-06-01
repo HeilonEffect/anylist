@@ -68,7 +68,6 @@ def add_anime(request):
 
 class AnimeDetail(DetailPageMixin, DetailView):
 	template_name = 'detail.html'
-	model = Anime
 	category = 'Anime'
 
 
@@ -181,7 +180,6 @@ def add_manga(request):
 
 class MangaDetailView(DetailPageMixin, DetailView):
 	template_name = 'detail.html'
-	model = Production
 	category = 'Manga'
 
 
