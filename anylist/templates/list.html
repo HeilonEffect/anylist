@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block header %}
+	<h1>{{ header }}</h1>
+	{% include "components/filters.html" %}
+	<img src="/static/glyphicons_158_show_lines.png" class="panel_display" onclick="show_panel()">
+	{{ block.super }}
+{% endblock %}
+{% block content %}
+	{% include "components/obj_list.html" %}
+{% endblock %}
+{% block navigation %}
+	<div id="left_menu">
+	{% include "components/raitings.html" %}
+	{% include "components/genres.html" %}
+	</div>
+{% endblock %}

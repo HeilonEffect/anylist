@@ -1,3 +1,6 @@
+from django.conf.urls.static import static
+
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls import patterns, include, url
 from anylist.views import *
 
@@ -15,18 +18,33 @@ urlpatterns = patterns('',
     url(r'^logout$', log_out),
     url(r'^profile$', ProfileView.as_view()),
 
-    url(r'^anime/add/?$', AddAnime.as_view()),
-    url(r'anime/add/\d', AddAnime.as_view()),
+    url(r'^anime/add/$', AddAnime.as_view()),
+    url(r'^anime/add/1$', add_anime),
+#    url(r'anime/add/\d', AddAnime.as_view()),
     url(r'^anime/?$', AnimeListView.as_view()),
     url(r'^anime/(?P<pk>[\d]+)-\w+/?$', AnimeDetail.as_view()),
-    url(r'^anime/(?P<pk>[\d]+)-\w+/series', AnimeSeriesView.as_view()),
+#    url(r'^anime/(?P<pk>[\d]+)-\w+/series', AnimeSeriesView.as_view()),
     url(r'^anime/series/add$', anime_series),
     url(r'^anime/season/add$', add_season),
 
 
     url(r'^anime/filter/(.+)/?', AnimeChoiceView.as_view()),
-    url(r'^manga/?$', MangaListView.as_view()),
+    url(r'^manga/$', MangaListView.as_view()),
     url(r'^manga/add/?$', AddManga.as_view()),
-    url(r'^manga/(?P<pk>[\d]+)-\w+', MangaDetailView.as_view()),
+    url(r'manga/add/1$', add_manga),
+    url(r'^manga/(?P<pk>[\d]+)-\w+$', MangaDetailView.as_view()),
     url(r'^manga/filter/(.+)/?', MangaChoiceView.as_view()),
 )
+
+if settings.DEBUG:
+
+    if settings.MEDIA_ROOT:
+
+        urlpatterns += static(settings.MEDIA_URL,
+
+            document_root=settings.MEDIA_ROOT)
+
+# Эта строка опциональна и будет добавлять url'ы только при DEBUG = True
+
+urlpatterns += staticfiles_urlpatterns()
+

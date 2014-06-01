@@ -16,7 +16,7 @@ class GenreGroup(models.Model):
     def set_genres(self, value):
         self.genres = value
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -29,10 +29,6 @@ class Raiting(models.Model):
 class Genre(models.Model):
     name = models.CharField(max_length=140, unique=True)
     group = models.ForeignKey(GenreGroup)
-    eng_name = models.CharField(max_length=140, null=True)
-
-    class Meta:
-        ordering = ['id']
 
     def __str__(self):
         return self.name
@@ -66,32 +62,6 @@ class Category(models.Model):
         return '/static/' + str(self.avatar).split('/')[-1]
 
 
-class Product(models.Model):
-    ''' Description single product '''
-    title = models.CharField(max_length=255, unique=True)
-    description = models.TextField(null=True)
-    genres = models.ManyToManyField(Genre)
-
-    avatar = models.FileField(upload_to=MEDIA_ROOT)
-
-    start_date = models.DateField(null=True, blank=True)   # if emty - then it is anounce
-    old_limit = models.ForeignKey(Raiting)
-
-    def get_absolute_url(self):
-        return '%i-%s' % (self.id, ''.join(re.split(r'[ :_!]', self.title)))
-
-    def avatar_path(self):
-        return '/static/' + str(self.avatar).split('/')[-1]
-
-    class Meta:
-        abstract = True
-        ordering = ['title']
-
-    def __str__(self):
-        return self.title
-
-
-
 class Production(models.Model):
     title = models.CharField(max_length=255, unique=True)
     description = models.TextField(null=True)
@@ -100,14 +70,15 @@ class Production(models.Model):
     genres = models.ManyToManyField(Genre)
     old_limit = models.ForeignKey(Raiting)
 
+    def avatar_path(self):
+        return '/media/' + str(self.avatar).split('/')[-1]
 
-#class UserLists(models.Model):
-#    user = models.ForeignKey(User)
-#    category = 
+    def get_absolute_url(self):
+        return '%i-%s' % (self.id, self.title.replace(" ", "_"))
 
-#class Profile(models.Model):
- #   user = models.OneToOneField(User)
-  #  avatar = models.FileField(upload_to=MEDIA_ROOT, blank=True, null=True)
+    def __str__(self):
+        return self.title
+
 
 # Таблица персонажей одна для всех, уникальные черты
 # будут доступны через связи с ней
@@ -117,30 +88,30 @@ class Hero(models.Model):
     description = models.TextField()
 
 
-class Anime(Product):
-    def get_absolute_url(self):
-        res = 'anime/' + super(Anime, self).get_absolute_url()
-        return res
+class Anime(models.Model):
+    link = models.OneToOneField(Production)
 
 
-class AnimeSeason(models.Model):
-    number = models.PositiveSmallIntegerField()
-    link = models.ForeignKey(Anime)
+class Manga(models.Model):
+    link = models.OneToOneField(Production)
+#class Anime(Product):
+#    def get_absolute_url(self):
+#        res = 'anime/' + super(Anime, self).get_absolute_url()
+#        return res
+
+
+#class AnimeSeason(models.Model):
+#    number = models.PositiveSmallIntegerField()
+#    link = models.ForeignKey(Anime)
     
-    def _series(self):
-        return AnimeSeries.objects.filter(season=self.id)
-    series = property(_series)
+#    def _series(self):
+#        return AnimeSeries.objects.filter(season=self.id)
+#    series = property(_series)
 
 
-class AnimeSeries(models.Model):
-    number = models.IntegerField()
-    name = models.CharField(max_length=255)
-    pub_date = models.DateTimeField(null=True)
+#class AnimeSeries(models.Model):
+#    number = models.IntegerField()
+#    name = models.CharField(max_length=255)
+#    pub_date = models.DateTimeField(null=True)
 
-    season = models.ForeignKey(AnimeSeason)
-
-
-class Manga(Product):
-    def get_absolute_url(self):
-        res = 'manga/' + super(Manga, self).get_absolute_url()
-        return res
+#    season = models.ForeignKey(AnimeSeason)

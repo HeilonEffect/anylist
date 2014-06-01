@@ -1,0 +1,13 @@
+<p>Рейтинг</p>
+<div class="box">
+{% for item in raiting %}
+	{% if item.count %}
+		<input type="checkbox" id="old_limit:{{ item }}" onchange="select_genre(this)">
+		<label for="old_limit:{{ item }}">{{ item.name }}</label>
+	{% else %}
+		<input type="checkbox" id="{{ item.name }}" disabled>
+		<label style="color:gray">{{ item.name }}</label>
+	{% endif %}
+	<br>
+{% endfor %}
+</div>

@@ -1,0 +1,16 @@
+<p>Жанры</p>
+<div class="box">
+{% for group in genre_groups %}
+	{% for genre in group.genres %}
+		{% if genre.count %}
+			<input type="checkbox" id="genres:{{ genre }}" onchange="select_genre(this)">
+			<label for="genres:{{ genre }}">{{ genre.name }}</label>
+		{% else %}
+			<input type="checkbox" disabled>
+			<label style="color:gray">{{ genre.name }}</label>
+		{% endif %}
+		<br>
+	{% endfor %}
+	<p></p>
+{% endfor %}
+</div>

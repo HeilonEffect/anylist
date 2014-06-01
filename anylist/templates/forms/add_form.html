@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-	<form enctype="multipart/form-data" method="post" action="/{{ category.get_absolute_url }}/add" id="add_form">
+	<form enctype="multipart/form-data" method="post" action="/{{ category.get_absolute_url }}/add/1" id="add_form">
 			<input name="title" type="text" placeholder="Enter title here" class="form-title">
 		<div class="form-menu">
 			<textarea class="form-textarea" rows="15" name="description"></textarea>
@@ -13,8 +13,6 @@
 				{% endfor %}
 			</select>
 			<p></p>
-			<input type="text" placeholder="Enter start date (optional)" id="datetimepick1" class="select-list" name="start_date">
-			<label>Укажите возрастное ограничение:</label>
 			<select name="old_limit" style="width:10em">
 			{% for item in raiting %}
 				<option value="{{ item.id }}">{{ item }}</option>
