@@ -43,8 +43,6 @@
 			new_url = '/{{ category.get_absolute_url }}';
 		return new_url;
 	}
-	var genres_translate = { {% for group in genre_groups %} {% for genre in group.genres %}"{{ genre.name }}":"{{ genre.id }}",{% endfor %}{% endfor %} };
-	
 	</script>
 </head>
 <body>
@@ -52,6 +50,18 @@
 	{% block header %}
 		<img src="/static/glyphicons_156_show_thumbnails.png" class="nav_display" onclick="show_menu()">
 		<hr>
+		{% if user.is_authenticated %}
+			<button id="logout">Log Out</button>
+		{% else %}
+			<button id="auth">Log In</button>
+		{% endif %}
+		<form id="auth_form">
+			<input name="username" type="text" placeholder="Input Username"><br>
+			<input name="password" type="password" placeholder="Input Password"><br>
+			<input name="email" type="email" placeholder="Input Email"><br>
+			<input type="checkbox" id="acc_tos"><label for="acc_tos">Register Me</label><br>
+			<input type="submit" value="Log In">
+		</form>
 		{% include "components/nav.html" %}
 	{% endblock %}
 	</header>
@@ -67,6 +77,30 @@
 	{% endblock %}
 	<script type="text/javascript">
 		update_checkboxes(url_resolve());
+		$("#auth").click(function () {
+			if ($("#auth_form").css("display") == "none")
+				$("#auth_form").show();
+			else
+				$("#auth_form").hide();
+		});
+		$("#auth_form").submit(function () {
+			if ($("#acc_tos")[0].checked)
+				$.post(
+					"/register",
+					$("#auth_form").serialize()
+				);
+			else
+				$.post(
+					"/login",
+					$("#auth_form").serialize()
+				);
+			return false;
+		});
+		$("#logout").click(function () {
+			$.post(
+				"/logout"
+			);
+		});
 	</script>
 </body>
 </html>

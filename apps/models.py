@@ -91,6 +91,20 @@ class Product(models.Model):
         return self.title
 
 
+
+class Production(models.Model):
+    title = models.CharField(max_length=255, unique=True)
+    description = models.TextField(null=True)
+    avatar = models.FileField(upload_to=MEDIA_ROOT)
+
+    genres = models.ManyToManyField(Genre)
+    old_limit = models.ForeignKey(Raiting)
+
+
+#class UserLists(models.Model):
+#    user = models.ForeignKey(User)
+#    category = 
+
 #class Profile(models.Model):
  #   user = models.OneToOneField(User)
   #  avatar = models.FileField(upload_to=MEDIA_ROOT, blank=True, null=True)

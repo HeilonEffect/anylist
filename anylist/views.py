@@ -2,6 +2,8 @@
 import json
 import re
 
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.core.cache import cache
 from django.db.models import F, Q
@@ -11,7 +13,7 @@ from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, FormView
 from django.views.generic.detail import DetailView
 
-from braces.views import FormValidMessageMixin
+from braces.views import LoginRequiredMixin
 
 from apps.models import *
 from apps.forms import *
@@ -102,7 +104,6 @@ class ListPageMixin(object):
 			for val in self.queryset:
 				if val.old_limit == item:
 					item.count += 1
-		print(context['genre_groups'])
 		return context
 
 
@@ -141,10 +142,21 @@ class BaseChoiceMixin(ListPageMixin):
 		return self.queryset
 
 
+#------------ Base Views -----------------
 class MainPage(BasePageMixin, ListView):
 	model = ThematicGroup
 	template_name = 'index.html'
 	header = 'Welcome'
+
+
+class ProfileView(LoginRequiredMixin, ListView):
+	template_name = 'profile.html'
+	model = ThematicGroup
+
+	def get_context_data(self, **kwargs):
+		context = super(ProfileView, self).get_context_data(**kwargs)
+		return context
+
 
 #------- views for anime ---------
 class AnimeListView(ListPageMixin, ListView):
@@ -194,7 +206,6 @@ def anime_series(request):
 	data['season'] = AnimeSeason.objects.filter(
 		link=data['anime']
 	).last().id
-	print(data)
 	form = AddAnimeSeriesForm(data)
 	if form.is_valid():
 		form.save()
@@ -209,6 +220,42 @@ class AnimeChoiceView(BaseChoiceMixin, ListView):
 	category = 'Anime'
 	genre_groups =\
 		['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
+
+
+def auth1(request):
+	username = request.POST['username']
+	password = request.POST['password']
+	user = authenticate(username=username, password=password)
+	if user:
+		if user.is_active:
+			login(request, user)
+			return HttpResponse('Succes')
+		else:
+			return HttpResponse('Account Disabled')
+	else:
+		return HttpResponse('Username or password incorrect')
+
+
+def auth2(request):
+	form = RegisterForm(request.POST)
+	if form.is_valid():
+		cd = form.cleaned_data
+		user = User.objects.create_user(**cd)
+		user.save()
+	return auth1(request)
+
+
+def auth(request):
+	form = LoginForm(request.POST)
+	if form.is_valid():
+		cd = form.cleaned_data
+		user = User.objects.get(username=cd['username'])
+	return auth1(request)
+
+
+def log_out(request):
+	logout(request)
+	return HttpResponse('logout')
 
 
 #----------views for manga------------
@@ -233,6 +280,7 @@ class AddManga(BasePageMixin, CreateView):
 class MangaDetailView(DetailPageMixin, DetailView):
 	template_name = 'detail.html'
 	model = Manga
+	category = 'Manga'
 
 
 class MangaChoiceView(ListPageMixin, BasePageMixin, ListView):

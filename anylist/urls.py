@@ -10,6 +10,11 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^$', MainPage.as_view()),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^register$', auth2),
+    url(r'^login$', auth),
+    url(r'^logout$', log_out),
+    url(r'^profile$', ProfileView.as_view()),
+
     url(r'^anime/add/?$', AddAnime.as_view()),
     url(r'anime/add/\d', AddAnime.as_view()),
     url(r'^anime/?$', AnimeListView.as_view()),

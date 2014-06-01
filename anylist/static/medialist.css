@@ -246,3 +246,21 @@ label:hover {
 .pub_ser {
 	width: 11em;
 }
+#auth_form {
+	position: fixed;
+	background-color: red;
+	top: 5em;
+	right: 2.5em;
+	display: none;
+	z-index: 1000;
+}
+#auth {
+	position: fixed;
+	top: 1em;
+	right: 1em;
+}
+#logout {
+	position: fixed;
+	top: 1em;
+	right: 1em;
+}
