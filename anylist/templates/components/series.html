@@ -2,23 +2,19 @@
 {% block header %}
 	{{ block.super }}
 	<img src="/static/add.png" id="add_serie">
-	<button id="add_season">Новый сезон</button>
 	{% include "forms/add_serie.html" %}
 {% endblock %}
 {% block content %}
 
-	{% for season in object_list %}
-	<p>{{ season.number }} сезон</p>
 	<table class="series_list">
-		{% for item in season.series %}
+	{% for item in object_list %}
 		<tr>
 			<td class="num_ser">{{ item.number }}</td>
 			<td class="name_ser">{{ item.name }}</td>
-			<td class="pub_ser">{{ item.pub_date }}</td>
+			<td class="pub_ser">{{ item.start_date }}</td>
 		</tr>
-		{% endfor %}
-	</table>
 	{% endfor %}
+	</table>
 {% endblock %}
 {% block navigation %}
 	{% include "components/info_block.html" %}
@@ -27,18 +23,7 @@
 	{{ block.script }}
 	<script type="text/javascript">
 		var link = document.location.pathname.split("/")[2].split("-")[0];
-		var category = "{{ category.get_absolute_url }}";
-		var num_season = {{ num_season }};
-		$("#add_season").click(function () {
-			$.post(
-				"/{{ category.get_absolute_url }}/season/add",
-				"link=" + link + "&number=" + (num_season + 1),
-				function () {
-					$(".series_list").prepend("<p>" + (num_season + 1) + " Сезон</p>");
-					//console.log('success');
-				}
-			);
-		});
+		var category = document.location.pathname.split("/")[1];
 		$("#pub_d").datetimepicker();
 		// показывает формочку добавления новой серии
 		// P.S переделать с использованием анимаций
@@ -51,8 +36,9 @@
 		// отправляет данные формы
 		$("#add_serie_form").submit(function () {
 			$.post(
-				"/{{ category.get_absolute_url }}/series/add",
-				$("#add_serie_form").serialize() + "&{{ category.get_absolute_url }}=" + link
+				"/" + category + "/series/add",
+				$("#add_serie_form").serialize() + "&product=" + link
+				//$("#add_serie_form").serialize() + "&"{{ category.get_absolute_url }}"=" + link
 			);
 			return false;
 		});

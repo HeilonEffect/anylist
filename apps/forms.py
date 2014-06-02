@@ -10,14 +10,6 @@ class AddForm(ModelForm):
 		model = Production
 
 
-#class AddAnimeSeriesForm(ModelForm):
-#	pub_date = forms.DateTimeField(
-#		required=False, input_formats=['%Y/%m/%d %H:%M'])
-
-#	class Meta:
-#		model = AnimeSeries
-
-
 class LoginForm(forms.Form):
 	username = forms.CharField(max_length=50)
 	password = forms.CharField()
@@ -29,11 +21,8 @@ class RegisterForm(forms.Form):
 	email = forms.EmailField()
 
 
-#class AddAnimeSeasonsForm(ModelForm):
-#	class Meta:
-#		model = AnimeSeason
-
-
-class AddMangaForm(ModelForm):
+class AddSerieForm(ModelForm):
+	start_date = forms.DateTimeField(required=False, input_formats=['%Y/%m/%d %H:%M'])
+	length = forms.TimeField(required=False, input_formats=['%M'])
 	class Meta:
-		model = Production
+		model = Serie

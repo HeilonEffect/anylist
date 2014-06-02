@@ -29,7 +29,7 @@
 	function construct_url(dict) {
 		// конструируем новый url (позже сделать его универсальным)
 		// на основе старого + изменения
-		var new_url = '/{{ category.get_absolute_url }}/filter/';
+		var new_url = '/{{ category }}/filter/';
 		for (var key in dict) {
 			if (dict[key].length) {
 				new_url += key + '/';
@@ -39,8 +39,8 @@
 				new_url = new_url.slice(0, new_url.length - 1) + '/';
 			}
 		}
-		if (new_url == '/{{ category.get_absolute_url }}/filter/')
-			new_url = '/{{ category.get_absolute_url }}';
+		if (new_url == '/{{ category }}/filter/')
+			new_url = '/{{ category }}';
 		return new_url;
 	}
 	</script>

@@ -91,27 +91,29 @@ class Hero(models.Model):
 class Anime(models.Model):
     link = models.OneToOneField(Production)
 
+    def __str__(self):
+        return self.link.title
+
 
 class Manga(models.Model):
     link = models.OneToOneField(Production)
-#class Anime(Product):
-#    def get_absolute_url(self):
-#        res = 'anime/' + super(Anime, self).get_absolute_url()
-#        return res
+
+    def __str__(self):
+        return self.link.title
 
 
-#class AnimeSeason(models.Model):
-#    number = models.PositiveSmallIntegerField()
-#    link = models.ForeignKey(Anime)
-    
-#    def _series(self):
-#        return AnimeSeries.objects.filter(season=self.id)
-#    series = property(_series)
+class SeriesGroup(models.Model):
+    number = models.PositiveSmallIntegerField(default=1)
+    name = models.CharField(max_length=255, null=True)
+    product = models.ForeignKey(Production)
+
+    def __str__(self):
+        return '%i-%s' % (self.number, self.product.title)
 
 
-#class AnimeSeries(models.Model):
-#    number = models.IntegerField()
-#    name = models.CharField(max_length=255)
-#    pub_date = models.DateTimeField(null=True)
-
-#    season = models.ForeignKey(AnimeSeason)
+class Serie(models.Model):
+    number = models.IntegerField()
+    name = models.CharField(max_length=255)
+    season = models.ForeignKey(SeriesGroup)
+    start_date = models.DateTimeField(null=True)
+    length = models.TimeField()

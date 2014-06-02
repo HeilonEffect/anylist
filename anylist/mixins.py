@@ -22,7 +22,8 @@ class DetailPageMixin(object):
 	def get_context_data(self, **kwargs):
 		context = super(DetailPageMixin, self).get_context_data(**kwargs)
 		context['nav_groups'] = ThematicGroup.objects.all()
-		context['category'] = Category.objects.get(name=self.category)
+		context['category'] = Category.objects.get(
+			name=self.category).name.lower()
 		context['url'] = self.model.objects.get(
 			id=self.kwargs['pk']).get_absolute_url()
 		return context
@@ -125,3 +126,18 @@ class BaseChoiceMixin(ListPageMixin):
 		self.queryset = q
 		self.queryset = [item.link for item in self.queryset]
 		return self.queryset
+
+
+class InfoPageMixin(object):
+	''' пердаёт дополнительную информацию в страницы, где
+	указаны серии, герои, создатели и т.д '''
+	model = Serie
+	def get_queryset(self):
+		return self.model.objects.filter(season__product=self.kwargs['pk'])
+
+	def get_context_data(self, **kwargs):
+		context = super(InfoPageMixin, self).get_context_data(**kwargs)
+		context['category'] = self.category.lower()
+		context['url'] = Production.objects.get(
+			id=self.kwargs['pk']).get_absolute_url()
+		return context

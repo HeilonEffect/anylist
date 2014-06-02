@@ -56,12 +56,20 @@ class AddAnime(BasePageMixin, CreateView):
 
 
 def add_anime(request):
+	''' В случае с аниме, сезон всегда один, если есть второй сезон с
+	аналогичным названием, то называем его <Название> [TV-2]. При
+	создании любого экзампляра по-умолчанию создаем новый сезон '''
 	form = AddForm(request.POST, request.FILES)
 	if form.is_valid():
 		cd = form.cleaned_data
+		# Сохраням продукт
 		form.save()
 		p = Production.objects.filter(title=cd['title']).last()
+		# Регистрируем новое аниме
 		Anime.objects.create(link=p)
+
+		# Создаём первый сезон
+		SeriesGroup.objects.create(number=1, product=p)
 		return HttpResponseRedirect('/anime')
 	return HttpResponse('Invalid form data')
 
@@ -69,36 +77,6 @@ def add_anime(request):
 class AnimeDetail(DetailPageMixin, DetailView):
 	template_name = 'detail.html'
 	category = 'Anime'
-
-
-#class AnimeSeriesView(ChildDetailPageMixin, ListView):
-#	template_name = 'components/series.html'
-#	model = AnimeSeason
-#	category = "Anime"
-#	parent_model = Anime
-
-
-def add_season(request):
-	form = AddAnimeSeasonsForm(request.POST)
-	if form.is_valid():
-		form.save()
-		return HttpResponse('Ok')
-
-
-def anime_series(request):
-	data = request.POST.copy()
-	q = AnimeSeason.objects.filter(link=data['anime'])
-	if not q:
-		AnimeSeason.objects.create(
-			number=1, link=Anime.objects.get(id=data['anime']))
-	data['season'] = AnimeSeason.objects.filter(
-		link=data['anime']
-	).last().id
-	form = AddAnimeSeriesForm(data)
-	if form.is_valid():
-		form.save()
-		return HttpResponse()
-	return HttpResponse('Invalid Form')
 
 
 class AnimeChoiceView(BaseChoiceMixin, ListView):
@@ -109,6 +87,32 @@ class AnimeChoiceView(BaseChoiceMixin, ListView):
 	category = 'Anime'
 	genre_groups =\
 		['Anime Male', 'Anime Female']#, 'Anime School', 'Standart', 'Anime Porn']
+
+
+class AnimeSeriesView(InfoPageMixin, ListView):
+	template_name = 'components/series.html'
+	category = 'Anime'
+
+	def get_queryset(self):
+		return Serie.objects.filter(
+			season__product=self.kwargs['pk'])
+
+
+def add_serie(request):
+	''' в случае с аниме сезон на одно название всегда один, поэтому
+	мы посылаем id самого аниме '''
+	cd = request.POST.copy()
+	g = SeriesGroup.objects.get(product=cd['product'])
+	cd['season'] = g.id
+	del cd['product']
+	print(cd)
+	form = AddSerieForm(cd)
+	if form.is_valid():
+		cd = form.cleaned_data
+		print(cd)
+		form.save()
+		return HttpResponse('success')
+	return HttpResponse('Invalid form data')
 
 
 def auth1(request):
@@ -160,7 +164,7 @@ class MangaListView(ListPageMixin, ListView):
 
 class AddManga(BasePageMixin, CreateView):
 	model = Production
-	form_class = AddMangaForm
+	form_class = AddForm
 	template_name = 'forms/add_form.html'
 	header = 'Добавление манги'
 	success_url = '/manga/'
