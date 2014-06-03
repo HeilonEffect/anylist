@@ -14,3 +14,13 @@
 	{% include "components/genres.html" %}
 	</div>
 {% endblock %}
+
+{% block script %}
+	{{ block.super }}
+	<script type="text/javascript">
+		$(".add_me").click(function (eventObject) {
+			var id = eventObject.target.parentElement.id.split("-")[0]
+			eventObject.preventDefault();
+		});
+	</script>
+{% endblock %}

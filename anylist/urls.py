@@ -16,11 +16,12 @@ urlpatterns = patterns('',
     url(r'^register$', auth2),
     url(r'^login$', auth),
     url(r'^logout$', log_out),
+
     url(r'^profile$', ProfileView.as_view()),
+    url(r'^mylist/add$', add_list),
 
     url(r'^anime/add/$', AddAnime.as_view()),
     url(r'^anime/add/1$', add_anime),
-#    url(r'anime/add/\d', AddAnime.as_view()),
     url(r'^anime/?$', AnimeListView.as_view()),
     url(r'^anime/(?P<pk>[\d]+)-\w+/?$', AnimeDetail.as_view()),
     url(r'^anime/(?P<pk>[\d]+)-\w+/series', AnimeSeriesView.as_view()),

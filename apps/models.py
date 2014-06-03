@@ -131,3 +131,21 @@ class Serie(models.Model):
 
     class Meta:
         ordering = ['-number']
+
+
+class Status(models.Model):
+    ''' Запланировано, Смотрю, Пересматриваю, Просмотрел, Отложил, Бросил '''
+    name = models.CharField(max_length=15, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class ListedProduct(models.Model):
+    ''' Продукт, который находится в списке у пользователя.
+    Поле <series> - список просмотренных/прочитанных пользователем
+    серий/глав '''
+    product = models.ForeignKey(Production)
+    status = models.ForeignKey(Status)
+    series = models.ManyToManyField(Serie)
+    user = models.ForeignKey(User, null=True)
