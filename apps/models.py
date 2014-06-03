@@ -74,7 +74,7 @@ class Production(models.Model):
         return '/media/' + str(self.avatar).split('/')[-1]
 
     def get_absolute_url(self):
-        return '%i-%s' % (self.id, self.title.replace(" ", "_"))
+        return '%i-%s' % (self.id, self.title.replace(" ", "_").replace("-", "_"))
 
     def __str__(self):
         return self.title
@@ -82,6 +82,7 @@ class Production(models.Model):
 
 # Таблица персонажей одна для всех, уникальные черты
 # будут доступны через связи с ней
+# пока не используется
 class Hero(models.Model):
     full_name = models.CharField(max_length=255)
     avatar = models.FileField(upload_to=MEDIA_ROOT)
@@ -107,6 +108,10 @@ class SeriesGroup(models.Model):
     name = models.CharField(max_length=255, null=True)
     product = models.ForeignKey(Production)
 
+    def _series(self):
+        return Serie.objects.filter(season=self.id)
+    series = property(_series)
+
     def __str__(self):
         return '%i-%s' % (self.number, self.product.title)
 
@@ -116,4 +121,7 @@ class Serie(models.Model):
     name = models.CharField(max_length=255)
     season = models.ForeignKey(SeriesGroup)
     start_date = models.DateTimeField(null=True)
-    length = models.TimeField()
+    length = models.IntegerField(null=True)
+
+    def __str__(self):
+        return "%i-%s" % (self.number, self.name)

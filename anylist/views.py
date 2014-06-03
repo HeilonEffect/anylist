@@ -94,8 +94,7 @@ class AnimeSeriesView(InfoPageMixin, ListView):
 	category = 'Anime'
 
 	def get_queryset(self):
-		return Serie.objects.filter(
-			season__product=self.kwargs['pk'])
+		return SeriesGroup.objects.filter(product=self.kwargs['pk'])
 
 
 def add_serie(request):
@@ -105,14 +104,26 @@ def add_serie(request):
 	g = SeriesGroup.objects.get(product=cd['product'])
 	cd['season'] = g.id
 	del cd['product']
-	print(cd)
 	form = AddSerieForm(cd)
 	if form.is_valid():
 		cd = form.cleaned_data
-		print(cd)
 		form.save()
 		return HttpResponse('success')
 	return HttpResponse('Invalid form data')
+
+
+def edit_serie(request):
+	cd = request.POST.copy()
+	g = SeriesGroup.objects.get(product=cd['product'])
+	cd['season'] = g.id
+	old = cd['ident']
+	del cd['product']
+	form = AddSerieForm(cd)
+	if form.is_valid():
+		cd = form.cleaned_data
+		Serie.objects.filter(number=old, season=g.id).update(**cd)
+		return HttpResponse('succes')
+	return HttpResponse(str(form))
 
 
 def auth1(request):
@@ -180,6 +191,16 @@ def add_manga(request):
 		Manga.objects.create(link=p)
 		return HttpResponseRedirect('/manga')
 	return HttpResponse('Invalid form')
+
+
+def add_manga_vol(request):
+	pass
+
+
+def add_manga_serie(request):
+	''' У манги может быть несолько томов, поэтому мы будем иметь
+	возможность добавить новый том '''
+	pass
 
 
 class MangaDetailView(DetailPageMixin, DetailView):

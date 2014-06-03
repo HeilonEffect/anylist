@@ -138,6 +138,7 @@ class InfoPageMixin(object):
 	def get_context_data(self, **kwargs):
 		context = super(InfoPageMixin, self).get_context_data(**kwargs)
 		context['category'] = self.category.lower()
+		context['nav_groups'] = ThematicGroup.objects.all()
 		context['url'] = Production.objects.get(
 			id=self.kwargs['pk']).get_absolute_url()
 		return context

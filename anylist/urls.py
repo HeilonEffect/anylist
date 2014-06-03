@@ -25,6 +25,7 @@ urlpatterns = patterns('',
     url(r'^anime/(?P<pk>[\d]+)-\w+/?$', AnimeDetail.as_view()),
     url(r'^anime/(?P<pk>[\d]+)-\w+/series', AnimeSeriesView.as_view()),
     url(r'^anime/series/add$', add_serie),
+    url(r'^anime/series/edit$', edit_serie),
 
     url(r'^anime/filter/(.+)/?', AnimeChoiceView.as_view()),
     url(r'^manga/$', MangaListView.as_view()),
@@ -32,6 +33,8 @@ urlpatterns = patterns('',
     url(r'manga/add/1$', add_manga),
     url(r'^manga/(?P<pk>[\d]+)-\w+$', MangaDetailView.as_view()),
     url(r'^manga/filter/(.+)/?', MangaChoiceView.as_view()),
+    url(r'^manga/series/add$', add_manga_serie),
+    url(r'^manga/volume/add$', add_manga_vol),
 )
 
 if settings.DEBUG:

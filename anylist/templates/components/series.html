@@ -7,12 +7,16 @@
 {% block content %}
 
 	<table class="series_list">
-	{% for item in object_list %}
+	{% for val in object_list %}
+	{% for item in val.series %}
 		<tr>
-			<td class="num_ser">{{ item.number }}</td>
-			<td class="name_ser">{{ item.name }}</td>
-			<td class="pub_ser">{{ item.start_date }}</td>
+			<td class="num_ser" id="num-{{ item.number }}">{{ item.number }}</td>
+			<td class="name_ser" id="name-{{ item.number }}">{{ item.name }}</td>
+			<td class="pub_ser" id="pub_ser-{{ item.number }}">{{ item.start_date }}</td>
+			<td class="len_ser" id="len_ser-{{ item.number }}">{{ item.length }}</td>
+			<td><img src="/static/edit.png" style="float:right" class="edit-ser" id="{{ item.number }}-edit"></td>
 		</tr>
+	{% endfor %}
 	{% endfor %}
 	</table>
 {% endblock %}
@@ -41,6 +45,84 @@
 				//$("#add_serie_form").serialize() + "&"{{ category.get_absolute_url }}"=" + link
 			);
 			return false;
+		});
+		var old_num, old_name, old_pub_date, old_len, ident, is_delta = false;
+		$(".edit-ser").click(function(element) {
+			var id = element.target.id.split("-")[0];
+			if ($("#" + element.target.id).attr("src") == "/static/check.png") {
+				// сохранение данных, если они изменились
+				// вместо old_name указать другой способ, т.к. непонятно, что делать
+				// если мы изменим данные (как вариант - на каждый ввод - пересохранять
+				// новое значение в переменной new_<xxx>)
+				$("#num-" + id).html(old_num);
+				$("#name-" + id).html(old_name);
+				$("#pub_ser-" + id).html(old_pub_date);
+				$("#len_ser-" + id).html(old_len);
+
+				if (is_delta && ident != -1) {
+					$.ajax({
+						url: "/" + category + "/series/edit",
+						data: {
+							number: old_num,
+							name: old_name,
+							start_date: old_pub_date,
+							length: old_len,
+							ident: ident,
+							product: link
+						},
+						type: "POST",
+					});
+					is_delta = false;
+					ident = -1;
+				}
+				old_num = null;
+				$("#" + element.target.id).attr("src", "/static/edit.png")
+			}
+			// редактирование возможно только с одним элемнтом одновременно
+			else if (!old_num) {
+				old_num = $("#num-" + id).html();
+				ident = old_num;		// запоминаем номер исправляемой серии серии
+				old_name = $("#name-" + id).html();
+				old_pub_date = $("#pub_ser-" + id).html();
+				old_len = $("#len_ser-" + id).html();
+
+				$("#num-" + id).html("<input style='width:2em' value='" + old_num + "''>");
+				$("#name-" + id).html("<input value='" + old_name + "'>");
+				$("#pub_ser-" + id).html("<input id='new_time' value='" + old_pub_date + "'>");
+				$("#new_time").datetimepicker();
+				$("#len_ser-" + id).html("<input value='" + old_len + "'>");
+				// отрисовка поля ввода новых данных
+				$("#" + element.target.id).attr("src", "/static/check.png");
+			}
+		});
+		// сохранияем изменения форм серий
+		$(".num_ser").change(function (eventObject) {
+			var tmp = eventObject.target.value;
+			if (old_num != tmp) {
+				old_num = tmp;
+				is_delta = true;
+			}
+		});
+		$(".name_ser").change(function (eventObject) {
+			var tmp = eventObject.target.value;
+			if (old_name != tmp) {
+				old_name = tmp;
+				is_delta = true;
+			}
+		});
+		$(".pub_ser").change(function (eventObject) {
+			var tmp = eventObject.target.value;
+			if (old_pub_date != tmp) {
+				old_pub_date = tmp;
+				is_delta = true;
+			}
+		});
+		$(".len_ser").change(function (eventObject) {
+			var tmp = eventObject.target.value;
+			if (old_len != tmp) {
+				old_len = tmp;
+				is_delta = true;
+			}
 		});
 	</script>
 {% endblock %}
