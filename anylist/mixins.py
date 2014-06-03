@@ -129,11 +129,11 @@ class BaseChoiceMixin(ListPageMixin):
 
 
 class InfoPageMixin(object):
-	''' пердаёт дополнительную информацию в страницы, где
+	''' передаёт дополнительную информацию в страницы, где
 	указаны серии, герои, создатели и т.д '''
 	model = Serie
 	def get_queryset(self):
-		return self.model.objects.filter(season__product=self.kwargs['pk'])
+		return self.model.objects.filter(product=self.kwargs['pk'])
 
 	def get_context_data(self, **kwargs):
 		context = super(InfoPageMixin, self).get_context_data(**kwargs)

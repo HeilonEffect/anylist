@@ -24,7 +24,7 @@
 	{% include "components/info_block.html" %}
 {% endblock %}
 {% block script %}
-	{{ block.script }}
+	{{ block.super }}
 	<script type="text/javascript">
 		var link = document.location.pathname.split("/")[2].split("-")[0];
 		var category = document.location.pathname.split("/")[1];
@@ -32,10 +32,10 @@
 		// показывает формочку добавления новой серии
 		// P.S переделать с использованием анимаций
 		$("#add_serie").click(function () {
-			if ($("#add_serie_form").css("display") == "none")
-				$("#add_serie_form").show();
+			if ($(".add_serie_form").css("display") == "none")
+				$(".add_serie_form").show();
 			else
-				$("#add_serie_form").hide();
+				$(".add_serie_form").hide();
 		});
 		// отправляет данные формы
 		$("#add_serie_form").submit(function () {

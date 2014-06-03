@@ -24,10 +24,12 @@ class RegisterForm(forms.Form):
 class AddSerieForm(ModelForm):
 	start_date = forms.DateTimeField(required=False, input_formats=['%Y/%m/%d %H:%M'])
 	length = forms.IntegerField(required=False)
+	name = forms.CharField(required=False)
 	class Meta:
 		model = Serie
 
 
-class AddMangaSerieForm(ModelForm):
+class AddMangaVolumeForm(ModelForm):
+	name = forms.CharField(required=False)
 	class Meta:
-		model = Serie
+		model = SeriesGroup

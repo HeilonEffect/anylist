@@ -115,6 +115,9 @@ class SeriesGroup(models.Model):
     def __str__(self):
         return '%i-%s' % (self.number, self.product.title)
 
+    class Meta:
+        ordering = ['-number']
+
 
 class Serie(models.Model):
     number = models.IntegerField()
@@ -125,3 +128,6 @@ class Serie(models.Model):
 
     def __str__(self):
         return "%i-%s" % (self.number, self.name)
+
+    class Meta:
+        ordering = ['-number']

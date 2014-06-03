@@ -1,1 +1,72 @@
 {% extends "base.html" %}
+{% block header %}
+	{{ block.super }}
+	<button id="new_vol">Новый том</button>
+{% endblock %}
+
+{% block content %}
+	{% for val in object_list %}
+	<table class="series_list">
+		
+		<p>Volume {{ val.number }}&nbsp;&nbsp;&nbsp;<sub><img src="/static/add.png" class="add_serie" style="width:2em;" id="add-{{ val.number }}"></sub></p>
+		<div style="width:70%">
+			<form method="post" class="add_serie_form" id="{{ val.number }}">
+				<input name="number" type="text" placeholder="Номер" style="width:3em">
+				<input name="name" type="text" placeholder="Название">
+				<input name="start_date" type="datetime" placeholder="Дата" class="pub_d" style="width:8em">
+				<input name="length" type="text" placeholder="Число страниц">
+				<input type="submit" value="Add" class="submit_serie">
+			</form>
+		</div>
+		
+		{% for item in val.series %}
+		<tr>
+			<td class="num_ser" id="num-{{ item.number }}">{{ item.number }}</td>
+			<td class="name_ser" id="name-{{ item.number }}">{{ item.name }}</td>
+			<td class="pub_ser" id="pub_ser-{{ item.number }}">{{ item.start_date }}</td>
+			<td class="len_ser" id="len_ser-{{ item.number }}">{{ item.length }}</td>
+			<td><img src="/static/edit.png" style="float:right" class="edit-ser" id="{{ item.number }}-edit"></td>
+		</tr>
+		{% endfor %}
+	</table>
+	{% endfor %}
+{% endblock %}
+
+{% block navigation %}
+	{% include "components/info_block.html" %}
+{% endblock %}
+{% block script %}
+	{{ block.super }}
+	<script type="text/javascript">
+		// link - id продукта
+		var link = document.location.pathname.split("/")[2].split("-")[0];
+		
+		var category = document.location.pathname.split("/")[1];
+		$("#new_vol").click(function () {
+			$.ajax({
+				url: "/manga/volume/add",
+				data: {
+					product: link
+				},
+				type: "POST"
+			});
+		});
+		$(".add_serie").click(function () {
+			if ($(".add_serie_form").css("display") == "none")
+				$(".add_serie_form").show();
+			else
+				$(".add_serie_form").hide();
+		});
+		$(".add_serie_form").submit(function (eventObject) {
+			var num_season = eventObject.target.id;
+			var data = $("#" + num_season).serialize();
+			console.log(data + "&product=" + link + "&season=" + num_season);
+			$.post(
+				"/manga/series/add",
+				data + "&product=" + link + "&season=" + num_season
+			);
+			return false;
+		});
+		$(".pub_d").datetimepicker();
+	</script>
+{% endblock %}

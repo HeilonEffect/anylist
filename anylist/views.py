@@ -113,6 +113,7 @@ def add_serie(request):
 
 
 def edit_serie(request):
+	''' Правим данные в анимешнной серии '''
 	cd = request.POST.copy()
 	g = SeriesGroup.objects.get(product=cd['product'])
 	cd['season'] = g.id
@@ -194,13 +195,40 @@ def add_manga(request):
 
 
 def add_manga_vol(request):
-	pass
+	''' Т.к у манги несколько томов (SeriesGroup), то
+	кнопка добавления серии появляется возле каждого конкретного
+	тома '''
+	cd = request.POST.copy()
+	cd['number'] = SeriesGroup.objects.filter(
+		product=cd['product']).last() or 1
+	if cd['number'] != 1:
+		cd['number'] = cd['number'].number + 1
+	form = AddMangaVolumeForm(cd)
+	if form.is_valid():
+		form.save()
+		return HttpResponse('success')
+	return HttpResponse(str(form))
 
 
 def add_manga_serie(request):
 	''' У манги может быть несолько томов, поэтому мы будем иметь
 	возможность добавить новый том '''
-	pass
+	cd = request.POST.copy()
+	cd['season'] = SeriesGroup.objects.get(
+		product=cd['product'], number=cd['season']).id
+	del cd['product']
+	form = AddSerieForm(cd)
+	print(cd)
+	if form.is_valid():
+		form.save()
+		return HttpResponse('success')
+	return HttpResponse(str(form))
+
+
+class MangaSeriesView(InfoPageMixin, ListView):
+	template_name = 'manga/series.html'
+	model = SeriesGroup
+	category = 'manga'
 
 
 class MangaDetailView(DetailPageMixin, DetailView):
