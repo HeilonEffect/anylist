@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'apps',
 #    'rest_framework',
     'south',
+    'apps.templatetags.nav_menu',
 #    'mptt',
 )
 

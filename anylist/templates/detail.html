@@ -19,6 +19,10 @@
 		</p>
 	</article>
 {% endblock %}
-{% block navigation %}
-	{% include "components/info_block.html" %}
+{% block script %}
+	{{ block.super }}
+	<script type="text/javascript">
+		// меню переключения между разделами карточки описания
+		infoBlockModule.renderLeftMenu("nav");
+	</script>
 {% endblock %}

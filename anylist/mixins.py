@@ -9,23 +9,10 @@ class BasePageMixin(object):
 		context['header'] = self.header
 		context['genres'] = Genre.objects.all()
 		context['raiting'] = Raiting.objects.all()
-		context['nav_groups'] = ThematicGroup.objects.all()
 		try:
 			context['category'] = Category.objects.get(name=self.category)
 		except AttributeError as e:
 			print('Category is not defined')
-		return context
-
-
-class DetailPageMixin(object):
-	model = Production
-	def get_context_data(self, **kwargs):
-		context = super(DetailPageMixin, self).get_context_data(**kwargs)
-		context['nav_groups'] = ThematicGroup.objects.all()
-		context['category'] = Category.objects.get(
-			name=self.category).name.lower()
-		context['url'] = self.model.objects.get(
-			id=self.kwargs['pk']).get_absolute_url()
 		return context
 
 
@@ -35,7 +22,6 @@ class ChildDetailPageMixin(object):
 	
 	def get_context_data(self, **kwargs):
 		context = super(ChildDetailPageMixin, self).get_context_data(**kwargs)
-		context['nav_groups'] = ThematicGroup.objects.all()
 		context['category'] = Category.objects.get(name=self.category)
 		context['num_season'] = self.get_queryset().count()
 		
@@ -54,7 +40,7 @@ class ListPageMixin(object):
 
 	def get_context_data(self, **kwargs):
 		context = super(ListPageMixin, self).get_context_data(**kwargs)
-		context['nav_groups'] = ThematicGroup.objects.all()
+#		context['nav_groups'] = ThematicGroup.objects.all()
 		context['raiting'] = Raiting.objects.all()
 		context['header'] = self.header
 		context['category'] =\
@@ -137,8 +123,9 @@ class InfoPageMixin(object):
 
 	def get_context_data(self, **kwargs):
 		context = super(InfoPageMixin, self).get_context_data(**kwargs)
+#		context['category'] = self.kwargs['category']
 		context['category'] = self.category.lower()
-		context['nav_groups'] = ThematicGroup.objects.all()
+#		context['url'] = self.
 		context['url'] = Production.objects.get(
 			id=self.kwargs['pk']).get_absolute_url()
 		return context

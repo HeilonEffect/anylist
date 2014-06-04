@@ -74,3 +74,34 @@ function show_panel() {
 		$("main").css("right", "0");
 	}
 }
+
+/*
+	Отображает различные блоки, относящиеся к странице продукта
+	Например, блок для боковой менюшки, переключающейся между разделами
+	карточки продукта:
+	infoBlockModule.renderLeftMenu("nav");
+*/
+var infoBlockModule = (function () {
+	var link = window.location.pathname;
+	var category = link.split("/")[1];
+	var product = link.split("/")[2];
+	// Для переключения между разделами
+	var dict = {
+		Main: "",
+		Series: "series",
+		Heroes: "heroes",
+		Creators: "creators"
+	};
+	return {
+		renderLeftMenu: function (tag) {
+			$(tag).html("<p>About</p>");
+			for (var key in dict) {
+				var url = ["", category, product, dict[key]].join("/");
+				if (url == link)
+					$(tag).append("<a>" + key + "</a><br>");
+				else
+					$(tag).append("<a href='" + url + "'>" + key + "</a><br>");
+			}
+		}
+	}
+}());

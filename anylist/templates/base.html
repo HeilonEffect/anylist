@@ -47,6 +47,8 @@
 </head>
 <body>
 	<header>
+		{% load nav_menu %}
+		{% navigation_menu %}
 	{% block header %}
 		<img src="/static/glyphicons_156_show_thumbnails.png" class="nav_display" onclick="show_menu()">
 		<hr>
@@ -62,7 +64,7 @@
 			<input type="checkbox" id="acc_tos"><label for="acc_tos">Register Me</label><br>
 			<input type="submit" value="Log In">
 		</form>
-		{% include "components/nav.html" %}
+<!--		{% include "components/nav.html" %}-->
 	{% endblock %}
 	</header>
 	<main>

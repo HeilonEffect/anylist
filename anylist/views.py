@@ -154,9 +154,10 @@ def add_anime(request):
 	return HttpResponse('Invalid form data')
 
 
-class AnimeDetail(DetailPageMixin, DetailView):
+class AnimeDetail(DetailView):
 	template_name = 'detail.html'
 	category = 'Anime'
+	model = Production
 
 
 class AnimeChoiceView(BaseChoiceMixin, ListView):
@@ -311,9 +312,10 @@ class MangaSeriesView(InfoPageMixin, ListView):
 	category = 'manga'
 
 
-class MangaDetailView(DetailPageMixin, DetailView):
+class MangaDetailView(DetailView):
 	template_name = 'detail.html'
 	category = 'Manga'
+	model = Production
 
 
 class MangaChoiceView(BaseChoiceMixin, ListView):
