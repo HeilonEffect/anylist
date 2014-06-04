@@ -6,13 +6,12 @@ class BasePageMixin(object):
 	''' Содержит одинаковые для всех классов приложения операции '''
 	def get_context_data(self, **kwargs):
 		context = super(BasePageMixin, self).get_context_data(**kwargs)
-		context['header'] = self.header
 		context['genres'] = Genre.objects.all()
 		context['raiting'] = Raiting.objects.all()
-		try:
-			context['category'] = Category.objects.get(name=self.category)
-		except AttributeError as e:
-			print('Category is not defined')
+#		try:
+#			context['category'] = Category.objects.get(name=self.category)
+#		except AttributeError as e:
+#			print('Category is not defined')
 		return context
 
 
@@ -22,7 +21,7 @@ class ChildDetailPageMixin(object):
 	
 	def get_context_data(self, **kwargs):
 		context = super(ChildDetailPageMixin, self).get_context_data(**kwargs)
-		context['category'] = Category.objects.get(name=self.category)
+#		context['category'] = Category.objects.get(name=self.category)
 		context['num_season'] = self.get_queryset().count()
 		
 		context['url'] = self.parent_model.objects.get(
@@ -40,7 +39,6 @@ class ListPageMixin(object):
 
 	def get_context_data(self, **kwargs):
 		context = super(ListPageMixin, self).get_context_data(**kwargs)
-#		context['nav_groups'] = ThematicGroup.objects.all()
 		context['raiting'] = Raiting.objects.all()
 		context['header'] = self.header
 		context['category'] =\
@@ -117,15 +115,5 @@ class BaseChoiceMixin(ListPageMixin):
 class InfoPageMixin(object):
 	''' передаёт дополнительную информацию в страницы, где
 	указаны серии, герои, создатели и т.д '''
-	model = Serie
 	def get_queryset(self):
-		return self.model.objects.filter(product=self.kwargs['pk'])
-
-	def get_context_data(self, **kwargs):
-		context = super(InfoPageMixin, self).get_context_data(**kwargs)
-#		context['category'] = self.kwargs['category']
-		context['category'] = self.category.lower()
-#		context['url'] = self.
-		context['url'] = Production.objects.get(
-			id=self.kwargs['pk']).get_absolute_url()
-		return context
+		return SeriesGroup.objects.filter(product=self.kwargs['pk'])

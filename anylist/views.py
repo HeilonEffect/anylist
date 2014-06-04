@@ -24,7 +24,6 @@ from anylist.mixins import *
 class MainPage(BasePageMixin, ListView):
 	model = ThematicGroup
 	template_name = 'index.html'
-	header = 'Welcome'
 
 
 def profile(request):
@@ -156,7 +155,6 @@ def add_anime(request):
 
 class AnimeDetail(DetailView):
 	template_name = 'detail.html'
-	category = 'Anime'
 	model = Production
 
 
@@ -172,10 +170,6 @@ class AnimeChoiceView(BaseChoiceMixin, ListView):
 
 class AnimeSeriesView(InfoPageMixin, ListView):
 	template_name = 'components/series.html'
-	category = 'Anime'
-
-	def get_queryset(self):
-		return SeriesGroup.objects.filter(product=self.kwargs['pk'])
 
 
 def add_serie(request):
@@ -308,13 +302,10 @@ def add_manga_serie(request):
 
 class MangaSeriesView(InfoPageMixin, ListView):
 	template_name = 'manga/series.html'
-	model = SeriesGroup
-	category = 'manga'
 
 
 class MangaDetailView(DetailView):
 	template_name = 'detail.html'
-	category = 'Manga'
 	model = Production
 
 

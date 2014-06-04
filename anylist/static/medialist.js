@@ -75,6 +75,25 @@ function show_panel() {
 	}
 }
 
+	function construct_url(dict) {
+		// конструируем новый url (позже сделать его универсальным)
+		// на основе старого + изменения
+		var category = window.location.pathname.split("/")[1];
+		var new_url = '/' + category + '/filter/';
+		for (var key in dict) {
+			if (dict[key].length) {
+				new_url += key + '/';
+				for (var i in dict[key]) {
+					new_url +=  dict[key][i] + ','
+				}
+				new_url = new_url.slice(0, new_url.length - 1) + '/';
+			}
+		}
+		if (new_url == '/' + category + '/filter/')
+			new_url = '/' + category;
+		return new_url;
+	}
+
 /*
 	Отображает различные блоки, относящиеся к странице продукта
 	Например, блок для боковой менюшки, переключающейся между разделами

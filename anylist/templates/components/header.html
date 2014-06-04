@@ -1,3 +1,136 @@
-<h1>{{ header }}</h1>
-<button style="float:left;">Log In</button>
-<hr>
+<header>
+	<h1>{{ header }}</h1>
+	<section>
+		<a href="/profile">{{ user.username }}</a>
+		<img src="/static/show_main_menu.png" id="show_main_menu">
+		{% if user.is_authenticated %}
+			<button id="log_in">Log Out</button>
+		{% else %}
+			<button id="log_out">Log In</button>
+		{% endif %}
+	</section>
+	
+	<!--Навигация по сайту-->
+	<div class="global_nav" id="global_menu">
+	{% for group in nav_groups %}
+		<p>{{ group.name }}</p>
+		<ul>
+		{% for value in group.children %}
+			<li>
+				<a href="/{{ value.get_absolute_url }}" class="minified">
+					<figure>
+						<img src="{{ value.avatar_path }}">
+						<figcaption>{{ value }}</figcaption>
+					</figure>
+				</a>
+			</li>
+		{% endfor %}
+		</ul>
+	{% endfor %}
+	</div>
+	<!--Конец навигации по сайту-->
+	<hr>
+</header>
+
+<script type="text/javascript">
+	$("#log_in").click(function () {
+	});
+	$("#log_out").click(function () {
+	});
+	$("#show_main_menu").click(function () {
+		var global_menu = $("#global_menu");
+		if (global_menu.css("display") == "none")
+			global_menu.css("display", "block");
+		else
+			global_menu.css("display", "none");
+	});
+</script>
+
+<style>
+/* Маниатюрный список для навигации */
+.minified {
+	width: 3em;
+	padding: 0;
+	margin: 0;
+	height: 4em;
+}
+.minified img {
+	padding: 0;
+	margin: 0;
+	border-radius: 2em;
+	width: 3em;
+	height: 4em;
+}
+.minified figure {
+	width: 3em;
+	height: 4em;
+}
+/* Меню навигации по сайту */
+.global_nav {
+	position: absolute;
+	top: 4.5em;
+	left: 0;
+	right: 0;
+	padding: 0;
+	margin: 0;
+	z-index: 999;
+	border: 1px solid black;
+	background-color: white;
+	display: none;
+}
+.global_nav p {
+	text-indent: 1em;
+}
+.global_nav ul {
+	list-style: none;
+	display: block;
+	padding: 0;
+}
+.global_nav li {
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+}
+/* Конец навигации по сайту */
+
+/* Вёрстка заголовка */
+body > header {
+	position: absolute;
+	min-height: 4.8em;
+	max-height: 10em;
+	min-width: 15em;
+	top: 0;
+	left: 0;
+	right: 0;
+}
+header > h1 {
+	max-width: 100%;
+	max-height: 100%;
+	margin-top: .3em;
+	text-indent: .9em;
+}
+header > span {
+	position: inherit;
+	margin-top: -1.1em;
+	left: 1em;
+}
+header > hr {
+	position: absolute;
+	top: 4em;
+	width: 100%;
+}
+header > section {
+	top: 1em;
+	right: 1em;
+	position: inherit;
+}
+/* конец вёрстки заголовка */
+/* кнопка отображения главного меню */
+#show_main_menu {
+	padding: .5em;
+}
+#show_main_menu:hover {
+	border: .5px solid rgba(0, 0, 0, .3);
+}
+
+</style>

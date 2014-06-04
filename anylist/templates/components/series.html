@@ -1,11 +1,8 @@
 {% extends "base.html" %}
-{% block header %}
-	{{ block.super }}
-	<img src="/static/add.png" id="add_serie">
-	{% include "forms/add_serie.html" %}
-{% endblock %}
 {% block content %}
-
+	<div>
+	{% include "forms/add_serie.html" %}
+	</div>
 	<table class="series_list">
 	{% for val in object_list %}
 	{% for item in val.series %}
@@ -21,12 +18,11 @@
 	{% endfor %}
 	</table>
 {% endblock %}
-{% block navigation %}
-	{% include "components/info_block.html" %}
-{% endblock %}
 {% block script %}
 	{{ block.super }}
 	<script type="text/javascript">
+		infoBlockModule.renderLeftMenu("nav");
+		
 		var link = document.location.pathname.split("/")[2].split("-")[0];
 		var category = document.location.pathname.split("/")[1];
 		$("#pub_d").datetimepicker();
