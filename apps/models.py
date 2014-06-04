@@ -140,6 +140,10 @@ class Status(models.Model):
     def __str__(self):
         return self.name
 
+    def _alt_name(self):
+        return self.name.lower()
+    alt_name = property(_alt_name)
+
 
 class ListedProduct(models.Model):
     ''' Продукт, который находится в списке у пользователя.
@@ -147,5 +151,9 @@ class ListedProduct(models.Model):
     серий/глав '''
     product = models.ForeignKey(Production)
     status = models.ForeignKey(Status)
-    series = models.ManyToManyField(Serie)
+    series = models.ManyToManyField(Serie, null=True)
     user = models.ForeignKey(User, null=True)
+    score = models.PositiveSmallIntegerField(null=True)
+
+    def __str__(self):
+        return self.product.title

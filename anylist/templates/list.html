@@ -20,6 +20,14 @@
 	<script type="text/javascript">
 		$(".add_me").click(function (eventObject) {
 			var id = eventObject.target.parentElement.id.split("-")[0]
+			console.log(id);
+			$.ajax({
+				url: "/mylist/add",
+				data: {
+					product: id
+				},
+				type: "POST"
+			});
 			eventObject.preventDefault();
 		});
 	</script>

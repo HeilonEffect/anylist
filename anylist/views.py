@@ -6,8 +6,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.core.cache import cache
+from django.db.models import F
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, render
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, FormView
 from django.views.generic.detail import DetailView
@@ -26,18 +27,93 @@ class MainPage(BasePageMixin, ListView):
 	header = 'Welcome'
 
 
-class ProfileView(LoginRequiredMixin, ListView):
-	template_name = 'profile.html'
-	model = ThematicGroup
+def profile(request):
+	''' профиль пользователя '''
+	result = {}
+	result['status'] = Status.objects.all()
+	result['planned_manga'] = ListedProduct.objects.filter(
+		product=F('product__manga__link'), status__name='Запланировано'
+	).count()
+	result['reading_manga'] = ListedProduct.objects.filter(
+		product=F('product__manga__link'), status__name='Смотрю'
+	)
+	result['readed_manga'] = ListedProduct.objects.filter(
+		product=F('product__manga__link'), status__name='Просмотрел'
+	)
+	result['rewatching_manga'] = ListedProduct.objects.filter(
+		product=F('product__manga__link'), status__name='Пересматриваю'
+	)
+	result['dropped_manga'] = ListedProduct.objects.filter(
+		product=F('product__manga__link'), status__name='Бросил'
+	)
+	result['deffered_manga'] = ListedProduct.objects.filter(
+		product=F('product__manga__link'), status__name='Отложил'
+	)
+	result['category'] = Category.objects.all()
+#	result['anime'] = ListedProduct.objects.filter(
+#		product=F('product__anime__link')Ц
+#	)
+	return render(request, 'profile.html', result)
+
+
+def add_list_serie(request):
+	''' добваляем серию в список просмотренных '''
+	p = Serie.objects.get(number=request.POST['number'],
+		season__product=request.POST['product'],
+		season__number=request.POST['season']
+	)
+	product = ListedProduct.objects.get(product=request.POST['product'])
+	product.series.add(p)
+	return HttpResponse("ok")
+
+
+def delete_list_serie(request):
+	''' удаляем серию из списка просмотренных (пока не реализовано) '''
+	p = Serie.objects.get(number=request.POST['number'],
+		season__product=request.POST['product'],
+		season__number=request.POST['season']
+	)
+	product = ListedProduct.objects.get(product=request.POST['product'])
+	product.series.remove(p)
+	return HttpResponse("ok")
+
+
+class UserList(ListView):
+	''' список произведений, составленный пользователем '''
+	template_name = 'user_list.html'
+
+	def get_queryset(self):
+		# Так мы делаем первую букву заглавной
+		status = self.kwargs['status'][:1].upper() +\
+			self.kwargs['status'][1:]
+		self.queryset = ListedProduct.objects.filter(
+			product=F('product__%s__link' % self.kwargs['category']),
+			status__name=status
+		)
+		return self.queryset
 
 	def get_context_data(self, **kwargs):
-		context = super(ProfileView, self).get_context_data(**kwargs)
-		context['nav_groups'] = ThematicGroup.objects.all()
+		context = super(UserList, self).get_context_data(**kwargs)
+
+		category = self.kwargs['category'][:1].upper() +\
+			self.kwargs['category'][1:]
+
+		context['category'] = Category.objects.get(
+			name=category).get_absolute_url()
 		return context
 
 
 def add_list(request):
-	pass
+	''' Добавляем произведение в список '''
+	cd = request.POST.copy()
+	cd['status'] = 1	# запланировано
+	cd['user'] = request.user.id
+	form = AddToListForm(cd)
+	if form.is_valid():
+		form.save()
+		return HttpResponse('success')
+	return HttpResponse(str(form))
+
 
 #------- views for anime ---------
 class AnimeListView(ListPageMixin, ListView):

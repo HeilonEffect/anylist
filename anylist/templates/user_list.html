@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+	<table class="user-series-list">
+		<tr>
+			<td>Name</td>
+			<td>Score</td>
+			<td>Watched Episodes</td>
+		</tr>
+	{% for item in object_list %}
+		<tr>
+			<td><a href="/{{ category }}/{{ item.product.get_absolute_url }}">{{ item.product.title }}</a></td>
+			<td>{{ item.score }}</td>
+			<td>{{ item.series.count }} / х.з</td>
+		</tr>
+	{% endfor %}
+	</table>
+{% endblock %}

@@ -22,10 +22,11 @@
 		{% for item in val.series %}
 		<tr>
 			<td class="num_ser" id="num-{{ item.number }}">{{ item.number }}</td>
-			<td class="name_ser" id="name-{{ item.number }}">{{ item.name }}</td>
+			<td class="name_ser" id="name-{{ item.number }}" style="min-width:9em">{{ item.name }}</td>
 			<td class="pub_ser" id="pub_ser-{{ item.number }}">{{ item.start_date }}</td>
 			<td class="len_ser" id="len_ser-{{ item.number }}">{{ item.length }}</td>
 			<td><img src="/static/edit.png" style="float:right" class="edit-ser" id="{{ item.number }}-edit"></td>
+			<td><button class="add_one_ser" id="add_ser-{{ item.number }}-{{ val.number }}">Просмотреть</button></td>
 		</tr>
 		{% endfor %}
 	</table>
@@ -68,5 +69,20 @@
 			return false;
 		});
 		$(".pub_d").datetimepicker();
+		$(".add_one_ser").click(function (eventObject) {
+			var id_serie = eventObject.target.id;
+			var num_ser = id_serie.split("-")[1];
+			var num_season = id_serie.split("-")[2];
+			$.ajax({
+				url: "/mylist/series/add",
+				data: {
+					number: num_ser,
+					product: link,
+					season: num_season
+				},
+				type: "POST"
+			});
+			//console.log("Серия: " + num_ser + " Сезон: " + num_season);
+		});
 	</script>
 {% endblock %}

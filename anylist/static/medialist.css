@@ -277,3 +277,19 @@ label:hover {
 	width: 1.5em;
 	height: 1.5em;
 }
+.manga-list {
+	width: 80%;
+	height: .5em;
+	background: red;
+}
+.anime-list {
+	width: 80%;
+	height: .5em;
+	background: blue;
+}
+.user-series-list {
+	width: 80%;
+}
+.user-series-list td {
+	border-bottom: 1px solid black;
+}

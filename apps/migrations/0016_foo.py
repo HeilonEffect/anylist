@@ -8,15 +8,15 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'ListedProduct.user'
-        db.add_column('apps_listedproduct', 'user',
-                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], default=1),
+        # Adding field 'ListedProduct.score'
+        db.add_column('apps_listedproduct', 'score',
+                      self.gf('django.db.models.fields.PositiveSmallIntegerField')(null=True),
                       keep_default=False)
 
 
     def backwards(self, orm):
-        # Deleting field 'ListedProduct.user'
-        db.delete_column('apps_listedproduct', 'user_id')
+        # Deleting field 'ListedProduct.score'
+        db.delete_column('apps_listedproduct', 'score')
 
 
     models = {
@@ -30,18 +30,18 @@ class Migration(SchemaMigration):
             'avatar': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['apps.ThematicGroup']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '40'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '40', 'unique': 'True'})
         },
         'apps.genre': {
             'Meta': {'object_name': 'Genre'},
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['apps.GenreGroup']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '140'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '140', 'unique': 'True'})
         },
         'apps.genregroup': {
             'Meta': {'object_name': 'GenreGroup'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '50'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '50', 'unique': 'True'})
         },
         'apps.hero': {
             'Meta': {'object_name': 'Hero'},
@@ -54,9 +54,10 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'ListedProduct'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'product': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['apps.Production']"}),
+            'score': ('django.db.models.fields.PositiveSmallIntegerField', [], {'null': 'True'}),
             'series': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['apps.Serie']", 'symmetrical': 'False'}),
             'status': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['apps.Status']"}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True'})
         },
         'apps.manga': {
             'Meta': {'object_name': 'Manga'},
@@ -70,15 +71,15 @@ class Migration(SchemaMigration):
             'genres': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['apps.Genre']", 'symmetrical': 'False'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'old_limit': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['apps.Raiting']"}),
-            'title': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'})
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '255', 'unique': 'True'})
         },
         'apps.raiting': {
             'Meta': {'object_name': 'Raiting'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '8'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '8', 'unique': 'True'})
         },
         'apps.serie': {
-            'Meta': {'object_name': 'Serie', 'ordering': "['-number']"},
+            'Meta': {'ordering': "['-number']", 'object_name': 'Serie'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'length': ('django.db.models.fields.IntegerField', [], {'null': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
@@ -87,30 +88,30 @@ class Migration(SchemaMigration):
             'start_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True'})
         },
         'apps.seriesgroup': {
-            'Meta': {'object_name': 'SeriesGroup', 'ordering': "['-number']"},
+            'Meta': {'ordering': "['-number']", 'object_name': 'SeriesGroup'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'null': 'True', 'max_length': '255'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
             'number': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '1'}),
             'product': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['apps.Production']"})
         },
         'apps.status': {
             'Meta': {'object_name': 'Status'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '15'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '15', 'unique': 'True'})
         },
         'apps.thematicgroup': {
             'Meta': {'object_name': 'ThematicGroup'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '50'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '50', 'unique': 'True'})
         },
         'auth.group': {
             'Meta': {'object_name': 'Group'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '80', 'unique': 'True'}),
             'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
         },
         'auth.permission': {
-            'Meta': {'object_name': 'Permission', 'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)"},
+            'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'object_name': 'Permission', 'unique_together': "(('content_type', 'codename'),)"},
             'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -130,10 +131,10 @@ class Migration(SchemaMigration):
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'related_name': "'user_set'", 'blank': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
+            'username': ('django.db.models.fields.CharField', [], {'max_length': '30', 'unique': 'True'})
         },
         'contenttypes.contenttype': {
-            'Meta': {'db_table': "'django_content_type'", 'object_name': 'ContentType', 'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)"},
+            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
             'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),

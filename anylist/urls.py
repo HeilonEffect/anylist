@@ -17,8 +17,10 @@ urlpatterns = patterns('',
     url(r'^login$', auth),
     url(r'^logout$', log_out),
 
-    url(r'^profile$', ProfileView.as_view()),
+    url(r'^profile/$', profile),
     url(r'^mylist/add$', add_list),
+    url(r'^mylist/series/add$', add_list_serie),
+    url(r'^profile/list/(?P<category>\w+)/(?P<status>\w+)$', UserList.as_view()),
 
     url(r'^anime/add/$', AddAnime.as_view()),
     url(r'^anime/add/1$', add_anime),

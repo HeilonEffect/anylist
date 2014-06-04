@@ -33,3 +33,11 @@ class AddMangaVolumeForm(ModelForm):
 	name = forms.CharField(required=False)
 	class Meta:
 		model = SeriesGroup
+
+
+class AddToListForm(ModelForm):
+	series = forms.MultipleChoiceField(required=False)
+	score = forms.IntegerField(required=False)
+	class Meta:
+		model = ListedProduct
+
