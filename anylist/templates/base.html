@@ -3,11 +3,14 @@
 <head>
 	<meta charset="utf8">
 	<title>Base title</title>
-	<link rel="stylesheet" type="text/css" href="/static/medialist.css">
-	<link rel="stylesheet" type="text/css" href="/static/jquery.datetimepicker.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/medialist.css">
+	<link rel="stylesheet" type="text/css" href="/static/datetimepicker/jquery.datetimepicker.css">
 	<link rel="stylesheet" type="text/css" href="/static/select2/select2.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/header.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/auth_form.css">
+	
 	<script type="text/javascript" src="/static/jquery.min.js"></script>
-	<script type="text/javascript" src="/static/jquery.datetimepicker.js"></script>
+	<script type="text/javascript" src="/static/datetimepicker/jquery.datetimepicker.js"></script>
 	<script type="text/javascript" src="/static/medialist.js"></script>
 	<script type="text/javascript" src="/static/select2/select2.js"></script>
 	<script type="text/javascript">
@@ -40,7 +43,7 @@
 	{% endblock %}
 	<script type="text/javascript">
 		update_checkboxes(url_resolve());
-		$("#auth").click(function () {
+		/*$("#auth").click(function () {
 			if ($("#auth_form").css("display") == "none")
 				$("#auth_form").show();
 			else
@@ -63,7 +66,7 @@
 			$.post(
 				"/logout"
 			);
-		});
+		});*/
 	</script>
 </body>
 </html>

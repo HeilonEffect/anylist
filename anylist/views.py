@@ -202,40 +202,50 @@ def edit_serie(request):
 	return HttpResponse(str(form))
 
 
-def auth1(request):
+def auth1(request, url):
+	url = "/%s" % url
 	username = request.POST['username']
 	password = request.POST['password']
 	user = authenticate(username=username, password=password)
 	if user:
 		if user.is_active:
 			login(request, user)
-			return HttpResponse('Succes')
+			return HttpResponseRedirect(url)
 		else:
 			return HttpResponse('Account Disabled')
 	else:
 		return HttpResponse('Username or password incorrect')
 
 
-def auth2(request):
-	form = RegisterForm(request.POST)
-	if form.is_valid():
-		cd = form.cleaned_data
-		user = User.objects.create_user(**cd)
-		user.save()
-	return auth1(request)
+def register(request, url):
+	if request.POST:
+		form = RegisterForm(request.POST)
+		if form.is_valid():
+			cd = form.cleaned_data
+			user = User.objects.create_user(**cd)
+			user.save()
+			return auth1(request, url)
+		return HttpResponse(str(form))
+	else:
+		return HttpResponseRedirect('/%s' % url)
 
 
-def auth(request):
-	form = LoginForm(request.POST)
-	if form.is_valid():
-		cd = form.cleaned_data
-		user = User.objects.get(username=cd['username'])
-	return auth1(request)
+def auth(request, url):
+	if request.POST:
+		form = LoginForm(request.POST)
+		if form.is_valid():
+			cd = form.cleaned_data
+			user = User.objects.get(username=cd['username'])
+			return auth1(request, url)
+		return HttpResponse(str(form))
+	else:
+		return HttpResponseRedirect('/%s' % url)
 
 
-def log_out(request):
+def log_out(request, url):
 	logout(request)
-	return HttpResponse('logout')
+	print(url)
+	return HttpResponseRedirect('/' + url)
 
 
 #----------views for manga------------
