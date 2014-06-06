@@ -7,9 +7,10 @@ register = template.Library()
 
 
 @register.inclusion_tag('components/header.html')
-def main_menu(title='', user=''):
+def main_menu(title='', user='', lst=False):
 	nav_groups = ThematicGroup.objects.all()
-	return {'header': title, 'nav_groups': nav_groups, 'user': user}
+	return {'header': title, 'nav_groups': nav_groups,
+        'user': user, 'lst': lst}
 
 
 @register.filter

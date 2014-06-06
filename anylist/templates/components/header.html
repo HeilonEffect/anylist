@@ -2,7 +2,7 @@
 	<h1>{{ header }}</h1>
 
 	{% comment %}Меню в правом верхнем углу{% endcomment %}
-	<section>
+	<section id="header_section">
 		<a href="/profile">{{ user.username }}</a>
 		<img src="/static/show_main_menu.png" id="show_main_menu">
 		{% if user.is_authenticated %}
@@ -38,7 +38,20 @@
 <script type="text/javascript">
 	authFormModule.render("#start_auth");
 	authFormModule.hide();
+	
+	var url = window.location.pathname;
+	var category = url.split("/");
 
+	{% comment %}так мы опрееляем, что это шаблон list.html{% endcomment %}
+	if ((category[1] != "profile" && !category[2]) || (category[2] == "filter"))  {
+		$("#header_section").append("<img src='/static/right_menu.png' id='right_menu'>");
+	}
+
+	$("#right_menu").click(function (eventObject) {
+		console.log('right_menu');
+		eventObject.preventDefault();
+		show_panel();
+	});
 	$("#log_in").click(function () {
 		authFormModule.hide_else_show();
 	});

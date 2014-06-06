@@ -13,6 +13,9 @@
 		<li>
 			<a href="/{{ category }}/{{ value.get_absolute_url }}">
 				<figure>
+					<div class="edit_me" id="{{ value.id }}-{{ value.title }}">
+						<img src="/static/edit.png">
+					</div>
 					<div class="add_me" id="{{value.id}}-{{ value.title }}">
 						<img src="/static/add-1.png">
 					</div>

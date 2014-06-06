@@ -31,7 +31,7 @@ class Genre(models.Model):
     group = models.ForeignKey(GenreGroup)
 
     def __str__(self):
-        return self.name
+        return "%i-%s" % (self.id, self.name)
 
 
 class ThematicGroup(models.Model):
@@ -74,7 +74,8 @@ class Production(models.Model):
         return '/media/' + str(self.avatar).split('/')[-1]
 
     def get_absolute_url(self):
-        return '%i-%s' % (self.id, self.title.replace(" ", "_").replace("-", "_"))
+        return '%i-%s' % (self.id, self.title.replace(
+            " ", "_").replace("-", "_").replace("&", "_").replace("(", "").replace(")", ""))
 
     def __str__(self):
         return self.title

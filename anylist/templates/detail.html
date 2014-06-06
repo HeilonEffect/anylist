@@ -9,13 +9,13 @@
 		<p>
 			<img src="{{ object.avatar_path }}">
 			Жанры: {% for genre in object.genres.all %}
-				<a href="filter/genres/{{ genre }}">{{ genre }}</a>
+				<a href="filter/genres/{{ genre.name }}">{{ genre.name }}</a>
 			{% endfor %}
 		</p>
 		<p>Возраст: <a href="filter/old_limit/{{ object.old_limit }}">{{ object.old_limit }}</a>
 			<br>
 			<br>
-			{{ object.description }}
+			{{ object.description|safe }}
 		</p>
 	</article>
 {% endblock %}

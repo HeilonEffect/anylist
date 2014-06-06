@@ -8,6 +8,7 @@
 	<link rel="stylesheet" type="text/css" href="/static/select2/select2.css">
 	<link rel="stylesheet" type="text/css" href="/static/css/header.css">
 	<link rel="stylesheet" type="text/css" href="/static/css/auth_form.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/add_form.css">
 	
 	<script type="text/javascript" src="/static/jquery.min.js"></script>
 	<script type="text/javascript" src="/static/datetimepicker/jquery.datetimepicker.js"></script>
@@ -30,7 +31,11 @@
 </head>
 <body>
 	{% load nav_menu %}
-	{% main_menu "Главная страница" user %}
+	{% if lst %}
+		{% main_menu header user lst %}
+	{% else %}
+		{% main_menu header user lst %}
+	{% endif %}
 	<main>
 	{% block content %}
 	{% endblock %}
@@ -43,30 +48,6 @@
 	{% endblock %}
 	<script type="text/javascript">
 		update_checkboxes(url_resolve());
-		/*$("#auth").click(function () {
-			if ($("#auth_form").css("display") == "none")
-				$("#auth_form").show();
-			else
-				$("#auth_form").hide();
-		});
-		$("#auth_form").submit(function () {
-			if ($("#acc_tos")[0].checked)
-				$.post(
-					"/register",
-					$("#auth_form").serialize()
-				);
-			else
-				$.post(
-					"/login",
-					$("#auth_form").serialize()
-				);
-			return false;
-		});
-		$("#logout").click(function () {
-			$.post(
-				"/logout"
-			);
-		});*/
 	</script>
 </body>
 </html>

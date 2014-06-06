@@ -1,16 +1,28 @@
 from django.conf.urls.static import static
-
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls import patterns, include, url
-from anylist.views import *
-
 from django.contrib import admin
 
+from rest_framework import viewsets, routers
+
 import anylist.settings as settings
+from anylist.views import *
+from apps.models import *
+
+
+class ProductViewSet(viewsets.ModelViewSet):
+    model = Production
+    fields = ('title',)
+
+
+router = routers.DefaultRouter()
+router.register(r'productions', ProductViewSet)
 
 admin.autodiscover()
 
 urlpatterns = patterns('',
+#    url(r'^', include(router.urls)),
+ #   url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^$', MainPage.as_view()),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^(?P<url>.+)/register$', register),
@@ -25,7 +37,7 @@ urlpatterns = patterns('',
     url(r'^anime/add/$', AddAnime.as_view()),
     url(r'^anime/add/1$', add_anime),
     url(r'^anime/$', AnimeListView.as_view()),
-    url(r'^anime/(?P<pk>[\d]+)-(?P<name>\w+)/?$', AnimeDetail.as_view()),
+    url(r'^anime/(?P<pk>[\d]+)-(?P<name>\w+)$', AnimeDetail.as_view()),
     url(r'^anime/(?P<pk>[\d]+)-\w+/series', AnimeSeriesView.as_view()),
     url(r'^anime/series/add$', add_serie),
     url(r'^anime/series/edit$', edit_serie),
@@ -39,6 +51,8 @@ urlpatterns = patterns('',
     url(r'^manga/filter/(.+)/?', MangaChoiceView.as_view()),
     url(r'^manga/series/add$', add_manga_serie),
     url(r'^manga/volume/add$', add_manga_vol),
+
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 )
 
 if settings.DEBUG:

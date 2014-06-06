@@ -20,7 +20,6 @@
 	<script type="text/javascript">
 		$(".add_me").click(function (eventObject) {
 			var id = eventObject.target.parentElement.id.split("-")[0]
-			console.log(id);
 			$.ajax({
 				url: "/mylist/add",
 				data: {
@@ -29,6 +28,12 @@
 				type: "POST"
 			});
 			eventObject.preventDefault();
+		});
+		// Изменение описания продукта
+		$(".edit_me").click(function (eventObject) {
+			var id = eventObject.target.parentElement.id;
+			eventObject.preventDefault();
+			window.location.pathname += id + "/edit";
 		});
 	</script>
 {% endblock %}

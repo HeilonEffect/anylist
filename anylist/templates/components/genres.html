@@ -3,8 +3,8 @@
 {% for group in genre_groups %}
 	{% for genre in group.genres %}
 		{% if genre.count %}
-			<input type="checkbox" id="genres:{{ genre }}" onchange="select_genre(this)">
-			<label for="genres:{{ genre }}">{{ genre.name }}</label>
+			<input type="checkbox" id="genres:{{ genre.name }}" onchange="select_genre(this)">
+			<label for="genres:{{ genre.name }}">{{ genre.name }}</label>
 		{% else %}
 			<input type="checkbox" disabled>
 			<label style="color:gray">{{ genre.name }}</label>

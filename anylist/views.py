@@ -21,7 +21,7 @@ from anylist.mixins import *
 
 
 #------------ Base Views -----------------
-class MainPage(BasePageMixin, ListView):
+class MainPage(ListView):
 	model = ThematicGroup
 	template_name = 'index.html'
 
@@ -122,7 +122,7 @@ class AnimeListView(ListPageMixin, ListView):
 	header = 'Список аниме'
 	category = 'Anime'
 	genre_groups =\
-		['Anime Male', 'Anime Female']#, 'Anime School', 'Standart', 'Anime Porn']
+		['Anime Male', 'Anime Female', 'Standart', 'Anime Porn', 'Anime School']
 
 
 class AddAnime(BasePageMixin, CreateView):
@@ -131,7 +131,8 @@ class AddAnime(BasePageMixin, CreateView):
 	template_name = 'forms/add_form.html'
 	header = 'Добавление продукта'
 	success_url = '/anime'
-	category = 'Anime'
+	genre_groups =\
+		['Anime Male', 'Anime Female', 'Anime Standart', 'Anime School']
 
 
 def add_anime(request):
@@ -150,12 +151,11 @@ def add_anime(request):
 		# Создаём первый сезон
 		SeriesGroup.objects.create(number=1, product=p)
 		return HttpResponseRedirect('/anime')
-	return HttpResponse('Invalid form data')
+	return HttpResponse(str(form))
 
 
-class AnimeDetail(DetailView):
-	template_name = 'detail.html'
-	model = Production
+class AnimeDetail(DetailPageMixin, DetailView):
+	pass
 
 
 class AnimeChoiceView(BaseChoiceMixin, ListView):
@@ -165,7 +165,7 @@ class AnimeChoiceView(BaseChoiceMixin, ListView):
 	header = 'Выборка'
 	category = 'Anime'
 	genre_groups =\
-		['Anime Male', 'Anime Female']#, 'Anime School', 'Standart', 'Anime Porn']
+		['Anime Male', 'Anime Female', 'Standart', 'Anime Porn', 'Anime School']
 
 
 class AnimeSeriesView(InfoPageMixin, ListView):
@@ -256,7 +256,7 @@ class MangaListView(ListPageMixin, ListView):
 	header = 'Список манги'
 	category = 'Manga'
 	genre_groups =\
-		['Anime Male', 'Anime Female']#, 'Anime School', 'Standart', 'Anime Porn']
+		['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
 
 
 class AddManga(BasePageMixin, CreateView):
@@ -265,7 +265,8 @@ class AddManga(BasePageMixin, CreateView):
 	template_name = 'forms/add_form.html'
 	header = 'Добавление манги'
 	success_url = '/manga/'
-	category = 'Manga'
+	genre_groups =\
+		['Anime Male', 'Anime Female', 'Standart', 'Anime Porn', 'Anime School']
 
 
 def add_manga(request):
@@ -314,9 +315,8 @@ class MangaSeriesView(InfoPageMixin, ListView):
 	template_name = 'manga/series.html'
 
 
-class MangaDetailView(DetailView):
-	template_name = 'detail.html'
-	model = Production
+class MangaDetailView(DetailPageMixin, DetailView):
+	pass
 
 
 class MangaChoiceView(BaseChoiceMixin, ListView):
