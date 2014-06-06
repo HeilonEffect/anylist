@@ -152,7 +152,7 @@ class ListedProduct(models.Model):
     Поле <series> - список просмотренных/прочитанных пользователем
     серий/глав '''
     product = models.ForeignKey(Production)
-    status = models.ForeignKey(Status)
+    status = models.ForeignKey(Status, default=1)
     series = models.ManyToManyField(Serie, null=True)
     user = models.ForeignKey(User, null=True)
     score = models.PositiveSmallIntegerField(null=True)

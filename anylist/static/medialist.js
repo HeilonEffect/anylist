@@ -116,20 +116,81 @@ var infoBlockModule = (function () {
 	};
 	return {
 		renderLeftMenu: function (tag) {
-			$(tag).html("<p>About</p>");
+			$(tag).append("<div id='about'></div>")
+			$("#about").append("<p>About</p>");
 			for (var key in dict) {
 				var url = ["", category, product, dict[key]].join("/");
 				if (!dict[key])
 					url = url.slice(0, url.length - 1);
 				if (url == link)
-					$(tag).append("<a>" + key + "</a><br>");
+					$("#about").append("<a>" + key + "</a><br>");
 				else
-					$(tag).append("<a href='" + url + "'>" + key + "</a><br>");
+					$("#about").append("<a href='" + url + "'>" + key + "</a><br>");
 			}
 		}
 	}
 }());
 
+var addToListModule = (function () {
+	var id = "add_to_list_el";
+	var arr = ["Planned", "Watch", "ReWatching", "Watched", "Dropped", "Deffered"];
+	var option_id;
+	var product = window.location.pathname.split("/")[2].split("-")[0];
+	var _renderBlock = function (tag, active) {
+			$(tag).append("<div id='" + id + "'><span class='bord_block'>Actions</span></div>");
+			arr.map(function (element) {
+				if (element == active)
+					$("#" + id).append("<br><span class='actions active'>" + element + "</span>");
+				else
+					$("#" + id).append("<br><span class='actions'>" + element + "</span>");
+			});
+			$(".actions").click(function (eventObject) {
+				$.post(
+					window.location.pathname + "/status",
+					"name=" + eventObject.target.textContent
+				).done(function () {
+					eventObject.target.style.background = "gray";
+				});
+			});
+		}
+	return {
+		renderBlock: function (tag, active) {
+			_renderBlock(tag, active);
+		},
+		renderSetting: function (tag, is_list) {
+			$(tag).append('<p id="' + option_id + '">Options</p>');
+			if (is_list) {
+				$("#" + option_id).append("<br><span id='add_to_list'>Add to list</span>");
+				$("#add_to_list").click(function () {
+					$.post(
+						"/mylist/add",
+						"product=" + product
+					).done(function () {
+						_renderBlock(tag);
+					});
+				});
+			}
+			else {
+				$("#" + option_id).append("<br><span id='remove_from'>Remove from list</span>");
+				$("#remove_from").click(function () {
+					//$.post();
+				});
+			}
+		},
+		renderRecord: function (tag) {
+			$(tag).append('<p id="add_to_list">Add To List</p>');
+			$("#add_to_list").click(function () {
+				var product = window.location.pathname.split("/")[2].split("-")[0];
+				$.post(
+					"/mylist/add",
+					"product=" + product
+				).done(function () {
+					_renderBlock(tag, arr[0]);
+				});
+			});
+		}
+	}
+}());
 
 var authFormModule = (function () {
 	var id = "auth_form";

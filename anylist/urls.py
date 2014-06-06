@@ -34,12 +34,14 @@ urlpatterns = patterns('',
     url(r'^mylist/series/add$', add_list_serie),
     url(r'^profile/list/(?P<category>\w+)/(?P<status>\w+)$', UserList.as_view()),
 
+    url(r'^[\w]+/(?P<pk>\d+)-\w+/status$', status_update),
+
     url(r'^anime/add/$', AddAnime.as_view()),
     url(r'^anime/add/1$', add_anime),
     url(r'^anime/$', AnimeListView.as_view()),
-    url(r'^anime/(?P<pk>[\d]+)-(?P<name>\w+)$', AnimeDetail.as_view()),
-    url(r'^anime/(?P<pk>[\d]+)-(?P<name>\w+)/edit$', AnimeEdit.as_view()),
-    url(r'^anime/(?P<pk>[\d]+)-\w+/series', AnimeSeriesView.as_view()),
+    url(r'^anime/(?P<pk>\d+)-(?P<name>\w+)$', AnimeDetail.as_view()),
+    url(r'^anime/(?P<pk>\d+)-(?P<name>\w+)/edit$', AnimeEdit.as_view()),
+    url(r'^anime/(?P<pk>\d+)-\w+/series', AnimeSeriesView.as_view()),
     url(r'^anime/series/add$', add_serie),
     url(r'^anime/series/edit$', edit_serie),
 

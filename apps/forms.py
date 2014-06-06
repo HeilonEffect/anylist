@@ -58,6 +58,11 @@ class AddToListForm(ModelForm):
 		model = ListedProduct
 
 
+class UpdateStatusForm(ModelForm):
+	class Meta:
+		model = Status
+
+
 # Wizard Form
 class CreateForm1(forms.Form):
 	name = forms.CharField(max_length=255)

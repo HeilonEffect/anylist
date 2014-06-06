@@ -30,6 +30,10 @@ class DetailPageMixin(object):
 	def get_context_data(self, **kwargs):
 		context = super(DetailPageMixin, self).get_context_data(**kwargs)
 		context['header'] = context['object'].title
+		context['status'] = Status.objects.all()
+		context['is_listed'] = ListedProduct.objects.filter(
+			user=self.request.user, product__title=context['object'].title
+			).first()
 		return context
 
 
@@ -49,7 +53,7 @@ class ListPageMixin(object):
 
 		context['listed'] =\
 			[item.product for item in ListedProduct.objects.filter(
-			user=context['view'].request.user)]
+			user=context['view'].request.user.id)]
 
 		context['category'] =\
 			Category.objects.get(name=self.category).name.lower()

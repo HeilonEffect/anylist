@@ -153,6 +153,13 @@ def add_anime(request):
 	return HttpResponse(str(form))
 
 
+def status_update(request, pk):
+	p = ListedProduct.objects.get(user=request.user, product__id=pk)
+	p.status=Status.objects.get(name=request.POST['name'])
+	p.save()
+	return HttpResponse('Ok')
+
+
 class AnimeDetail(DetailPageMixin, DetailView):
 	pass
 

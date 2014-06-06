@@ -12,12 +12,23 @@
 				<a href="filter/genres/{{ genre.name }}">{{ genre.name }}</a>
 			{% endfor %}
 		</p>
-		<p>Возраст: <a href="filter/old_limit/{{ object.old_limit }}">{{ object.old_limit }}</a>
-			<br>
+		<p>Возраст: <a href="filter/old_limit/{{ object.old_limit }}">{{ object.old_limit }}</a></p>
 			<br>
 			{{ object.description|safe }}
-		</p>
 	</article>
+{% endblock %}
+
+{% block navigation %}
+	<!--{% if is_listed %}
+	<div id="actions">
+		<p>Actions</p>
+		{% for item in status %}
+			<span class="actions">{{ item.name }}</span><br>
+		{% endfor %}
+	</div>
+	{% else %}
+	<p id="add_to_list">Add To List</p>
+	{% endif %}-->
 {% endblock %}
 
 {% block script %}
@@ -25,5 +36,16 @@
 	<script type="text/javascript">
 		// меню переключения между разделами карточки описания
 		infoBlockModule.renderLeftMenu("nav");
+		addToListModule.renderSetting("nav", "{{ is_listed }}");
+		{% if is_listed %}
+			addToListModule.renderBlock("nav", "{{ is_listed.status }}");
+		{% endif %}
+		/*$(".actions").click(function (eventObject) {
+			var action = eventObject.target.textContent;
+			$.post(
+				window.location.pathname + "/status",
+				"name=" + action
+			);
+		});*/
 	</script>
 {% endblock %}
