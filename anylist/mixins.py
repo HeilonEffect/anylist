@@ -34,6 +34,7 @@ class DetailPageMixin(object):
 
 
 class ListPageMixin(object):
+	model = Production
 	def get_queryset(self):
 		if not self.queryset:
 			self.queryset = [p.link for p in self.model1.objects.all()]
@@ -45,7 +46,11 @@ class ListPageMixin(object):
 		context = super(ListPageMixin, self).get_context_data(**kwargs)
 		context['raiting'] = Raiting.objects.all()
 		context['header'] = self.header
-		context['lst'] = True
+
+		context['listed'] =\
+			[item.product for item in ListedProduct.objects.filter(
+			user=context['view'].request.user)]
+
 		context['category'] =\
 			Category.objects.get(name=self.category).name.lower()
 

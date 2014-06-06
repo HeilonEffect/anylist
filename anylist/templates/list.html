@@ -31,7 +31,11 @@
 		});
 		// Изменение описания продукта
 		$(".edit_me").click(function (eventObject) {
-			var id = eventObject.target.parentElement.id;
+			{% comment %}Эта срань вычисляет url, на который мы перенаправимся,
+			если нажмем на кнопку edit{% endcomment %}
+			var id = eventObject.target.parentElement.parentElement.parentElement.href.split("/");
+			id = id[id.length - 1];
+
 			eventObject.preventDefault();
 			window.location.pathname += id + "/edit";
 		});

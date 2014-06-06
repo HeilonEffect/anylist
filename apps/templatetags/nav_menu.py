@@ -25,3 +25,8 @@ def add_class(html, css_class):
                 tag['class'] = [css_class]
 
     return mark_safe(soup.renderContents())
+
+
+@register.filter
+def lower(value, user):
+    return ListedProduct.objects.filter(user=user, product__title=value)

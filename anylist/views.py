@@ -10,7 +10,7 @@ from django.db.models import F
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response, render
 from django.views.generic import TemplateView, ListView
-from django.views.generic.edit import CreateView, FormView
+from django.views.generic.edit import CreateView, FormView, UpdateView
 from django.views.generic.detail import DetailView
 
 from braces.views import LoginRequiredMixin
@@ -117,7 +117,6 @@ def add_list(request):
 #------- views for anime ---------
 class AnimeListView(ListPageMixin, ListView):
 	template_name = 'list.html'
-	model = Production
 	model1 = Anime
 	header = 'Список аниме'
 	category = 'Anime'
@@ -156,6 +155,13 @@ def add_anime(request):
 
 class AnimeDetail(DetailPageMixin, DetailView):
 	pass
+
+
+class AnimeEdit(BasePageMixin, UpdateView):
+	template_name = "forms/edit_form.html"
+	model = Production
+	genre_groups =\
+		['Anime Male', 'Anime Female', 'Standart', 'Anime Porn', 'Anime School']
 
 
 class AnimeChoiceView(BaseChoiceMixin, ListView):

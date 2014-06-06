@@ -1,6 +1,7 @@
 import re
 
 from django.db import models
+from django.db.models import F
 from django.contrib.auth.models import User
 
 from anylist.settings import MEDIA_ROOT, MEDIA_URL, STATICFILES_DIRS

@@ -10,10 +10,13 @@ function select_genre (element) {
 			dict[elem[0]].push(elem[1]);
 	} else {
 		var elem = element.id.split(":");
+		console.log(dict);
+		console.log(elem);
 		// удаляем элемент, с которого снято выделение
 		dict[elem[0]] = dict[elem[0]].filter(function(element) {
-			return element != elem[1];
+			return decodeURIComponent(element) != elem[1];
 		});
+		console.log(dict);
 	}
 	window.location.href = construct_url(dict);
 }
@@ -116,6 +119,8 @@ var infoBlockModule = (function () {
 			$(tag).html("<p>About</p>");
 			for (var key in dict) {
 				var url = ["", category, product, dict[key]].join("/");
+				if (!dict[key])
+					url = url.slice(0, url.length - 1);
 				if (url == link)
 					$(tag).append("<a>" + key + "</a><br>");
 				else
