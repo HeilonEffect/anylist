@@ -27,6 +27,24 @@ class MainPage(ListView):
 
 
 def profile(request):
+	result = {}
+	result['category'] = Category.objects.all()
+	st = Status.objects.all()
+	for cat in result['category']:
+		status = [item for item in st]
+		values = []
+		cat.status = []
+		for item in status:
+			kwargs = {'status__name': item}
+			k = F('product__%s__link' % cat.name.lower())
+			kwargs['product'] = k
+			cat.status.append({'name': item, 'count': 
+				ListedProduct.objects.filter(**kwargs).count()})
+		print(cat.status)
+	return render(request, 'profile.html', result)
+
+
+def profile1(request):
 	''' профиль пользователя '''
 	result = {}
 	result['status'] = Status.objects.all()
@@ -157,6 +175,11 @@ def status_update(request, pk):
 	p = ListedProduct.objects.get(user=request.user, product__id=pk)
 	p.status=Status.objects.get(name=request.POST['name'])
 	p.save()
+	return HttpResponse('Ok')
+
+
+def remove_from_list(request, pk):
+	ListedProduct.objects.filter(user=request.user, product__id=pk).delete()
 	return HttpResponse('Ok')
 
 

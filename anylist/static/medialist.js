@@ -135,6 +135,7 @@ var addToListModule = (function () {
 	var id = "add_to_list_el";
 	var arr = ["Planned", "Watch", "ReWatching", "Watched", "Dropped", "Deffered"];
 	var option_id;
+	var url = window.location.pathname;
 	var product = window.location.pathname.split("/")[2].split("-")[0];
 	var _renderBlock = function (tag, active) {
 			$(tag).append("<div id='" + id + "'><span class='bord_block'>Actions</span></div>");
@@ -153,29 +154,41 @@ var addToListModule = (function () {
 				});
 			});
 		}
+	var _renderDelSetting = function (tag) {
+		$("#" + option_id).append("<span id='remove_from'>Remove from list</span>");
+		$("#remove_from").click(function () {
+			$.post(
+				window.location.pathname + "/remove_from_list"
+			).done(function () {
+				$("#add_to_list_el").remove();
+				$("#remove_from").remove();
+				_renderAddSetting(tag);
+			});
+		});
+	}
+	var _renderAddSetting = function (tag) {
+		$("#" + option_id).append("<span id='add_to_list'>Add to list</span>");
+		$("#add_to_list").click(function () {
+			$.post(
+				"/mylist/add",
+				"product=" + product
+			).done(function () {
+				$("#add_to_list").remove();
+				_renderDelSetting(tag);
+				_renderBlock(tag);
+			});
+		});
+	}
 	return {
 		renderBlock: function (tag, active) {
 			_renderBlock(tag, active);
 		},
 		renderSetting: function (tag, is_list) {
 			$(tag).append('<p id="' + option_id + '">Options</p>');
-			if (is_list) {
-				$("#" + option_id).append("<br><span id='add_to_list'>Add to list</span>");
-				$("#add_to_list").click(function () {
-					$.post(
-						"/mylist/add",
-						"product=" + product
-					).done(function () {
-						_renderBlock(tag);
-					});
-				});
-			}
-			else {
-				$("#" + option_id).append("<br><span id='remove_from'>Remove from list</span>");
-				$("#remove_from").click(function () {
-					//$.post();
-				});
-			}
+			if (is_list != "None")
+				_renderDelSetting(tag);
+			else
+				_renderAddSetting(tag);
 		},
 		renderRecord: function (tag) {
 			$(tag).append('<p id="add_to_list">Add To List</p>');

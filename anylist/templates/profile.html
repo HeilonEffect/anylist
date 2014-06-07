@@ -1,13 +1,12 @@
 {% extends "base.html" %}
-{% block header %}
-	{{ block.super }}
-{% endblock %}
 
 {% block content %}
 	{% for cat in category %}
 		<h3>{{ cat }}</h3>
-		{% for item in status %}
-			<a href="list/{{ cat.get_absolute_url }}/{{ item.alt_name }}">{{ item }}</a><span> / </span>
+		{% for item in cat.status %}
+			{% if item.count != 0 %}
+				<a href="list/{{ cat.get_absolute_url }}/{{ item.name }}">{{ item.name }} ({{ item.count }})</a><span> / </span>
+			{% endif %}
 		{% endfor %}
 		<div class="{{ cat.get_absolute_url }}-list"></div>
 		<br>

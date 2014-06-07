@@ -34,6 +34,7 @@ urlpatterns = patterns('',
     url(r'^mylist/series/add$', add_list_serie),
     url(r'^profile/list/(?P<category>\w+)/(?P<status>\w+)$', UserList.as_view()),
 
+    url(r'^\w+/(?P<pk>\d+)-\w+/remove_from_list', remove_from_list),
     url(r'^[\w]+/(?P<pk>\d+)-\w+/status$', status_update),
 
     url(r'^anime/add/$', AddAnime.as_view()),

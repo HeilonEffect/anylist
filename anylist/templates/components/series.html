@@ -35,12 +35,18 @@
 				$(".add_serie_form").hide();
 		});
 		// отправляет данные формы
-		$("#add_serie_form").submit(function () {
+		$(".add_serie_form").submit(function () {
+			var number = $("input[name='number']").val();
+			var name = $("input[name='name']").val();
+			var start_date = $("input[name='start_date]").val();
+			var length = $("input[name='length']").val();
 			$.post(
 				"/" + category + "/series/add",
-				$("#add_serie_form").serialize() + "&product=" + link
+				$(".add_serie_form").serialize() + "&product=" + link
 				//$("#add_serie_form").serialize() + "&"{{ category.get_absolute_url }}"=" + link
-			);
+			).done(function () {
+				/*$(".series_list").prepend("<tr><td class='num_ser' id='num-" + number + "'>" + number + "</td><td class='name_ser' id=></td><tr>");*/
+			});
 			return false;
 		});
 		var old_num, old_name, old_pub_date, old_len, ident, is_delta = false;
