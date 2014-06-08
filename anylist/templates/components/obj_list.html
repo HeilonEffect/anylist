@@ -21,6 +21,10 @@
 						<div class="add_me" id="{{value.id}}-{{ value.title }}">
 							<img src="/static/add-1.png">
 						</div>
+						{% else %}
+						<div class="del_me" id="{{ value.get_absolute_url }}">
+							<img src="/static/cancel.png">
+						</div>
 						{% endif %}
 					{% endif %}
 					<img src="{{ value.avatar_path }}">

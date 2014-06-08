@@ -130,4 +130,12 @@ class InfoPageMixin(object):
 	''' передаёт дополнительную информацию в страницы, где
 	указаны серии, герои, создатели и т.д '''
 	def get_queryset(self):
-		return SeriesGroup.objects.filter(product=self.kwargs['pk'])
+		self.queryset = SeriesGroup.objects.filter(product=self.kwargs['pk'])
+		return self.queryset
+
+	def get_context_data(self, **kwargs):
+		context = super(InfoPageMixin, self).get_context_data(**kwargs)
+		context['numbers'] = [item['id'] for item in
+			ListedProduct.objects.filter(user=self.request.user,
+				product=self.kwargs['pk'])[0].series.values()]
+		return context

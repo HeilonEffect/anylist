@@ -32,6 +32,7 @@ urlpatterns = patterns('',
     url(r'^profile/$', profile),
     url(r'^mylist/add$', add_list),
     url(r'^mylist/series/add$', add_list_serie),
+    url(r'^mylist/series/del$', del_list_serie),
     url(r'^profile/list/(?P<category>\w+)/(?P<status>\w+)$', UserList.as_view()),
 
     url(r'^\w+/(?P<pk>\d+)-\w+/remove_from_list', remove_from_list),
@@ -55,6 +56,7 @@ urlpatterns = patterns('',
     url(r'^manga/filter/(.+)/?', MangaChoiceView.as_view()),
     url(r'^manga/series/add$', add_manga_serie),
     url(r'^manga/volume/add$', add_manga_vol),
+    url(r'^manga/series/edit$', edit_serie),
 
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 )

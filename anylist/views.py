@@ -40,36 +40,6 @@ def profile(request):
 			kwargs['product'] = k
 			cat.status.append({'name': item, 'count': 
 				ListedProduct.objects.filter(**kwargs).count()})
-		print(cat.status)
-	return render(request, 'profile.html', result)
-
-
-def profile1(request):
-	''' профиль пользователя '''
-	result = {}
-	result['status'] = Status.objects.all()
-	result['planned_manga'] = ListedProduct.objects.filter(
-		product=F('product__manga__link'), status__name='Запланировано'
-	).count()
-	result['reading_manga'] = ListedProduct.objects.filter(
-		product=F('product__manga__link'), status__name='Смотрю'
-	)
-	result['readed_manga'] = ListedProduct.objects.filter(
-		product=F('product__manga__link'), status__name='Просмотрел'
-	)
-	result['rewatching_manga'] = ListedProduct.objects.filter(
-		product=F('product__manga__link'), status__name='Пересматриваю'
-	)
-	result['dropped_manga'] = ListedProduct.objects.filter(
-		product=F('product__manga__link'), status__name='Бросил'
-	)
-	result['deffered_manga'] = ListedProduct.objects.filter(
-		product=F('product__manga__link'), status__name='Отложил'
-	)
-	result['category'] = Category.objects.all()
-#	result['anime'] = ListedProduct.objects.filter(
-#		product=F('product__anime__link')Ц
-#	)
 	return render(request, 'profile.html', result)
 
 
@@ -79,9 +49,19 @@ def add_list_serie(request):
 		season__product=request.POST['product'],
 		season__number=request.POST['season']
 	)
-	product = ListedProduct.objects.get(product=request.POST['product'])
+	product = ListedProduct.objects.get(product=request.POST['product'], user=request.user)
 	product.series.add(p)
 	return HttpResponse("ok")
+
+
+def del_list_serie(request):
+	p = Serie.objects.get(number=request.POST['number'],
+		season__product=request.POST['product'],
+		season__number=request.POST['season']
+	)
+	product = ListedProduct.objects.get(product=request.POST['product'])
+	product.series.remove(p)
+	return HttpResponse('Ok')
 
 
 def delete_list_serie(request):
@@ -107,6 +87,14 @@ class UserList(ListView):
 			product=F('product__%s__link' % self.kwargs['category']),
 			status__name=status
 		)
+		p = Production.objects.filter(
+			id=F('%s__link' % self.kwargs['category']),
+			listedproduct__status__name=status
+		)
+		#print(self.queryset[1].series.count())
+		for i, item in enumerate(self.queryset):
+			#print(i, item)
+			pass
 		return self.queryset
 
 	def get_context_data(self, **kwargs):
@@ -117,6 +105,7 @@ class UserList(ListView):
 
 		context['category'] = Category.objects.get(
 			name=category).get_absolute_url()
+		context['status'] = Status.objects.all()
 		return context
 
 
@@ -212,7 +201,9 @@ def add_serie(request):
 	''' в случае с аниме сезон на одно название всегда один, поэтому
 	мы посылаем id самого аниме '''
 	cd = request.POST.copy()
-	g = SeriesGroup.objects.get(product=cd['product'])
+	if not cd.get('season'):
+		cd['season'] = 1
+	g = SeriesGroup.objects.get(product=cd['product'], number=cd['season'])
 	cd['season'] = g.id
 	del cd['product']
 	form = AddSerieForm(cd)
@@ -224,17 +215,15 @@ def add_serie(request):
 
 
 def edit_serie(request):
-	''' Правим данные в анимешнной серии '''
 	cd = request.POST.copy()
-	g = SeriesGroup.objects.get(product=cd['product'])
-	cd['season'] = g.id
-	old = cd['ident']
-	del cd['product']
+	g = SeriesGroup.objects.get(product=cd['product'], number=cd['season'])
+	old = cd['ident']	# номер той серии, что мы правим
+	cd['season'] = g.id 	# id сезона
 	form = AddSerieForm(cd)
 	if form.is_valid():
 		cd = form.cleaned_data
 		Serie.objects.filter(number=old, season=g.id).update(**cd)
-		return HttpResponse('succes')
+		return HttpResponse('success')
 	return HttpResponse(str(form))
 
 

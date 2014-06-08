@@ -12,7 +12,11 @@
 			<td class="pub_ser" id="pub_ser-{{ item.number }}">{{ item.start_date }}</td>
 			<td class="len_ser" id="len_ser-{{ item.number }}">{{ item.length }}</td>
 			<td><img src="/static/edit.png" style="float:right" class="edit-ser" id="{{ item.number }}-edit"></td>
+			{% if item.id in numbers %}
+			<td><button class="del_one_ser" id="del_ser-{{ item.number }}-{{ val.number }}">Удалить из просмотренных</button></td>
+			{% else %}
 			<td><button class="add_one_ser" id="add_ser-{{ item.number }}-{{ val.number }}">Просмотреть</button></td>
+			{% endif %}
 		</tr>
 	{% endfor %}
 	{% endfor %}
@@ -38,7 +42,7 @@
 		$(".add_serie_form").submit(function () {
 			var number = $("input[name='number']").val();
 			var name = $("input[name='name']").val();
-			var start_date = $("input[name='start_date]").val();
+			var start_date = $("input[name='start_date']").val();
 			var length = $("input[name='length']").val();
 			$.post(
 				"/" + category + "/series/add",
@@ -71,7 +75,8 @@
 							start_date: old_pub_date,
 							length: old_len,
 							ident: ident,
-							product: link
+							product: link,
+							season: 1
 						},
 						type: "POST",
 					});
@@ -127,7 +132,20 @@
 				is_delta = true;
 			}
 		});
-		
+		$(".del_one_ser").click(function (eventObject) {
+			var id_serie = eventObject.target.id;
+			var num_ser = id_serie.split("-")[1];
+			var num_season = id_serie.split("-")[2];
+			$.ajax({
+				url: "/mylist/series/del",
+				data: {
+					number: num_ser,
+					product: link,
+					season: num_season
+				},
+				type: "POST"
+			});
+		});
 		$(".add_one_ser").click(function (eventObject) {
 			var id_serie = eventObject.target.id;
 			var num_ser = id_serie.split("-")[1];

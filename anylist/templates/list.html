@@ -29,6 +29,14 @@
 			});
 			eventObject.preventDefault();
 		});
+		$(".del_me").click(function (eventObject) {
+			var id = eventObject.target.parentElement.id;
+			console.log(id);
+			$.post(
+				window.location.pathname + id + "/remove_from_list"
+			);
+			eventObject.preventDefault();
+		});
 		// Изменение описания продукта
 		$(".edit_me").click(function (eventObject) {
 			{% comment %}Эта срань вычисляет url, на который мы перенаправимся,

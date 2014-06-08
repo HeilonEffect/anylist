@@ -3,15 +3,45 @@
 	<table class="user-series-list">
 		<tr>
 			<td>Name</td>
+			<td>Status</td>
 			<td>Score</td>
 			<td>Watched Episodes</td>
 		</tr>
 	{% for item in object_list %}
 		<tr>
 			<td><a href="/{{ category }}/{{ item.product.get_absolute_url }}">{{ item.product.title }}</a></td>
-			<td>{{ item.score }}</td>
-			<td>{{ item.series.count }} / х.з</td>
+			<td class="get_status" id="{{ item.product.get_absolute_url }}">{{ item.status }}</td>
+			{% if item.score %}
+				<td>{{ item.score }}</td>
+			{% else %}
+				<td>-</td>
+			{% endif %}
+			<td>{{ item.series.count }} / </td>
 		</tr>
 	{% endfor %}
 	</table>
+{% endblock %}
+{% block script %}
+	{{ block.super }}
+	<script type="text/javascript">
+		var url;
+		$(".get_status").click(function (eventObject) {
+			var id = eventObject.target.id;
+			if (!url)
+				url = eventObject.target.id;
+			$("#" + id).html("<select id='sel'></select>");
+			{% for item in status %}
+				$("#sel").append("<option value='{{ item.id }}' class='upp'>{{ item.name }}</option>");
+			{% endfor %}
+			$(".upp").click(function (eventObject) {
+				var name = eventObject.target.textContent;
+				var url = eventObject.target.parentElement.parentElement.id;
+				var category = window.location.pathname.split("/")[3];
+				$.post(
+					"/" + category + "/" + url + "/status",
+					"name=" + name
+				);
+			});
+		});
+	</script>
 {% endblock %}
