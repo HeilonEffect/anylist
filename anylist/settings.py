@@ -43,7 +43,6 @@ INSTALLED_APPS = (
     'south',
     'apps.templatetags.nav_menu',
     'django_wysiwyg',
-    'haystack',
 #    'mptt',
 )
 
@@ -125,12 +124,4 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
-}
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
-        # ...or for multicore...
-        # 'URL': 'http://127.0.0.1:8983/solr/mysite',
-    },
 }

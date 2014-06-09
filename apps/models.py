@@ -71,15 +71,21 @@ class Production(models.Model):
     genres = models.ManyToManyField(Genre)
     old_limit = models.ForeignKey(Raiting)
 
+    pub_date = models.DateTimeField(auto_now=True)
+
     def avatar_path(self):
         return '/media/' + str(self.avatar).split('/')[-1]
 
-    def get_absolute_url(self):
-        return '%i-%s' % (self.id, self.title.replace(
-            " ", "_").replace("-", "_").replace("&", "_").replace("(", "").replace(")", ""))
+    def get_category(self):
+        for category in Category.objects.all():
+            if category.name.lower() in dir(self):
+                return str(category.name.lower())
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return '%i-%s' % (self.id, ''.join(re.split(r"[ -&'():]", self.title)))
 
 
 # Таблица персонажей одна для всех, уникальные черты

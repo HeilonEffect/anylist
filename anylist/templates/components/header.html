@@ -3,6 +3,7 @@
 
 	{% comment %}Меню в правом верхнем углу{% endcomment %}
 	<section id="header_section">
+		<input type="search" placeholder="Start enter name">
 		<a href="/profile">{{ user.username }}</a>
 		<img src="/static/show_main_menu.png" id="show_main_menu">
 		{% if user.is_authenticated %}
@@ -12,6 +13,7 @@
 		{% endif %}
 	</section>
 	<div id="start_auth"></div>
+	<ul class="dropdown"></ul>
 	
 	{% comment %}Навигация по сайту (как в яндекс.островах){% endcomment %}
 	<div class="global_nav" id="global_menu">
@@ -36,6 +38,21 @@
 </header>
 
 <script type="text/javascript">
+	$("input[type='search']").keypress(function (eventObject) {
+		if (!eventObject.ctrlKey && eventObject.key.length < 2 && !eventObject.shiftKey) {
+			$.get(
+				"/search",
+				{ key:  eventObject.target.value + eventObject.key},
+				function (data) {
+					console.log(data);
+					$(".dropdown").html("");
+					for (var key in data) {
+						$(".dropdown").append("<li><a href='" + data[key] + "'>" + key + "</a></li>");
+					}
+				}
+			);
+		}
+	});
 	authFormModule.render("#start_auth");
 	authFormModule.hide();
 	
@@ -48,7 +65,6 @@
 	}
 
 	$("#right_menu").click(function (eventObject) {
-		console.log('right_menu');
 		eventObject.preventDefault();
 		show_panel();
 	});

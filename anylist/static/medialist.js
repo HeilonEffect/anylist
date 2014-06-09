@@ -130,6 +130,54 @@ var infoBlockModule = (function () {
 		}
 	}
 }());
+var authFormModule = (function () {
+	var id = "auth_form";
+	var id1 = "#auth_form";
+	var pos;
+	return {
+		render: function(tag) {
+			pos = tag;
+			$(tag).html("<form id='" + id + "'></form>");
+			$(id1).append("<input name='username' type='text' placeholder='Username'>");
+			$(id1).append("<input name='password' type='password' placeholder='Password'>");
+			$(id1).append("<input name='email' type='email' placeholder='E-mail'>");
+			$(id1).append("<input type='submit' value='Log In'>");
+			$(id1).append("<input type='checkbox' id='is_reg'><label for='is_reg'>Register Me</label>");
+			$(id1).submit(function () {
+				var check = document.getElementById("is_reg").checked;
+				var url = "login";
+				if (check)
+					url = "register";
+				$.ajax({
+					url: url,
+					data: $(id1).serialize(),
+					type: "POST"
+				}).done(function () {
+					var link = window.location.pathname;
+					console.log(link);
+					if (link.endsWith("/"))
+						window.location.pathname = link + url;
+					else
+						window.location.pathname = link + "/" + url;
+				});
+				return false;
+			});
+		},
+		hide: function () {
+			$(pos).hide();
+		},
+		show: function () {
+			$(pos).show();
+		},
+		hide_else_show: function () {
+			if ($(pos).css("display") == "none")
+				$(pos).show();
+			else
+				$(pos).hide();
+		}
+	}
+}());
+
 
 var addToListModule = (function () {
 	var id = "add_to_list_el";
@@ -201,54 +249,6 @@ var addToListModule = (function () {
 					_renderBlock(tag, arr[0]);
 				});
 			});
-		}
-	}
-}());
-
-var authFormModule = (function () {
-	var id = "auth_form";
-	var id1 = "#auth_form";
-	var pos;
-	return {
-		render: function(tag, url) {
-			pos = tag;
-			$(tag).html("<form id='" + id + "'></form>");
-			$(id1).append("<input name='username' type='text' placeholder='Username'>");
-			$(id1).append("<input name='password' type='password' placeholder='Password'>");
-			$(id1).append("<input name='email' type='email' placeholder='E-mail'>");
-			$(id1).append("<input type='submit' value='Log In'>");
-			$(id1).append("<input type='checkbox' id='is_reg'><label for='is_reg'>Register Me</label>");
-			$(id1).submit(function () {
-				var check = document.getElementById("is_reg").checked;
-				var url = "login";
-				if (check)
-					url = "register";
-				$.ajax({
-					url: url,
-					data: $(id1).serialize(),
-					type: "POST"
-				}).done(function () {
-					var link = window.location.pathname;
-					console.log(link);
-					if (link.endsWith("/"))
-						window.location.pathname = link + url;
-					else
-						window.location.pathname = link + "/" + url;
-				});
-				return false;
-			});
-		},
-		hide: function () {
-			$(pos).hide();
-		},
-		show: function () {
-			$(pos).show();
-		},
-		hide_else_show: function () {
-			if ($(pos).css("display") == "none")
-				$(pos).show();
-			else
-				$(pos).hide();
 		}
 	}
 }());

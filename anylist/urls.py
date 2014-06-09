@@ -4,30 +4,25 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
 from rest_framework import viewsets, routers
+from rest_framework.urlpatterns import format_suffix_patterns
 
 import anylist.settings as settings
 from anylist.views import *
 from apps.models import *
+from apps.views import *
 
-
-class ProductViewSet(viewsets.ModelViewSet):
-    model = Production
-    fields = ('title',)
-
-
-router = routers.DefaultRouter()
-router.register(r'productions', ProductViewSet)
 
 admin.autodiscover()
 
 urlpatterns = patterns('',
 #    url(r'^', include(router.urls)),
- #   url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+#    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^$', MainPage.as_view()),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^(?P<url>.+)/register$', register),
     url(r'^(?P<url>.+)/login$', auth),
     url(r'^(?P<url>.+)/logout$', log_out),
+    url(r'^search$', search),
 
     url(r'^profile/$', profile),
     url(r'^mylist/add$', add_list),
@@ -58,6 +53,17 @@ urlpatterns = patterns('',
     url(r'^manga/volume/add$', add_manga_vol),
     url(r'^manga/series/edit$', edit_serie),
 
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+)
+
+urlpatterns += patterns('apps.views',
+#    url(r'^$', 'api_root'),
+    url(r'^api/products$', ProductList.as_view(), name='product-list'),
+)
+
+urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'api'])
+
+urlpatterns += patterns('',
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 )
 

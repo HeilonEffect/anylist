@@ -2,23 +2,7 @@ from django import forms
 from django.forms import ModelForm
 from django.forms.models import BaseModelFormSet
 
-from haystack.forms import SearchForm
-
 from apps.models import *
-
-
-class ProductionSearchForm(SearchForm):
-	title = forms.CharField(max_length=255)
-
-	def search(self):
-		sqs = super(ProductionSearchForm, self).search()
-
-		if not self.is_valid():
-			return self.no_query_found()
-
-		sqs = sqs.filter(title__contains=self.cleaned_data['title'])
-
-		return sqs
 
 
 class AddForm(ModelForm):

@@ -1,3 +1,7 @@
+import itertools
+import functools
+import operator
+
 from django.db.models import F, Q
 
 from apps.models import *
@@ -68,6 +72,7 @@ class ListPageMixin(object):
 
 		for item in self.queryset:
 			genres = item.genres.all()
+			#genres = item.genres.count())
 			for genre in genres:
 				num_genres[genre.name] += 1
 
@@ -100,17 +105,14 @@ class BaseChoiceMixin(ListPageMixin):
 		# избавляемся от пустых значений
 		tmp = list(filter(lambda item: item, tmp))
 
-		keys = tmp[::2]
-		values = [item.split(',') for item in tmp[1::2]]
-		qs = dict(zip(keys, values))
+		# преобразовываем пары в словарь
+		qs = dict(zip(tmp[::2],  [item.split(',') for item in tmp[1::2]]))
 
 		tmp = qs.get('old_limit')
 		q = []
+		f = lambda item: Q(link__old_limit__name=item)
 		if tmp:
-			q, *rest = tmp
-			q = Q(link__old_limit__name=q)
-			for item in rest:
-				q = q.__or__(Q(link__old_limit__name=item))
+			q = functools.reduce(operator.or_, map(f, tmp))
 
 		if isinstance(q, list):
 			q = self.model1.objects
