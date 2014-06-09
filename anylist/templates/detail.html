@@ -36,9 +36,10 @@
 	<script type="text/javascript">
 		// меню переключения между разделами карточки описания
 		infoBlockModule.renderLeftMenu("nav");
-		addToListModule.renderSetting("nav", "{{ is_listed }}");
+		//addToListModule.renderSetting("nav", "{{ is_listed }}");
 		{% if is_listed %}
-			addToListModule.renderBlock("nav", "{{ is_listed.status }}");
+			addToListModule.renderStatusBlock("nav", ["Planned", "Watch", "ReWatching", "Watched", "Dropped", "Deffered"], "{{ is_listed.status }}");
+			//addToListModule.renderBlock("nav", "{{ is_listed.status }}");
 		{% endif %}
 		/*$(".actions").click(function (eventObject) {
 			var action = eventObject.target.textContent;

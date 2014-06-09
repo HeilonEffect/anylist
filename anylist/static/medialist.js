@@ -79,24 +79,24 @@ function show_panel() {
 	}
 }
 
-	function construct_url(dict) {
-		// конструируем новый url (позже сделать его универсальным)
-		// на основе старого + изменения
-		var category = window.location.pathname.split("/")[1];
-		var new_url = '/' + category + '/filter/';
-		for (var key in dict) {
-			if (dict[key].length) {
-				new_url += key + '/';
-				for (var i in dict[key]) {
-					new_url +=  dict[key][i] + ','
-				}
-				new_url = new_url.slice(0, new_url.length - 1) + '/';
+function construct_url(dict) {
+	// конструируем новый url (позже сделать его универсальным)
+	// на основе старого + изменения
+	var category = window.location.pathname.split("/")[1];
+	var new_url = '/' + category + '/filter/';
+	for (var key in dict) {
+		if (dict[key].length) {
+			new_url += key + '/';
+			for (var i in dict[key]) {
+				new_url +=  dict[key][i] + ','
 			}
+			new_url = new_url.slice(0, new_url.length - 1) + '/';
 		}
-		if (new_url == '/' + category + '/filter/')
-			new_url = '/' + category;
-		return new_url;
 	}
+	if (new_url == '/' + category + '/filter/')
+		new_url = '/' + category;
+	return new_url;
+}
 
 /*
 	Отображает различные блоки, относящиеся к странице продукта
@@ -127,17 +127,6 @@ var infoBlockModule = (function () {
 					}
 				}
 			);
-			/*$(tag).append("<div id='about'></div>")
-			$("#about").append("<p>About</p>");
-			for (var key in dict) {
-				var url = ["", category, product, dict[key]].join("/");
-				if (!dict[key])
-					url = url.slice(0, url.length - 1);
-				if (url == link)
-					$("#about").append("<a>" + key + "</a><br>");
-				else
-					$("#about").append("<a href='" + url + "'>" + key + "</a><br>");
-			}*/
 		}
 	}
 }());
@@ -189,8 +178,42 @@ var authFormModule = (function () {
 	}
 }());
 
-
 var addToListModule = (function () {
+	return {
+		renderStatusBlock: function (tag, statuses, active) {
+			// отрисовывает статус промотра
+			just.render(
+				"status_block",
+				{statuses: statuses, active: active},
+				function (err, html) {
+					if (!err) {
+						$(tag).append(html);
+						
+						var activeEl = $(".status-select.active");
+
+						$(".status-select").click(function (eventObject) {
+							var val = eventObject.target.textContent;
+							if (!$(this).attr("class").endsWith("active")) {
+								if (activeEl)
+									$(activeEl).attr("class", ".status-select");
+								$(this).attr("class", ".status-select active");
+								activeEl = this;
+								$.post(
+									window.location.pathname + "/status",
+									"name=" + val
+								);
+							}
+						});
+					} else {
+						console.log(err);
+					}
+				}
+			);
+		}
+	}
+}());
+
+var addToListModule1 = (function () {
 	var id = "add_to_list_el";
 	var arr = ["Planned", "Watch", "ReWatching", "Watched", "Dropped", "Deffered"];
 	var option_id;
@@ -198,6 +221,7 @@ var addToListModule = (function () {
 	var product = window.location.pathname.split("/")[2].split("-")[0];
 	var _renderBlock = function (tag, active) {
 			$(tag).append("<div id='" + id + "'><span class='bord_block'>Actions</span></div>");
+
 			arr.map(function (element) {
 				if (element == active)
 					$("#" + id).append("<br><span class='actions active'>" + element + "</span>");
