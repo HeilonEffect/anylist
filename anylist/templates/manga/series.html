@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
+<script id="add-ser-templ" type="text/x-add-form">
+</script>
 <button id="new_vol">Новый том</button>
 	{% for val in object_list %}
 	<table class="series_list">
 		
-		<p>Volume {{ val.number }}&nbsp;&nbsp;&nbsp;<sub><img src="/static/add.png" class="add_serie" style="width:2em;" id="add-{{ val.number }}"></sub></p>
+		<p>Volume {{ val.number }}</p>
 		<div style="width:70%">
 			<form method="post" class="add_serie_form" id="{{ val.number }}">
 				<input name="number" type="text" placeholder="Номер" style="width:3em">
@@ -35,7 +37,7 @@
 
 {% block script %}
 	{{ block.super }}
-	<script type="text/javascript">
+	<script type="text/javascript">;
 		infoBlockModule.renderLeftMenu("nav");
 		
 		// link - id продукта

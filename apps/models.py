@@ -85,7 +85,7 @@ class Production(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return '%i-%s' % (self.id, ''.join(re.split(r"[ -&'():]", self.title)))
+        return '%i-%s' % (self.id, ''.join(re.split(r"[- &'(!):]", self.title)))
 
 
 # Таблица персонажей одна для всех, уникальные черты

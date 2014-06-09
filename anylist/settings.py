@@ -43,7 +43,6 @@ INSTALLED_APPS = (
     'south',
     'apps.templatetags.nav_menu',
     'django_wysiwyg',
-#    'mptt',
 )
 
 MIDDLEWARE_CLASSES = (

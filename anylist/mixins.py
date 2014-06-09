@@ -137,7 +137,8 @@ class InfoPageMixin(object):
 
 	def get_context_data(self, **kwargs):
 		context = super(InfoPageMixin, self).get_context_data(**kwargs)
-		context['numbers'] = [item['id'] for item in
+		context['numbers'] = [i.id for item in
 			ListedProduct.objects.filter(user=self.request.user,
-				product=self.kwargs['pk'])[0].series.values()]
+				product=self.kwargs['pk']) for i in item.series.all()]
+		print(context['numbers'])
 		return context

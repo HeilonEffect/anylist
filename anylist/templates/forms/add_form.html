@@ -29,6 +29,7 @@
 	</div>
 	<form enctype="multipart/form-data" method="post" id="add_form">
 			<input name="title" type="text" placeholder="Enter title here" class="form-title">
+			<ul class="dropdown-title"></ul>
 			<textarea class="form-textarea" rows="15" name="description" id="description"></textarea>
 			<div id="upload_form">
 				<input type="file" name="avatar">
@@ -97,6 +98,22 @@
 			genres = genres.filter(function(elem) {
 				return elem != box.id.split("-")[0];
 			});
+	});
+
+	$("input[name='title']").keypress(function (eventObject) {
+		if (!eventObject.ctrlKey && eventObject.key.length < 2 && !eventObject.shiftKey) {
+			$.get(
+				"/search",
+				{ key:  eventObject.target.value + eventObject.key},
+				function (data) {
+					console.log(data);
+					$(".dropdown-title").html("");
+					for (var key in data) {
+						$(".dropdown-title").append("<li><a href='" + data[key] + "'>" + key + "</a></li><br>");
+					}
+				}
+			);
+		}
 	});
 </script>
 {% endblock %}

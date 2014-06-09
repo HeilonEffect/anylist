@@ -1,3 +1,4 @@
+var just = new JUST({root: "/static/view", useCache: false, ext: ".html"});
 function select_genre (element) {
 	var dict = url_resolve();
 	// если мы отметили ранее не отмеченный элемент, то
@@ -104,19 +105,29 @@ function show_panel() {
 	infoBlockModule.renderLeftMenu("nav");
 */
 var infoBlockModule = (function () {
-	var link = window.location.pathname;
-	var category = link.split("/")[1];
-	var product = link.split("/")[2];
+	var link = window.location.pathname.split("/");
+	var pre_url = [link[1], link[2]].join("/");
 	// Для переключения между разделами
 	var dict = {
-		Main: "",
-		Series: "series",
-		Heroes: "heroes",
-		Creators: "creators"
+		Main: pre_url,
+		Series: [pre_url, "series"].join("/"),
+		Heroes: [pre_url, "heroes"].join("/"),
+		Creators: [pre_url, "creators"].join("/")
 	};
 	return {
 		renderLeftMenu: function (tag) {
-			$(tag).append("<div id='about'></div>")
+			just.render(
+				"info_block",
+				{dict: dict, url: window.location.pathname.slice(1)},
+				function (err, html) {
+					if (!err) {
+						$(tag).append(html);
+					} else {
+						console.log(err);
+					}
+				}
+			);
+			/*$(tag).append("<div id='about'></div>")
 			$("#about").append("<p>About</p>");
 			for (var key in dict) {
 				var url = ["", category, product, dict[key]].join("/");
@@ -126,7 +137,7 @@ var infoBlockModule = (function () {
 					$("#about").append("<a>" + key + "</a><br>");
 				else
 					$("#about").append("<a href='" + url + "'>" + key + "</a><br>");
-			}
+			}*/
 		}
 	}
 }());

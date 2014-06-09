@@ -41,6 +41,7 @@ def search(request):
 
 
 def profile(request):
+    ''' страница профиля пользователя '''
     result = {}
     result['category'] = Category.objects.all()
     st = Status.objects.all()
@@ -90,14 +91,6 @@ class UserList(LoginRequiredMixin, ListView):
             product=F('product__%s__link' % self.kwargs['category']),
             status__name=status
         )
-        p = Production.objects.filter(
-            id=F('%s__link' % self.kwargs['category']),
-            listedproduct__status__name=status
-        )
-        #print(self.queryset[1].series.count())
-        for i, item in enumerate(self.queryset):
-            #print(i, item)
-            pass
         return self.queryset
 
     def get_context_data(self, **kwargs):
