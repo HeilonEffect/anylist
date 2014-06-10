@@ -85,7 +85,7 @@
 	$("#add_form").submit({genres: genres}, function (eventObject) {
 		// указываем, куда отсылать запрос
 		var link = window.location.pathname.split("/")[1];
-		$("#add_form").attr("action", "/" + link + "/add/1");
+		$("#add_form").attr("action", "/" + link + "/add");
 		//console.log(eventObject);
 		//return false;
 	});

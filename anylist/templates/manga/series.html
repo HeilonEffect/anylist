@@ -1,107 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
-<script id="add-ser-templ" type="text/x-add-form">
-</script>
 <button id="new_vol">Новый том</button>
-	{% for val in object_list %}
-	<table class="series_list">
-		
-		<p>Volume {{ val.number }}</p>
-		<div style="width:70%">
-			<form method="post" class="add_serie_form" id="{{ val.number }}">
-				<input name="number" type="text" placeholder="Номер" style="width:3em">
-				<input name="name" type="text" placeholder="Название">
-				<input name="start_date" type="datetime" placeholder="Дата" class="pub_d" style="width:8em">
-				<input name="length" type="text" placeholder="Число страниц">
-				<input type="submit" value="Add" class="submit_serie">
-			</form>
-		</div>
-		
-		{% for item in val.series %}
-		<tr>
-			<td class="num_ser" id="num-{{ item.number }}-{{ val.number }}">{{ item.number }}</td>
-			<td class="name_ser" id="name-{{ item.number }}-{{ val.number }}" style="min-width:9em">{{ item.name }}</td>
-			<td class="pub_ser" id="pub_ser-{{ item.number }}-{{ val.number }}">{{ item.start_date }}</td>
-			<td class="len_ser" id="len_ser-{{ item.number }}-{{ val.number }}">{{ item.length }}</td>
-			<td><img src="/static/edit.png" style="float:right" class="edit-ser" id="{{ item.number }}-{{ val.number}}-edit"></td>
-			{% if item.id in numbers %}
-			<td><button class="del_one_ser" id="del_ser-{{ item.number }}-{{ val.number }}">Удалить из просмотренных</button></td>
-			{% else %}
-			<td><button class="add_one_ser" id="add_ser-{{ item.number }}-{{ val.number }}">Просмотреть</button></td>
-			{% endif %}
-		</tr>
-		{% endfor %}
-	</table>
-	{% endfor %}
 {% endblock %}
 
 {% block script %}
 	{{ block.super }}
 	<script type="text/javascript">;
 		infoBlockModule.renderLeftMenu("nav");
-		
-		// link - id продукта
-		var link = document.location.pathname.split("/")[2].split("-")[0];
-		
-		var category = document.location.pathname.split("/")[1];
-		$("#new_vol").click(function () {
-			$.ajax({
-				url: "/manga/volume/add",
-				data: {
-					product: link
-				},
-				type: "POST"
-			});
-		});
-		/*$(".add_serie").click(function () {
-			if ($(".add_serie_form").css("display") == "none")
-				$(".add_serie_form").show();
-			else
-				$(".add_serie_form").hide();
-		});*/
-		$(".add_serie_form").submit(function (eventObject) {
-			var num_season = eventObject.target.id;
-			var data = $("#" + num_season).serialize();
-			console.log(data + "&product=" + link + "&season=" + num_season);
-			$.post(
-				"/manga/series/add",
-				data + "&product=" + link + "&season=" + num_season
-			);
-			return false;
-		});
-		$(".pub_d").datetimepicker();
-		$(".add_one_ser").click(function (eventObject) {
-			var id_serie = eventObject.target.id;
-			var num_ser = id_serie.split("-")[1];
-			var num_season = id_serie.split("-")[2];
-			$.ajax({
-				url: "/mylist/series/add",
-				data: {
-					number: num_ser,
-					product: link,
-					season: num_season
-				},
-				type: "POST"
-			});
-			//console.log("Серия: " + num_ser + " Сезон: " + num_season);
-		});
+		var product = window.location.pathname.split("/")[2].split("-")[0];
 
-		$(".del_one_ser").click(function (eventObject) {
-			var id_serie = eventObject.target.id;
-			var num_ser = id_serie.split("-")[1];
-			var num_season = id_serie.split("-")[2];
-			$.ajax({
-				url: "/mylist/series/del",
-				data: {
-					number: num_ser,
-					product: link,
-					season: num_season
-				},
-				type: "POST"
-			});
+		// получаем список серий через api и отрисовываем его
+		$.get(["/api/product:" + product, "season:" + 1].join("/")).done(function (data) {
+			console.log(data);
+			// Получили первый сезон
+			seriesModule.renderVolume("main", "1", true, data, {{ numbers }});
 		});
-
-		var old_num, old_name, old_pub_date, old_len, ident, is_delta = false;
+		/*var old_num, old_name, old_pub_date, old_len, ident, is_delta = false;
 		$(".edit-ser").click(function(element) {
 			var id = element.target.id.split("-")[0];
 			var season = element.target.id.split("-")[1];
@@ -182,6 +96,6 @@
 				old_len = tmp;
 				is_delta = true;
 			}
-		});
+		});*/
 	</script>
 {% endblock %}

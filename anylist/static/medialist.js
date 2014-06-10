@@ -179,8 +179,11 @@ var authFormModule = (function () {
 }());
 
 var addToListModule = (function () {
-	return {
-		renderStatusBlock: function (tag, statuses, active) {
+	var _renderStatusBlock = function (tag, active) {
+		$.get("/api/status?format=json").done(function (data) {
+			var statuses = data.map(function (element) {
+				return element.name;
+			});
 			// отрисовывает статус промотра
 			just.render(
 				"status_block",
@@ -188,14 +191,13 @@ var addToListModule = (function () {
 				function (err, html) {
 					if (!err) {
 						$(tag).append(html);
-						
-						var activeEl = $(".status-select.active");
 
-						$(".status-select").click(function (eventObject) {
-							var val = eventObject.target.textContent;
-							if (!$(this).attr("class").endsWith("active")) {
-								if (activeEl)
-									$(activeEl).attr("class", ".status-select");
+					var activeEl = $(".status-select.active");
+					$(".status-select").click(function (eventObject) {
+						var val = eventObject.target.textContent;
+						if (!$(this).attr("class").endsWith("active")) {
+							if (activeEl)
+								$(activeEl).attr("class", ".status-select");
 								$(this).attr("class", ".status-select active");
 								activeEl = this;
 								$.post(
@@ -209,81 +211,107 @@ var addToListModule = (function () {
 					}
 				}
 			);
+		});
+	};
+	var command = {};
+	command["Удалить из списка"] = function (element) {
+		$.post(
+			window.location.pathname + "/remove_from_list"
+		).done(function () {
+			element.textContent = "Добавить в список";
+			$("section.status-options").remove();
+			return true;
+		});
+		return false;
+	}
+	command["Добавить в список"] = function (element) {
+		var product = window.location.pathname.split("/")[2].split("-")[0];
+		console.log(product);
+		$.post(
+			"/add_to_list",
+			"product=" + product
+		).done(function (data) {
+			element.textContent = "Удалить из списка";
+			console.log(data)
+			_renderStatusBlock("nav", "Planned");
+			return true;
+		});
+		return false;
+	}
+	return {
+		renderStatusBlock: function (tag, statuses, active) {
+			_renderStatusBlock(tag, statuses, active);
+		},
+		renderOptionsBlock: function (tag, in_list) {
+			just.render(
+				"options_block",
+				{in_list: in_list},
+				function (err, html) {
+					if (!err) {
+						$(tag).append(html);
+						$(".select-options").click(function (eventObject) {
+							command[eventObject.target.textContent](eventObject.target);
+						});
+					} else {
+						console.log(err);
+					}
+				}
+			);
 		}
 	}
 }());
 
-var addToListModule1 = (function () {
-	var id = "add_to_list_el";
-	var arr = ["Planned", "Watch", "ReWatching", "Watched", "Dropped", "Deffered"];
-	var option_id;
-	var url = window.location.pathname;
-	var product = window.location.pathname.split("/")[2].split("-")[0];
-	var _renderBlock = function (tag, active) {
-			$(tag).append("<div id='" + id + "'><span class='bord_block'>Actions</span></div>");
-
-			arr.map(function (element) {
-				if (element == active)
-					$("#" + id).append("<br><span class='actions active'>" + element + "</span>");
-				else
-					$("#" + id).append("<br><span class='actions'>" + element + "</span>");
-			});
-			$(".actions").click(function (eventObject) {
-				$.post(
-					window.location.pathname + "/status",
-					"name=" + eventObject.target.textContent
-				).done(function () {
-					eventObject.target.style.background = "gray";
-				});
-			});
-		}
-	var _renderDelSetting = function (tag) {
-		$("#" + option_id).append("<span id='remove_from'>Remove from list</span>");
-		$("#remove_from").click(function () {
-			$.post(
-				window.location.pathname + "/remove_from_list"
-			).done(function () {
-				$("#add_to_list_el").remove();
-				$("#remove_from").remove();
-				_renderAddSetting(tag);
-			});
-		});
-	}
-	var _renderAddSetting = function (tag) {
-		$("#" + option_id).append("<span id='add_to_list'>Add to list</span>");
-		$("#add_to_list").click(function () {
-			$.post(
-				"/mylist/add",
-				"product=" + product
-			).done(function () {
-				$("#add_to_list").remove();
-				_renderDelSetting(tag);
-				_renderBlock(tag);
-			});
-		});
-	}
+var seriesModule = (function () {
+	var numbers = [];	// контроль, что-бы не создать сезоны с одинаковами номерами
+	_renderVolume = function (tag, number, is_auth, series, numbers) {
+		just.render(
+			"add_serie_form",
+			{number: number, is_auth: is_auth, series: series, numbers: numbers},
+			function (err, html) {
+				if (!err) {
+					$(tag).append(html);
+					$("#strt").datetimepicker();
+					// добавление новой серии
+					$(".add-serie-form").submit(function (eventObject) {
+						var season = eventObject.target.id;
+						console.log(season);
+						
+						var result = [
+							$(".add-serie-form").serialize(),"&season=", season].join();
+						$.post(
+							[window.location.pathname, "add"].join("/"),
+							$(".add-serie-form").serialize() + "&season=" + season
+						).done(function (data) {
+							console.log(data);
+						});
+						return false;
+					});
+					$(".serie_action").click(function (eventObject) {
+						var txt = eventObject.target.textContent;
+						var num_serie = eventObject.target.parentElement.parentElement.id.split("-")[1];
+						var product = window.location.pathname.split("/")[2].split("-")[0];
+						var url = "";
+						if (txt == "Добавить в список")
+							url = "/mylist/series/add";
+						else if (txt == "Удалить из списка")
+							url = "/mylist/series/del";
+						$.ajax({
+							url: url,
+							data: {
+								number: num_serie,
+								product: product,
+								season: number
+							},
+							type: "POST"
+						});
+					});
+				} else {
+					console.log(err);
+				}
+			}
+		);
+	};
 	return {
-		renderBlock: function (tag, active) {
-			_renderBlock(tag, active);
-		},
-		renderSetting: function (tag, is_list) {
-			$(tag).append('<p id="' + option_id + '">Options</p>');
-			if (is_list != "None")
-				_renderDelSetting(tag);
-			else
-				_renderAddSetting(tag);
-		},
-		renderRecord: function (tag) {
-			$(tag).append('<p id="add_to_list">Add To List</p>');
-			$("#add_to_list").click(function () {
-				var product = window.location.pathname.split("/")[2].split("-")[0];
-				$.post(
-					"/mylist/add",
-					"product=" + product
-				).done(function () {
-					_renderBlock(tag, arr[0]);
-				});
-			});
-		}
+		renderVolume: _renderVolume
 	}
 }());

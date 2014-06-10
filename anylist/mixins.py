@@ -1,29 +1,46 @@
 import itertools
+import json
 import functools
 import operator
 
 from django.db.models import F, Q
 
+from apps.forms import *
 from apps.models import *
+
+
+Types = {'anime': Anime, 'manga': Manga}
 
 class BasePageMixin(object):
 	''' Содержит одинаковые для всех классов приложения операции '''
 	def get_context_data(self, **kwargs):
 		context = super(BasePageMixin, self).get_context_data(**kwargs)
+
 		context['genres'] = Genre.objects.all()
 		context['header'] = 'Добавление'
-
-		group1, *groups = self.genre_groups
-		q = Q(name=group1)
-		for group in groups:
-			q = q.__or__(Q(name=group))
-
-		# Стандартные жанры доступны всегда
-		context['standart_genres'] = GenreGroup.objects.get(name='Standart')
-
-		context['genre_group'] = GenreGroup.objects.filter(q)
-
 		context['raiting'] = Raiting.objects.all()
+
+		return context
+
+
+class CreateMixin(object):
+	template_name = 'forms/add_form.html'
+	model = Production
+	form_class = AddForm
+	
+	def get_success_url(self):
+		# Создаём запись в базе с продуктом
+		p = Production.objects.last()
+		Types[self.kwargs['category']].objects.create(link=p)
+
+		return '/%s/' % self.kwargs['category']
+	
+	def get_context_data(self, **kwargs):
+		context = super(CreateMixin, self).get_context_data(**kwargs)
+
+		context['genres'] = Genre.objects.all()
+		context['raiting'] = Raiting.objects.all()
+
 		return context
 
 
@@ -34,7 +51,6 @@ class DetailPageMixin(object):
 	def get_context_data(self, **kwargs):
 		context = super(DetailPageMixin, self).get_context_data(**kwargs)
 		context['header'] = context['object'].title
-		context['status'] = Status.objects.all()
 		context['is_listed'] = ListedProduct.objects.filter(
 			user=self.request.user, product__title=context['object'].title
 			).first()
@@ -118,7 +134,7 @@ class BaseChoiceMixin(ListPageMixin):
 			q = self.model1.objects
 		else:
 			q = self.model1.objects.filter(q)
-		
+
 		tmp = qs.get('genres')
 		if tmp:
 			for item in tmp:
@@ -137,8 +153,10 @@ class InfoPageMixin(object):
 
 	def get_context_data(self, **kwargs):
 		context = super(InfoPageMixin, self).get_context_data(**kwargs)
+		# Список тех серий, что мы посмотрели
 		context['numbers'] = [i.id for item in
 			ListedProduct.objects.filter(user=self.request.user,
 				product=self.kwargs['pk']) for i in item.series.all()]
 		print(context['numbers'])
+		context['numbers'] = json.dumps(context['numbers'])
 		return context

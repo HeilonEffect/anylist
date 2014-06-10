@@ -19,7 +19,7 @@ from apps.models import *
 from apps.forms import *
 from apps.serializers import ProductSerializer
 
-from anylist.mixins import *
+from .mixins import *
 
 
 #------------ Base Views -----------------
@@ -60,12 +60,16 @@ def profile(request):
 
 def add_list_serie(request):
     ''' добваляем серию в список просмотренных '''
+    print(request.POST)
     p = Serie.objects.get(number=request.POST['number'],
-        season__product=request.POST['product'],
+        season__product__id=request.POST['product'],
         season__number=request.POST['season']
     )
-    product = ListedProduct.objects.get(product=request.POST['product'], user=request.user)
+    print(p)
+    product = ListedProduct.objects.get(
+        product__id=request.POST['product'], user=request.user)
     product.series.add(p)
+    print(product.series.all())
     return HttpResponse("ok")
 
 
@@ -113,7 +117,9 @@ def add_list(request):
     form = AddToListForm(cd)
     if form.is_valid():
         form.save()
+        print(form)
         return HttpResponse('success')
+    print(form)
     return HttpResponse(str(form))
 
 
@@ -127,33 +133,10 @@ class AnimeListView(ListPageMixin, ListView):
         ['Anime Male', 'Anime Female', 'Standart', 'Anime Porn', 'Anime School']
 
 
-class AddAnime(BasePageMixin, CreateView):
-    model = Anime
-    form_class = AddForm
-    template_name = 'forms/add_form.html'
+class AddAnime(CreateMixin, CreateView):
     header = 'Добавление продукта'
-    success_url = '/anime'
     genre_groups =\
         ['Anime Male', 'Anime Female', 'Anime Standart', 'Anime School']
-
-
-def add_anime(request):
-    ''' В случае с аниме, сезон всегда один, если есть второй сезон с
-    аналогичным названием, то называем его <Название> [TV-2]. При
-    создании любого экзампляра по-умолчанию создаем новый сезон '''
-    form = AddForm(request.POST, request.FILES)
-    if form.is_valid():
-        cd = form.cleaned_data
-        # Сохраням продукт
-        form.save()
-        p = Production.objects.filter(title=cd['title']).last()
-        # Регистрируем новое аниме
-        Anime.objects.create(link=p)
-
-        # Создаём первый сезон
-        SeriesGroup.objects.create(number=1, product=p)
-        return HttpResponseRedirect('/anime')
-    return HttpResponse(str(form))
 
 
 def status_update(request, pk):
@@ -190,21 +173,20 @@ class AnimeChoiceView(BaseChoiceMixin, ListView):
 
 
 class AnimeSeriesView(InfoPageMixin, ListView):
-    template_name = 'components/series.html'
+    template_name = 'manga/series.html'
 
 
-def add_serie(request):
-    ''' в случае с аниме сезон на одно название всегда один, поэтому
-    мы посылаем id самого аниме '''
+
+def add_serie(request, category, pk):
+    ''' Добавляем новую серию в указанный сезон '''
     cd = request.POST.copy()
-    if not cd.get('season'):
-        cd['season'] = 1
-    g = SeriesGroup.objects.get(product=cd['product'], number=cd['season'])
-    cd['season'] = g.id
-    del cd['product']
+    pk = Production.objects.get(id=pk)
+    p = SeriesGroup.objects.get_or_create(product=pk, number=cd['season'])
+    if isinstance(p, tuple):
+        p = p[0]
+    cd['season'] = p.id
     form = AddSerieForm(cd)
     if form.is_valid():
-        cd = form.cleaned_data
         form.save()
         return HttpResponse('success')
     return HttpResponse('Invalid form data')
@@ -212,7 +194,7 @@ def add_serie(request):
 
 def edit_serie(request):
     cd = request.POST.copy()
-    g = SeriesGroup.objects.get(product=cd['product'], number=cd['season'])
+    g = SeriesGroup.objects.get(product=cd['product'], number=int(cd['season']))
     old = cd['ident']   # номер той серии, что мы правим
     cd['season'] = g.id     # id сезона
     form = AddSerieForm(cd)
@@ -281,25 +263,10 @@ class MangaListView(ListPageMixin, ListView):
         ['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
 
 
-class AddManga(BasePageMixin, CreateView):
-    model = Production
-    form_class = AddForm
-    template_name = 'forms/add_form.html'
+class AddManga(CreateMixin, CreateView):
     header = 'Добавление манги'
-    success_url = '/manga/'
     genre_groups =\
         ['Anime Male', 'Anime Female', 'Standart', 'Anime Porn', 'Anime School']
-
-
-def add_manga(request):
-    form = AddForm(request.POST, request.FILES)
-    if form.is_valid():
-        cd = form.cleaned_data
-        form.save()
-        p = Production.objects.filter(title=cd['title']).last()
-        Manga.objects.create(link=p)
-        return HttpResponseRedirect('/manga')
-    return HttpResponse('Invalid form')
 
 
 def add_manga_vol(request):

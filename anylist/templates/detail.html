@@ -18,35 +18,16 @@
 	</article>
 {% endblock %}
 
-{% block navigation %}
-	<!--{% if is_listed %}
-	<div id="actions">
-		<p>Actions</p>
-		{% for item in status %}
-			<span class="actions">{{ item.name }}</span><br>
-		{% endfor %}
-	</div>
-	{% else %}
-	<p id="add_to_list">Add To List</p>
-	{% endif %}-->
-{% endblock %}
-
 {% block script %}
 	{{ block.super }}
 	<script type="text/javascript">
 		// меню переключения между разделами карточки описания
 		infoBlockModule.renderLeftMenu("nav");
-		//addToListModule.renderSetting("nav", "{{ is_listed }}");
 		{% if is_listed %}
-			addToListModule.renderStatusBlock("nav", ["Planned", "Watch", "ReWatching", "Watched", "Dropped", "Deffered"], "{{ is_listed.status }}");
-			//addToListModule.renderBlock("nav", "{{ is_listed.status }}");
+			addToListModule.renderOptionsBlock("nav", true)
+			addToListModule.renderStatusBlock("nav", "{{ is_listed.status }}");
+		{% else %}
+			addToListModule.renderOptionsBlock("nav", false);
 		{% endif %}
-		/*$(".actions").click(function (eventObject) {
-			var action = eventObject.target.textContent;
-			$.post(
-				window.location.pathname + "/status",
-				"name=" + action
-			);
-		});*/
 	</script>
 {% endblock %}
