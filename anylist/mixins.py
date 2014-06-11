@@ -44,24 +44,13 @@ class CreateMixin(object):
 		return context
 
 
-class DetailPageMixin(object):
-	model = Production
-	template_name = 'detail.html'
-
-	def get_context_data(self, **kwargs):
-		context = super(DetailPageMixin, self).get_context_data(**kwargs)
-		context['header'] = context['object'].title
-		context['is_listed'] = ListedProduct.objects.filter(
-			user=self.request.user, product__title=context['object'].title
-			).first()
-		return context
-
-
 class ListPageMixin(object):
 	model = Production
+	template_name = 'list.html'
+
 	def get_queryset(self):
 		if not self.queryset:
-			self.queryset = [p.link for p in self.model1.objects.all()]
+			self.queryset = [p.link for p in Types[self.kwargs['category']].objects.all()]
 			return self.queryset
 		else:
 			return self.queryset
@@ -69,14 +58,14 @@ class ListPageMixin(object):
 	def get_context_data(self, **kwargs):
 		context = super(ListPageMixin, self).get_context_data(**kwargs)
 		context['raiting'] = Raiting.objects.all()
-		context['header'] = self.header
+		#context['header'] = self.header
+		context['header'] = 'This list of %s' % self.kwargs['category']
 
 		context['listed'] =\
 			[item.product for item in ListedProduct.objects.filter(
 			user=context['view'].request.user.id)]
 
-		context['category'] =\
-			Category.objects.get(name=self.category).name.lower()
+		context['category'] = self.kwargs['category']
 
 		context['genre_groups'] = []
 
@@ -116,7 +105,7 @@ class BaseChoiceMixin(ListPageMixin):
 
 	def get_queryset(self):
 		qs = {}
-		tmp = self.args[0].split('/')
+		tmp = self.kwargs['args'].split('/')
 
 		# избавляемся от пустых значений
 		tmp = list(filter(lambda item: item, tmp))
@@ -131,9 +120,9 @@ class BaseChoiceMixin(ListPageMixin):
 			q = functools.reduce(operator.or_, map(f, tmp))
 
 		if isinstance(q, list):
-			q = self.model1.objects
+			q = Types[self.kwargs['category']].objects
 		else:
-			q = self.model1.objects.filter(q)
+			q = Types[self.kwargs['category']].objects.filter(q)
 
 		tmp = qs.get('genres')
 		if tmp:
@@ -142,21 +131,3 @@ class BaseChoiceMixin(ListPageMixin):
 		self.queryset = q
 		self.queryset = [item.link for item in self.queryset]
 		return self.queryset
-
-
-class InfoPageMixin(object):
-	''' передаёт дополнительную информацию в страницы, где
-	указаны серии, герои, создатели и т.д '''
-	def get_queryset(self):
-		self.queryset = SeriesGroup.objects.filter(product=self.kwargs['pk'])
-		return self.queryset
-
-	def get_context_data(self, **kwargs):
-		context = super(InfoPageMixin, self).get_context_data(**kwargs)
-		# Список тех серий, что мы посмотрели
-		context['numbers'] = [i.id for item in
-			ListedProduct.objects.filter(user=self.request.user,
-				product=self.kwargs['pk']) for i in item.series.all()]
-		print(context['numbers'])
-		context['numbers'] = json.dumps(context['numbers'])
-		return context

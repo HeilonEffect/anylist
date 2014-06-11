@@ -18,6 +18,10 @@
 {% block script %}
 	{{ block.super }}
 	<script type="text/javascript">
+		$("#right_menu").click(function (eventObject) {
+			eventObject.preventDefault();
+			show_panel();
+		});
 		$(".add_me").click(function (eventObject) {
 			var id = eventObject.target.parentElement.id.split("-")[0]
 			$.ajax({

@@ -22,6 +22,9 @@ from apps.serializers import ProductSerializer
 from .mixins import *
 
 
+Types = {'anime': Anime, 'manga': Manga}
+
+
 #------------ Base Views -----------------
 class MainPage(ListView):
     model = ThematicGroup
@@ -60,16 +63,13 @@ def profile(request):
 
 def add_list_serie(request):
     ''' добваляем серию в список просмотренных '''
-    print(request.POST)
     p = Serie.objects.get(number=request.POST['number'],
         season__product__id=request.POST['product'],
         season__number=request.POST['season']
     )
-    print(p)
     product = ListedProduct.objects.get(
         product__id=request.POST['product'], user=request.user)
     product.series.add(p)
-    print(product.series.all())
     return HttpResponse("ok")
 
 
@@ -117,18 +117,13 @@ def add_list(request):
     form = AddToListForm(cd)
     if form.is_valid():
         form.save()
-        print(form)
         return HttpResponse('success')
     print(form)
     return HttpResponse(str(form))
 
 
 #------- views for anime ---------
-class AnimeListView(ListPageMixin, ListView):
-    template_name = 'list.html'
-    model1 = Anime
-    header = 'Список аниме'
-    category = 'Anime'
+class ProductionList(ListPageMixin, ListView):
     genre_groups =\
         ['Anime Male', 'Anime Female', 'Standart', 'Anime Porn', 'Anime School']
 
@@ -151,8 +146,18 @@ def remove_from_list(request, pk):
     return HttpResponse('Ok')
 
 
-class AnimeDetail(DetailPageMixin, DetailView):
-    pass
+class ProductDetail(DetailView):
+    model = Production
+    template_name = 'detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProductDetail, self).get_context_data(**kwargs)
+        context['header'] = context['object'].title
+        context['category'] = self.kwargs['category']
+        context['is_listed'] = ListedProduct.objects.filter(
+            user=self.request.user, product__title=context['object'].title
+            ).first()
+        return context
 
 
 class AnimeEdit(BasePageMixin, UpdateView):
@@ -160,21 +165,6 @@ class AnimeEdit(BasePageMixin, UpdateView):
     model = Production
     genre_groups =\
         ['Anime Male', 'Anime Female', 'Standart', 'Anime Porn', 'Anime School']
-
-
-class AnimeChoiceView(BaseChoiceMixin, ListView):
-    model = Production
-    model1 = Anime
-    template_name = 'list.html'
-    header = 'Выборка'
-    category = 'Anime'
-    genre_groups =\
-        ['Anime Male', 'Anime Female', 'Standart', 'Anime Porn', 'Anime School']
-
-
-class AnimeSeriesView(InfoPageMixin, ListView):
-    template_name = 'manga/series.html'
-
 
 
 def add_serie(request, category, pk):
@@ -253,16 +243,6 @@ def log_out(request, url):
 
 
 #----------views for manga------------
-class MangaListView(ListPageMixin, ListView):
-    template_name = 'list.html'
-    model = Production
-    model1 = Manga
-    header = 'Список манги'
-    category = 'Manga'
-    genre_groups =\
-        ['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
-
-
 class AddManga(CreateMixin, CreateView):
     header = 'Добавление манги'
     genre_groups =\
@@ -300,15 +280,28 @@ def add_manga_serie(request):
     return HttpResponse(str(form))
 
 
-class MangaSeriesView(InfoPageMixin, ListView):
+class ProductionSeriesView(ListView):
+    ''' передаёт дополнительную информацию в страницы, где
+    указаны серии, герои, создатели и т.д '''
     template_name = 'manga/series.html'
+    
+    def get_queryset(self):
+        self.queryset = SeriesGroup.objects.filter(product=self.kwargs['pk'])
+        return self.queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(ProductionSeriesView, self).get_context_data(**kwargs)
+        # Список тех серий, что мы посмотрели
+        context['numbers'] = [i.id for item in
+            ListedProduct.objects.filter(user=self.request.user,
+                product=self.kwargs['pk']) for i in item.series.all()]
+        print(context['numbers'])
+        context['numbers'] = json.dumps(context['numbers'])
+        return context
 
 
-class MangaDetailView(DetailPageMixin, DetailView):
-    pass
 
-
-class MangaChoiceView(BaseChoiceMixin, ListView):
+class ProductionChoiceView(BaseChoiceMixin, ListView):
     model = Production
     template_name = 'list.html'
     header = 'Выборка манги по жанрам'

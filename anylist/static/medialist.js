@@ -305,6 +305,13 @@ var seriesModule = (function () {
 							type: "POST"
 						});
 					});
+					$(".serie_edit").click(function (eventObject) {
+						var tr = eventObject.target.parentElement.parentElement;
+						var num_serie = tr.id.split("-")[1];
+						var num_season = tr.parentElement.parentElement.id.split("-")[1];
+						
+						//console.log("Серия: " + num_serie + " Сезон: " + num_season);
+					});
 				} else {
 					console.log(err);
 				}

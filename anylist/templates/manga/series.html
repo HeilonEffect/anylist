@@ -11,91 +11,9 @@
 
 		// получаем список серий через api и отрисовываем его
 		$.get(["/api/product:" + product, "season:" + 1].join("/")).done(function (data) {
-			console.log(data);
+			//console.log(data);
 			// Получили первый сезон
 			seriesModule.renderVolume("main", "1", true, data, {{ numbers }});
 		});
-		/*var old_num, old_name, old_pub_date, old_len, ident, is_delta = false;
-		$(".edit-ser").click(function(element) {
-			var id = element.target.id.split("-")[0];
-			var season = element.target.id.split("-")[1];
-			console.log(season);
-			if ($("#" + element.target.id).attr("src") == "/static/check.png") {
-				// сохранение данных, если они изменились
-				// вместо old_name указать другой способ, т.к. непонятно, что делать
-				// если мы изменим данные (как вариант - на каждый ввод - пересохранять
-				// новое значение в переменной new_<xxx>)
-				$("#num-" + id + "-" + season).html(old_num);
-				$("#name-" + id + "-" + season).html(old_name);
-				$("#pub_ser-" + id + "-" + season).html(old_pub_date);
-				$("#len_ser-" + id + "-" + season).html(old_len);
-
-
-				if (is_delta && ident != -1) {
-					$.ajax({
-						url: "/" + category + "/series/edit",
-						data: {
-							number: old_num,
-							name: old_name,
-							start_date: old_pub_date,
-							length: old_len,
-							ident: ident,
-							product: link,
-							season: element.target.id.split("-")[1]
-						},
-						type: "POST",
-					});
-					is_delta = false;
-					ident = -1;
-				}
-				old_num = null;
-				$("#" + element.target.id).attr("src", "/static/edit.png")
-			}
-			// редактирование возможно только с одним элемнтом одновременно
-			else if (!old_num) {
-				old_num = $("#num-" + id + "-" + season).html();
-				ident = old_num;		// запоминаем номер исправляемой серии серии
-				old_name = $("#name-" + id + "-" + season).html();
-				old_pub_date = $("#pub_ser-" + id + "-" + season).html();
-				old_len = $("#len_ser-" + id + "-" + season).html();
-
-				$("#num-" + id + "-" + season).html("<input style='width:2em' value='" + old_num + "''>");
-				$("#name-" + id + "-" + season).html("<input value='" + old_name + "'>");
-				$("#pub_ser-" + id + "-" + season).html("<input id='new_time' value='" + old_pub_date + "'>");
-				$("#new_time").datetimepicker();
-				$("#len_ser-" + id + "-" + season).html("<input value='" + old_len + "'>");
-				// отрисовка поля ввода новых данных
-				$("#" + element.target.id).attr("src", "/static/check.png");
-			}
-		});
-		// сохранияем изменения форм серий
-		$(".num_ser").change(function (eventObject) {
-			var tmp = eventObject.target.value;
-			if (old_num != tmp) {
-				old_num = tmp;
-				is_delta = true;
-			}
-		});
-		$(".name_ser").change(function (eventObject) {
-			var tmp = eventObject.target.value;
-			if (old_name != tmp) {
-				old_name = tmp;
-				is_delta = true;
-			}
-		});
-		$(".pub_ser").change(function (eventObject) {
-			var tmp = eventObject.target.value;
-			if (old_pub_date != tmp) {
-				old_pub_date = tmp;
-				is_delta = true;
-			}
-		});
-		$(".len_ser").change(function (eventObject) {
-			var tmp = eventObject.target.value;
-			if (old_len != tmp) {
-				old_len = tmp;
-				is_delta = true;
-			}
-		});*/
 	</script>
 {% endblock %}

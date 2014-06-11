@@ -59,15 +59,10 @@
 	var url = window.location.pathname;
 	var category = url.split("/");
 
-	{% comment %}так мы опрееляем, что это шаблон list.html{% endcomment %}
+	{% comment %}так мы определяем, что это шаблон list.html{% endcomment %}
 	if ((category[1] != "profile" && !category[2]) || (category[2] == "filter"))  {
 		$("#header_section").append("<img src='/static/right_menu.png' id='right_menu'>");
 	}
-
-	$("#right_menu").click(function (eventObject) {
-		eventObject.preventDefault();
-		show_panel();
-	});
 	$("#log_in").click(function () {
 		authFormModule.hide_else_show();
 	});
