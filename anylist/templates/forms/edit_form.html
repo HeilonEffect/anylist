@@ -2,31 +2,6 @@
 {% block content %}
 	{% load wysiwyg %}
 	{% wysiwyg_setup %}
-	<div class="lightbox-genre">
-		<div id="stanard_genres">
-		<ul>
-		{% for genre in standart_genres.genres %}
-			<li>
-				<input type="checkbox" id="{{ genre }}" class="genre_check">
-				<label for="{{ genre }}">{{ genre.name }}</label>
-			</li>
-		{% endfor %}
-		</ul>
-		</div>
-		<div id="other_genres">
-		{% for group in genre_group %}
-			<ul>
-			{% for genre in group.genres %}
-				<li>
-				<input type="checkbox" id="{{ genre }}" class="genre_check">
-				<label for="{{ genre }}">{{ genre.name }}</label>
-				</li>
-			{% endfor %}
-			</ul><br>
-		{% endfor %}
-		</div>
-		<button id="close_lightbox">Close</button>
-	</div>
 	<form enctype="multipart/form-data" method="post" id="add_form">
 			<input name="title" type="text" placeholder="Enter title here" class="form-title" value="{{ object.title }}" id="edit_title">
 			<textarea class="form-textarea" rows="15" name="description" id="description">{{ object.description|safe }}</textarea>
@@ -40,13 +15,11 @@
 			{% endfor %}
 			</select>
 			<p></p>
-			<!--<button id="sel_genres">Выберите жанры</button>-->
 			<select name="old_limit" style="width:10em">
 			{% for item in raiting %}
 				<option value="{{ item.id }}">{{ item }}</option>
 			{% endfor %}
 			</select>
-			<!--<input type="text" class="select-list" placeholder="Введите возрастное ограничение" name="old_limit">-->
 		</div>
 		<div>
 			{% csrf_token %}
@@ -57,42 +30,20 @@
 {% endblock %}
 {% block script %}
 <script type="text/javascript">
-	var preload_data = [
-		{id: '1', text: 'Сёнен'}
-	];
-	var genres = [];
-	$(".lightbox-genre").hide();
-	$("#sel_genres").click(function (eventObject) {
-		$(".lightbox-genre").show();
-		eventObject.preventDefault();
-	});
-	$("#close_lightbox").click(function () {
-		$(".lightbox-genre").hide();
-	});
+	{% autoescape off %}
+		var data = {{ use_genres }};
+	{% endautoescape %}
+	var preload_data = [];
+	for (var i in data) {
+		preload_data.push({id: '' + i, text: data[i]});	
+	};
 	$("#datetimepick1").datetimepicker({
 		timepicker: false,
 		format: 'd/m/Y'
 	});
-	var tags = [];
-	{% for genre in object.genres.all %}
-	tags.push("{{ genre }}");
-	{% endfor %}
 	$("#genres").select2({
-		multiple: true,
 		width: 400,
 		placeholder: "Выберите жанры",
-		query: function (query) {
-			var data = {results: []};
-
-			$.each(preload_data, function () {
-				if (query.term.length ==0 || this.text.toUpperCase().indexOf(query.term.toUpperCase())>= 0) {
-					data.results.push({id: this.id, text: this.text});
-				}
-			});
-
-			query.callback(data);
-		}
-//		tags: ["Сёнен"]
 	});
 	$("#genres").select2('data', preload_data);
 	$("select[name='old_limit']").select2({
@@ -106,6 +57,7 @@
 		// указываем, куда отсылать запрос
 		var link = window.location.pathname.split("/");
 		var url = [link[1], link[2]].join("/");
+		console.log(url + "/edit");
 		$("#add_form").attr("action", "/" + url + "/edit");
 		//console.log(eventObject);
 		//return false;

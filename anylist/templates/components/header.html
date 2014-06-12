@@ -1,6 +1,5 @@
 <header>
 	<h1>{{ header }}</h1>
-
 	{% comment %}Меню в правом верхнем углу{% endcomment %}
 	<section id="header_section">
 		<input type="search" placeholder="Start enter name">
@@ -20,7 +19,7 @@
 	{% for group in nav_groups %}
 		<p>{{ group.name }}</p>
 		<ul>
-		{% for value in group.children %}
+		{% for value in group.dashs %}
 			<li>
 				<a href="/{{ value.get_absolute_url }}" class="minified">
 					<figure>

@@ -1,0 +1,32 @@
+#auth_form {
+	background-color: #F1C40F;
+	/*background-color: #E74C3C;*/
+	border: 1px solid black;
+	width: 10em;
+	height: 5.4em;
+	position: fixed;
+	right: 3em;
+	top: 4em;
+	padding: .5em;
+	z-index: 200;
+}
+#auth_form input {
+	height: 1.7em;
+	border: 1px solid black;
+}
+#auth_form input:focus {
+	border: 2px solid blue;
+}
+#auth_form input[type="submit"] {
+	height: 2.5em;
+	width: 6em;
+	right: 1em;
+	background-color: rgba(255, 255, 255, 0.1);
+	border: 2px solid black;
+}
+#is_reg {
+	margin-left: 1em;
+}
+label[for="is_reg"]:hover {
+/*	background-color: #E74C3C;*/
+}

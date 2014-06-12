@@ -128,12 +128,6 @@ class ProductionList(ListPageMixin, ListView):
         ['Anime Male', 'Anime Female', 'Standart', 'Anime Porn', 'Anime School']
 
 
-class AddAnime(CreateMixin, CreateView):
-    header = 'Добавление продукта'
-    genre_groups =\
-        ['Anime Male', 'Anime Female', 'Anime Standart', 'Anime School']
-
-
 def status_update(request, pk):
     p = ListedProduct.objects.get(user=request.user, product__id=pk)
     p.status=Status.objects.get(name=request.POST['name'])
@@ -160,11 +154,23 @@ class ProductDetail(DetailView):
         return context
 
 
-class AnimeEdit(BasePageMixin, UpdateView):
-    template_name = "forms/edit_form.html"
+class ProductionEdit(UpdateView):
+    template_name = 'forms/edit_form.html'
     model = Production
-    genre_groups =\
-        ['Anime Male', 'Anime Female', 'Standart', 'Anime Porn', 'Anime School']
+
+    success_url = '/manga/'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProductionEdit, self).get_context_data(**kwargs)
+
+        context['genres'] = Genre.objects.all()
+        context['header'] = 'Edit %s' % self.kwargs['category']
+        context['use_genres'] = json.dumps(
+            [str(item.name) for item in context['object'].genres.all()],
+            ensure_ascii=False
+        )
+        context['raiting'] = Raiting.objects.all()
+        return context
 
 
 def add_serie(request, category, pk):
@@ -192,7 +198,9 @@ def edit_serie(request):
         cd = form.cleaned_data
         Serie.objects.filter(number=old, season=g.id).update(**cd)
         return HttpResponse('success')
-    return HttpResponse(str(form))
+    result = json.dumps([item for item in form.errors.keys()])
+    print(result)
+    return HttpResponse(result)
 
 
 def auth1(request, url):
@@ -243,10 +251,26 @@ def log_out(request, url):
 
 
 #----------views for manga------------
-class AddManga(CreateMixin, CreateView):
-    header = 'Добавление манги'
-    genre_groups =\
-        ['Anime Male', 'Anime Female', 'Standart', 'Anime Porn', 'Anime School']
+class AddProduct(CreateView):
+    template_name = 'forms/add_form.html'
+    model = Production
+    form_class = AddForm
+    
+    def get_success_url(self):
+        # Создаём запись в базе с продуктом
+        p = Production.objects.last()
+        Types[self.kwargs['category']].objects.create(link=p)
+
+        return '/%s/' % self.kwargs['category']
+    
+    def get_context_data(self, **kwargs):
+        context = super(AddProduct, self).get_context_data(**kwargs)
+
+        context['genres'] = Genre.objects.all()
+        context['header'] = 'Create new %s' % self.kwargs['category']
+        context['raiting'] = Raiting.objects.all()
+
+        return context
 
 
 def add_manga_vol(request):
@@ -259,21 +283,6 @@ def add_manga_vol(request):
     if cd['number'] != 1:
         cd['number'] = cd['number'].number + 1
     form = AddMangaVolumeForm(cd)
-    if form.is_valid():
-        form.save()
-        return HttpResponse('success')
-    return HttpResponse(str(form))
-
-
-def add_manga_serie(request):
-    ''' У манги может быть несолько томов, поэтому мы будем иметь
-    возможность добавить новый том '''
-    cd = request.POST.copy()
-    cd['season'] = SeriesGroup.objects.get(
-        product=cd['product'], number=cd['season']).id
-    del cd['product']
-    form = AddSerieForm(cd)
-    print(cd)
     if form.is_valid():
         form.save()
         return HttpResponse('success')
@@ -300,12 +309,11 @@ class ProductionSeriesView(ListView):
         return context
 
 
-
 class ProductionChoiceView(BaseChoiceMixin, ListView):
     model = Production
     template_name = 'list.html'
     header = 'Выборка манги по жанрам'
     category = 'Manga'
     genre_groups =\
-        ['Anime Male', 'Anime Female']#, 'Anime School', 'Standart', 'Anime Porn']
+        ['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
     model1 = Manga

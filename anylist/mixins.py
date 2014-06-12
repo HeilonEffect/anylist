@@ -11,39 +11,6 @@ from apps.models import *
 
 Types = {'anime': Anime, 'manga': Manga}
 
-class BasePageMixin(object):
-	''' Содержит одинаковые для всех классов приложения операции '''
-	def get_context_data(self, **kwargs):
-		context = super(BasePageMixin, self).get_context_data(**kwargs)
-
-		context['genres'] = Genre.objects.all()
-		context['header'] = 'Добавление'
-		context['raiting'] = Raiting.objects.all()
-
-		return context
-
-
-class CreateMixin(object):
-	template_name = 'forms/add_form.html'
-	model = Production
-	form_class = AddForm
-	
-	def get_success_url(self):
-		# Создаём запись в базе с продуктом
-		p = Production.objects.last()
-		Types[self.kwargs['category']].objects.create(link=p)
-
-		return '/%s/' % self.kwargs['category']
-	
-	def get_context_data(self, **kwargs):
-		context = super(CreateMixin, self).get_context_data(**kwargs)
-
-		context['genres'] = Genre.objects.all()
-		context['raiting'] = Raiting.objects.all()
-
-		return context
-
-
 class ListPageMixin(object):
 	model = Production
 	template_name = 'list.html'

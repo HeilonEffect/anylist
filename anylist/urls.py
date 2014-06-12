@@ -24,31 +24,26 @@ urlpatterns = patterns('',
     url(r'^(?P<url>.+)/logout$', log_out),
     url(r'^search$', search),
 
-    # Добавление нового продукта
-    url(r'^(?P<category>\w+)/add$', AddManga.as_view()),
-
     url(r'^profile/$', profile),
-#    url(r'^mylist/add$', add_list),
     url(r'^mylist/series/add$', add_list_serie),
     url(r'^mylist/series/del$', del_list_serie),
     url(r'^profile/list/(?P<category>\w+)/(?P<status>\w+)$', UserList.as_view()),
 
     # Новые url'ы, для более универсальных вьюх
-    url(r'^\w+/(?P<pk>\d+)-\w+/remove_from_list', remove_from_list),
-    url(r'^\w+/(?P<pk>\d+)-\w+/series/remove_from_list', remove_from_list),
+    url(r'^(?P<category>\w+)/add$', AddProduct.as_view()),
+    url(r'^\w+/(?P<pk>\d+)-\w+/remove_from_list$', remove_from_list),
+    url(r'^\w+/(?P<pk>\d+)-\w+/series/remove_from_list$', remove_from_list),
     url(r'^\w+/(?P<pk>\d+)-\w+/status$', status_update),
-    url(r'^(?P<category>\w+)/(?P<pk>\w+)-\w+$', ProductDetail.as_view()),
-    url(r'^(?P<category>\w+)/(?P<pk>\w+)-\w+/series$', ProductionSeriesView.as_view()),
+    url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+$', ProductDetail.as_view()),
+    url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+/edit$', ProductionEdit.as_view()),
+    url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+/series$', ProductionSeriesView.as_view()),
     url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+/series/add$', add_serie),
     url(r'^(?P<category>\w+)/$', ProductionList.as_view()),
-    url(r'^(?P<category>\w+)/filter/(?P<args>(.+))/?', ProductionChoiceView.as_view()),
+    url(r'^(?P<category>\w+)/filter/(?P<args>(.+))/?$', ProductionChoiceView.as_view()),
+    url(r'^\w+/series/edit$', edit_serie),
     url(r'^add_to_list$', add_list),
 
-    url(r'^anime/(?P<pk>\d+)-(?P<name>\w+)/edit$', AnimeEdit.as_view()),
-    url(r'^anime/series/edit$', edit_serie),
-
     url(r'^manga/volume/add$', add_manga_vol),
-    url(r'^manga/series/edit$', edit_serie),
 
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 )

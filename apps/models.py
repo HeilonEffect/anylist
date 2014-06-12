@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models import F
 from django.contrib.auth.models import User
 
-from anylist.settings import MEDIA_ROOT, MEDIA_URL, STATICFILES_DIRS
+from anylist.settings import MEDIA_ROOT, MEDIA_URL, first_static
 
 
 class GenreGroup(models.Model):
@@ -43,14 +43,17 @@ class ThematicGroup(models.Model):
         return Category.objects.filter(group=self.id)
     children = property(_children)
 
+    def _dashs(self):
+        return DashBoard.objects.filter(group=self.id)
+    dashs = property(_dashs)
+
     def __str__(self):
         return self.name
 
 
-class Category(models.Model):
-    ''' Здесь мы перечисляем названия разделов сайта '''
-    name = models.CharField(max_length=40, unique=True) # на английском
-    avatar = models.FileField(upload_to=MEDIA_ROOT)
+class DashBoard(models.Model):
+    name = models.CharField(max_length=30, unique=True)
+    icon = models.ImageField(upload_to=MEDIA_ROOT)
     group = models.ForeignKey(ThematicGroup)
 
     def get_absolute_url(self):
@@ -60,13 +63,30 @@ class Category(models.Model):
         return self.name
 
     def avatar_path(self):
-        return '/static/' + str(self.avatar).split('/')[-1]
+        return '/media/' + str(self.icon).split('/')[-1]
+
+
+class Category(models.Model):
+    ''' Здесь мы перечисляем названия разделов сайта '''
+    name = models.CharField(max_length=40, unique=True) # на английском
+    avatar = models.ImageField(upload_to=MEDIA_ROOT)
+    group = models.ForeignKey(ThematicGroup)
+
+    def get_absolute_url(self):
+        return self.name.lower()
+
+    def __str__(self):
+        return self.name
+
+    def avatar_path(self):
+        return '/media/' + str(self.avatar).split('/')[-1]
 
 
 class Production(models.Model):
     title = models.CharField(max_length=255, unique=True)
     description = models.TextField(null=True)
-    avatar = models.FileField(upload_to=MEDIA_ROOT)
+    avatar = models.ImageField(upload_to=MEDIA_ROOT)
+#    avatar = models.FileField(upload_to=MEDIA_ROOT)
 
     genres = models.ManyToManyField(Genre)
     old_limit = models.ForeignKey(Raiting)

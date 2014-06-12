@@ -261,8 +261,10 @@ var addToListModule = (function () {
 	}
 }());
 
+// Рендеринг списка серий
+// Сделано сразу так, что-бы при редактировании, когда требуется интерактивность
+// не пихать html ручками в jQuery функции, как делалось в прошлых версиях
 var seriesModule = (function () {
-	var numbers = [];	// контроль, что-бы не создать сезоны с одинаковами номерами
 	_renderVolume = function (tag, number, is_auth, series, numbers) {
 		just.render(
 			"add_serie_form",
@@ -270,7 +272,8 @@ var seriesModule = (function () {
 			function (err, html) {
 				if (!err) {
 					$(tag).append(html);
-					$("#strt").datetimepicker();
+					$(".strt").datetimepicker();
+					
 					// добавление новой серии
 					$(".add-serie-form").submit(function (eventObject) {
 						var season = eventObject.target.id;
@@ -286,6 +289,7 @@ var seriesModule = (function () {
 						});
 						return false;
 					});
+					// Добавление/удаление новой серии в список/из списка просмотренных
 					$(".serie_action").click(function (eventObject) {
 						var txt = eventObject.target.textContent;
 						var num_serie = eventObject.target.parentElement.parentElement.id.split("-")[1];
@@ -303,14 +307,79 @@ var seriesModule = (function () {
 								season: number
 							},
 							type: "POST"
+						}).done(function () {
+							if (url.endsWith("add"))
+								eventObject.target.textContent = "Удалить из списка";
+							else
+								eventObject.target.textContent = "Добавить в список";
 						});
 					});
+
+					// Изменение данных серии
 					$(".serie_edit").click(function (eventObject) {
 						var tr = eventObject.target.parentElement.parentElement;
 						var num_serie = tr.id.split("-")[1];
 						var num_season = tr.parentElement.parentElement.id.split("-")[1];
+						tr = document.getElementById("s-" + num_serie);
+						var dict = {number: "", name: "", start_date: "", length: ""};
+						var ident;
 						
-						//console.log("Серия: " + num_serie + " Сезон: " + num_season);
+						// Извлекаем текущие данные указанной серии
+						var i = 0;
+						for (var key in dict) {
+							dict[key] = tr.children[i].textContent;
+							i++;
+						}
+						// рендерим формочку для изменения данных указанной серии
+						just.render("input_serie", dict, function (err, html) {
+							if (!err) {
+								// вставляем input'ы в таблицу
+								$("#s-" + num_serie).html(html);
+								$("#serie-update").click(function (eventObject) {
+									// при нажатии на кнопку отправки данных проверяем,
+									// действительно ли значения были изменены,
+									// если это так - то отправляем данные
+									i = 0;
+									var update_flag = false;
+									for (var key in dict) {
+										var tmp = tr.children[i].children[0].value;
+										if (dict[key] != tmp) {
+											dict[key] = tmp;
+											ident = num_serie;
+											update_flag = true;
+										}
+										i++;
+									}
+									// Логика для отправки измененных данных на сервер
+									if (update_flag) {
+										var lnk = window.location.pathname.split("/")[1];
+										dict['product'] = window.location.pathname.split("/")[2].split("-")[0];
+										dict['season'] = 1;
+										dict['ident'] = ident;
+										$.ajax({
+											url: "/" + lnk + "/series/edit",
+											data: dict,
+											type: "POST"
+										}).done(function (eventObject) {
+											if (eventObject != "success") {
+												// подсвечивание невалидных полей
+											} else {
+												// перерисовка с учетом новых данных
+												just.render(
+													"result_serie", dict,
+													function (err, html) {
+														if (!err) {
+															$("#s-" + num_serie).html(html);
+														} else
+															console.log(err);
+													});
+											}
+										});
+									}
+								});
+							} else
+								console.log(err);
+						});
 					});
 				} else {
 					console.log(err);
