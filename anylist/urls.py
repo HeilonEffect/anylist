@@ -53,6 +53,7 @@ urlpatterns += patterns('apps.views',
     url(r'^api/products$', ProductList.as_view(), name='product-list'),
     url(r'^api/status$', StatusList.as_view()),
     url(r'^api/product:(?P<pk>\d+)/season:(?P<number>\d+)$', SeriesView.as_view(), name='series-list'),
+    url(r'^api/product:(?P<pk>\d+)/seasons$', SeriesView.as_view(), name='seasons-list'),
 )
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'api'])

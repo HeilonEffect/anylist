@@ -8,12 +8,12 @@
 	<script type="text/javascript">;
 		infoBlockModule.renderLeftMenu("nav");
 		var product = window.location.pathname.split("/")[2].split("-")[0];
+		var num_seasons = {{ num_seasons }};
 
 		// получаем список серий через api и отрисовываем его
-		$.get(["/api/product:" + product, "season:" + 1].join("/")).done(function (data) {
-			//console.log(data);
-			// Получили первый сезон
-			seriesModule.renderVolume("main", "1", true, data, {{ numbers }});
-		});
+		/*for (var i = num_seasons; i > 0; i--)*/
+			$.get(["/api/product:" + product, "season:" + 1].join("/")).done(function (data) {
+				seriesModule.renderVolume("main", "1", true, data, {{ numbers }});
+			});
 	</script>
 {% endblock %}

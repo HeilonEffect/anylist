@@ -14,6 +14,7 @@ class StatusSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class SerieSerializer(serializers.ModelSerializer):
+	start_date = serializers.DateTimeField(format='%Y/%m/%d %H:%M')
 	class Meta:
 		model = Serie
 		fields = ('id', 'number', 'name', 'start_date', 'length')

@@ -32,7 +32,13 @@ class StatusList(generics.ListCreateAPIView):
 
 class SeriesView(generics.ListAPIView):
 	queryset = Serie.objects.all()
+	
 	def get_queryset(self):
-		return self.queryset.filter(
-			season__product__id=self.kwargs['pk'], season__number=self.kwargs['number'])
+		if self.kwargs.get('number'):
+			return self.queryset.filter(
+				season__product__id=self.kwargs['pk'],
+				season__number=self.kwargs['number'])
+		else:
+			return self.queryset.filter(
+				season__product__id=self.kwargs['pk']).order_by('-season__id', '-number')
 	serializer_class = SerieSerializer

@@ -118,7 +118,6 @@ def add_list(request):
     if form.is_valid():
         form.save()
         return HttpResponse('success')
-    print(form)
     return HttpResponse(str(form))
 
 
@@ -199,7 +198,6 @@ def edit_serie(request):
         Serie.objects.filter(number=old, season=g.id).update(**cd)
         return HttpResponse('success')
     result = json.dumps([item for item in form.errors.keys()])
-    print(result)
     return HttpResponse(result)
 
 
@@ -300,11 +298,14 @@ class ProductionSeriesView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ProductionSeriesView, self).get_context_data(**kwargs)
+
+        context['num_seasons'] = SeriesGroup.objects.filter(
+            product__id=self.kwargs['pk']).count()
+
         # Список тех серий, что мы посмотрели
         context['numbers'] = [i.id for item in
             ListedProduct.objects.filter(user=self.request.user,
                 product=self.kwargs['pk']) for i in item.series.all()]
-        print(context['numbers'])
         context['numbers'] = json.dumps(context['numbers'])
         return context
 

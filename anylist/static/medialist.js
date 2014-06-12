@@ -335,6 +335,7 @@ var seriesModule = (function () {
 							if (!err) {
 								// вставляем input'ы в таблицу
 								$("#s-" + num_serie).html(html);
+								$("#start_date").datetimepicker();
 								$("#serie-update").click(function (eventObject) {
 									// при нажатии на кнопку отправки данных проверяем,
 									// действительно ли значения были изменены,
@@ -349,6 +350,8 @@ var seriesModule = (function () {
 											update_flag = true;
 										}
 										i++;
+										if (i == 4)
+											break;
 									}
 									// Логика для отправки измененных данных на сервер
 									if (update_flag) {
@@ -360,9 +363,13 @@ var seriesModule = (function () {
 											url: "/" + lnk + "/series/edit",
 											data: dict,
 											type: "POST"
-										}).done(function (eventObject) {
-											if (eventObject != "success") {
+										}).done(function (data) {
+											if (data != "success") {
 												// подсвечивание невалидных полей
+												var keys = JSON.parse(data);
+												for (var i in keys) {
+													$("input[name='" + keys[i] + "'][class=dd_sr]").css("border-color", "red");
+												}
 											} else {
 												// перерисовка с учетом новых данных
 												just.render(
@@ -375,6 +382,15 @@ var seriesModule = (function () {
 													});
 											}
 										});
+									} else {
+										just.render(
+													"result_serie", dict,
+													function (err, html) {
+														if (!err) {
+															$("#s-" + num_serie).html(html);
+														} else
+															console.log(err);
+													});
 									}
 								});
 							} else
