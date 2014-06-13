@@ -290,7 +290,7 @@ def add_manga_vol(request):
 class ProductionSeriesView(ListView):
     ''' передаёт дополнительную информацию в страницы, где
     указаны серии, герои, создатели и т.д '''
-    template_name = 'manga/series.html'
+    template_name = 'series.html'
     
     def get_queryset(self):
         self.queryset = SeriesGroup.objects.filter(product=self.kwargs['pk'])
@@ -299,8 +299,14 @@ class ProductionSeriesView(ListView):
     def get_context_data(self, **kwargs):
         context = super(ProductionSeriesView, self).get_context_data(**kwargs)
 
-        context['num_seasons'] = SeriesGroup.objects.filter(
-            product__id=self.kwargs['pk']).count()
+        js = []
+        for item in self.queryset:
+            js.append({'number': item.number, 'name': item.name, 'series':
+                [{'number': elem.number, 'name': elem.name,
+                    'start_date': str(elem.start_date), 'length': elem.length}
+                    for elem in item.series]
+            })
+        context['object'] = json.dumps(js, ensure_ascii=False)
 
         # Список тех серий, что мы посмотрели
         context['numbers'] = [i.id for item in

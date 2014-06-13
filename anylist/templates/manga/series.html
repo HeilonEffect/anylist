@@ -1,14 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
 <button id="new_vol">Новый том</button>
+{% autoescape off %}
+	<div ng-app ng-init="{{ object }}">
+	</div>
+{% endautoescape %}
 {% endblock %}
 
 {% block script %}
 	{{ block.super }}
 	<script type="text/javascript">;
 		infoBlockModule.renderLeftMenu("nav");
+		{% autoescape off %}
+			var items = {{ object }};
+		{% endautoescape %}
 		var product = window.location.pathname.split("/")[2].split("-")[0];
-		var num_seasons = {{ num_seasons }};
+//		var num_seasons = {{ num_seasons }};
 
 		// получаем список серий через api и отрисовываем его
 		/*for (var i = num_seasons; i > 0; i--)*/

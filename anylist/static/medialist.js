@@ -407,3 +407,6 @@ var seriesModule = (function () {
 		renderVolume: _renderVolume
 	}
 }());
+function drawSeason() {
+	just.render()
+}

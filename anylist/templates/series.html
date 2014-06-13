@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ru" ng-app="series">
+<head>
+  	<meta charset="utf-8">
+  	<title>Series page</title>
+  	<link rel="stylesheet" href="/static/css/medialist.css">
+	<link rel="stylesheet" href="/static/datetimepicker/jquery.datetimepicker.css">
+	<link rel="stylesheet" href="/static/select2/select2.css">
+	<link rel="stylesheet" href="/static/css/header.css">
+	<link rel="stylesheet" href="/static/css/auth_form.css">
+	<link rel="stylesheet" href="/static/css/add_form.css">
+	<script type="text/javascript" src="/static/lib/angular.min.js"></script>
+	<script src="/static/series/controllers.js"></script>
+</head>
+<body ng-controller="SeriesCtrl">
+	<main>
+		<section class="series_list_block" ng-repeat="season in seasons">
+			<h2>{{number}}</h2>
+			<form class="add-serie-form">
+				<input name="number" type="number">
+				<input name="name" type="text">
+				<input name="start_date" type="datetime-local" class="srtr">
+				<input name="length" type="number">
+				<input type="submit" value="Add">
+			</form>
+			<table>
+				<thead>
+					<tr>
+						<td ng-repeat="head in tablehead">{{head}}</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="serie in season.series">
+						<td>{{serie.number}}</td>
+						<td>{{serie.name}}</td>
+						<td>{{serie.start_date}}</td>
+						<td>{{serie.length}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+	</main>
+</body>
