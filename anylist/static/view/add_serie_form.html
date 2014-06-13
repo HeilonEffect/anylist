@@ -1,0 +1,33 @@
+<section class="series_list_block">
+	<h2><%= number %></h2>
+	<form class="add-serie-form" id="<%= number %>">
+		<input name="number" type="text">
+		<input name="name" type="text">
+		<input name="start_date" type="text" class="strt">
+		<input name="length" type="text">
+		<input type="submit" value="Add">
+	</form>
+	<table id="season-<%= number %>">
+		<% for (var i = 0; i < series.length; i++) { %>
+			<tr id="s-<%= series[i].number %>">
+				<td><%= series[i].number %></td>
+				<td><%= series[i].name %></td>
+				<td><%= series[i].start_date %></td>
+				<td><%= series[i].length %></td>
+				<% if (is_auth) { %>
+					<td><img src="/static/edit.png" class="serie_edit"></td>
+					<% if (numbers.indexOf(series[i].id) != -1) { %>
+						<td><button class="serie_action">Удалить из списка</button></td>
+					<% } else { %>
+						<td><button class="serie_action">Добавить в список</button></td>
+					<% } %>
+				<% } %>
+			</tr>
+		<% } %>
+	</table>
+<section>
+<!--
+	Используемые переменные: series - массив объектов, описывающих серию,
+	is_auth - true, если пользователь авторизован, иначе false
+	number - номер данного сезона
+-->

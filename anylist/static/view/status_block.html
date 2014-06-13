@@ -1,0 +1,12 @@
+<section class="status-options">
+	<span>Options</span>
+	<ul>
+	<% for (var i = 0; i < statuses.length; i++) { %>
+		<% if (statuses[i] == active) { %>
+			<li class="status-select active"><%= statuses[i] %></li>
+		<% } else { %>
+			<li class="status-select"><%= statuses[i] %></li>
+		<% } %>
+	<% } %>
+	</ul>
+</section>

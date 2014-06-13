@@ -1,0 +1,25 @@
+<section class="series_list_block">
+	<h2>{{number}}</h2>
+	<form class="add-serie-form" id="{{number}}">
+		<input name="number" type="text">
+		<input name="name" type="text">
+		<input name="start_date" type="text" class="strt">
+		<input name="length" type="text">
+		<input type="submit" value="Add">
+	</form>
+	<table id="season-{{number}}">
+		<thead>
+			<tr>
+				<th ng-repeat="head in tablehead">{{head.title}}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="item in items">
+				<td>{{item.number}}</td>
+				<td>{{item.name}}</td>
+				<td>{{item.start_date}}</td>
+				<td>{{item.length}}</td>
+			</tr>
+		</tbody>
+	</table>
+</section>

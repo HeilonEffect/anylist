@@ -1,0 +1,394 @@
+body {
+	font: 24px normal Times,Georgia,Cambria,"Times New Roman",serif;
+}
+h1 {
+	color: #444;
+}
+a {
+	text-decoration: none;
+	color: black;
+}
+sup {
+	font-size: 20px;
+	font-style: italic;
+	color: blue;
+}
+sub {
+	font-size: 14px;
+
+}
+figure {
+	min-width: 5em;
+	max-width: 10em;
+}
+figure img {
+	width: 8.6em;
+	height: 11.6em;
+	margin: 0;
+	padding: 0;
+	max-height: 15em;
+}
+figcaption {
+	margin-bottom: .3em;
+	margin-left: .4em;
+	height: 3em;
+	width: 8em;
+	overflow: hidden;
+}
+/* Grid для коллекций */
+main {
+	position: absolute;
+	top: 5em;
+	bottom: 0;
+	left: 1em;
+/*	left: 1em;*/
+	right: 0;
+	padding: .5em;
+	min-width: 10em;
+/*	width: 95%;*/
+}
+nav p {
+	margin-left: 1em;
+}
+nav {
+	font-size: 22px;
+	position: absolute;
+	top: 5em;
+	right: 0;
+	width: 11.5em;
+}
+nav > input {
+	margin-left: 1.5em;
+}
+/* Детальное описание карточки */
+main > article {
+	position: inherit;
+	left: 3em;
+	top: 1em;
+	width: 70%;
+}
+article > p {
+	text-indent: 1em;
+}
+article > p > a {
+	color: rgb(0, 0, 160);
+	cursor: pointer;
+}
+.avatars {
+	float: right;
+	margin: 7px 0 7px 7px;
+	width: 11em;
+}
+article img {
+	float: right;
+	margin: 0px 0 7px 7px;
+	width: 11em;
+}
+
+/*Конец детального описания карточки*/
+
+a > figure {
+	padding: .3em;
+	margin: .3em;
+}
+main ul {
+	padding: 0;
+	margin: 0;
+}
+main li {
+	list-style-type: none;
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+}
+/* Случаи не-ajax формы */
+main > form {
+	margin-left: 5%;
+	width: 90%;
+	height: 100%;
+}
+
+.form-title {
+	height: 2em;
+	border: none;
+	width: 70%;
+	border: .5px solid rgba(200, 200, 200, .8);
+}
+.form-textarea {
+	border: none;
+	max-width: 40%;
+	min-width: 40%;
+	display: inline;
+	border: .5px solid rgba(200, 200, 200, .8);
+}
+.select-list {
+	border: 1px solid black;
+	margin-left: 0;
+	font-size: 20px;
+	padding: .2em;
+}
+label:hover {
+	background-color: rgba(200, 200, 255, .5);
+}
+.nav_display {
+	position: absolute;
+	right: 4em;
+	top: 1em;
+	border: .5px solid rgba(0, 0, 0, 0);
+	padding: .7em;
+}
+.nav_display:hover {
+	border: .5px solid rgba(0, 0, 0, .3);
+}
+.panel_display {
+	position: absolute;
+	top: 1em;
+	background-color: white;
+	padding: .7em;
+	right: 1em;
+}
+.panel_display:hover {
+	border: .5px solid rgba(0, 0, 0, .3);
+}
+#left_menu {
+	display: none;
+	z-index: 1000;
+	background-color: white;
+	border: 1px solid black;
+}
+.box {
+	margin-left: .7em;
+}
+.orderable {
+	font-size: 16px;
+	top: 5em;
+	position: absolute;
+	right: 2em;
+	float: right;
+}
+.add_series_button {
+	position: fixed;
+	top: 2em;
+	left: 1em;
+}
+#add_serie_form {
+	position: fixed;
+	display: none;
+}
+.series_list {
+	width: 75%;
+}
+.series_list td {
+	border-bottom: 1px solid black;
+	/*border: 1px solid black;*/
+}
+.num_ser {
+	text-align: right;
+	width: 2em;
+}
+.name_ser {
+	text-indent: 1em;
+}
+.pub_ser {
+	width: 11em;
+}
+#auth {
+	position: fixed;
+	top: 1em;
+	right: 1em;
+}
+#logout {
+	position: fixed;
+	top: 1em;
+	right: 1em;
+}
+.add_me, .del_me {
+	position: absolute;
+	margin-left: 6.8em;
+	margin-top: .3em;
+	width: 1.5em;
+	height: 1.5em;
+	background: white;
+	border: 1px solid black;
+}
+.add_me img, .del_me img {
+	width: 1.5em;
+	height: 1.5em;
+}
+.manga-list {
+	width: 80%;
+	height: .5em;
+	background: red;
+}
+.anime-list {
+	width: 80%;
+	height: .5em;
+	background: blue;
+}
+.user-series-list {
+	width: 80%;
+}
+.user-series-list td {
+	border-bottom: 1px solid black;
+}
+.edit_me {
+	position: absolute;
+	margin-left: 5em;
+	margin-top: .3em;
+	border-radius: 1.5em;
+	width: 1.45em;
+	height: 1.45em;
+	background-color: white;
+}
+.edit_me img {
+	width: 1.5em;
+	height: 1.5em;
+}
+.actions.active {
+	background-color: rgba(100, 100, 100, .3);
+}
+.actions:hover {
+	cursor: pointer;
+	background-color: rgba(100, 100, 100, .3);
+}
+.bord_block {
+	text-indent: 4em;
+	padding: .3em;
+	background-color: rgba(100, 100, 100, .3);
+}
+#add_to_list_el {
+	margin-top: 2em;
+}
+#add_to_list:hover {
+	background-color: rgba(100, 100, 100, .3);
+	cursor: pointer;
+}
+#remove_from:hover {
+	background-color: rgba(100, 100, 100, .3);
+	cursor: pointer;
+}
+/* панель для переключения между категориями продукта */
+#about {
+	top: 0;
+	right: 2.5em;
+	width: 10em;
+	position: absolute;
+	height: 9em;
+}
+#about span {
+	background-color: #BDC3C7;
+	position: inherit;
+	width: 8.1em;
+	text-indent: 1em;
+	height: 1em;
+	padding: 1em;
+}
+#about a {
+	background-color: white;
+	position: inherit;
+	margin-top: 3em;
+	height: 2em;
+	padding: .11em;
+	text-indent: 1.9em;
+	width: 9.8em;
+	border: .2px solid rgba(0, 0, 0, .3);
+}
+/* Панель для смены статуса */
+.status-options {
+	position: absolute;
+	margin-top: 20em;
+	left: -1em;
+}
+.status-options span, #list-options span {
+	background-color: #BDC3C7;
+	height: 1em;
+	padding: 1em;
+	position: inherit;
+	width: 8.1em;
+}
+.status-options ul, #list-options ul {
+	margin-top: 2.9em;
+	position: inherit;
+	right: -10.1em;
+}
+.status-options li, #list-options li {
+	cursor: pointer;
+	margin-right: 1em;
+	background-color: white;
+	width: 9.8em;
+	padding: .11em;
+	text-indent: 1.3em;
+	height: 2em;
+	margin: 0;
+	border: .2px solid rgba(0, 0, 0, .3);
+}
+.status-options .active {
+	background-color: gray;
+	cursor: default;
+}
+ul {
+	list-style: none;
+}
+#list-options {
+	position: absolute;
+	margin-top: 14em;
+	left: -1em;
+}
+.series_list_block {
+	position: relative;
+	width: 75%;
+}
+.series_list_block table {
+}
+.series_list_block > table td:nth-child(1) {
+	width: 2em;
+	text-align: right;
+}
+.series_list_block > table td:nth-child(2) {
+	width: 10em;
+	text-align: right;
+}
+.series_list_block > table td:nth-child(3) {
+	width: 8em;
+	text-align: right;
+}
+.series_list_block > table td:nth-child(4) {
+	width: 5em;
+	text-indent: 3em;
+}
+
+.series_list_block h2 {
+	text-indent: .5em;
+	color: #444;
+}
+.series-list-block form {
+	position: inherit;
+	width: 100%;
+}
+.add-serie-form {
+}
+.add-serie-form input {
+	height: 2em;
+	border: .5px solid #F1C40F;
+}
+input[name="number"] {
+	width: 4em;
+}
+input[name="start_date"] {
+	width: 15em;
+}
+.add-serie-form input[name="name"] {
+	width: 15em;
+}
+input[name="length"] {
+	width: 8em;
+}
+input[type="submit"] {
+	border: 1px solid black;
+	height: 2.5em;
+	width: 6em;
+}
+td input {
+	height: 1.5em;
+	border: .5px solid #F1C40F;
+}
