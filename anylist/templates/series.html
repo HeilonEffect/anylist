@@ -4,40 +4,57 @@
   	<meta charset="utf-8">
   	<title>Series page</title>
   	<link rel="stylesheet" href="/static/css/medialist.css">
-	<link rel="stylesheet" href="/static/datetimepicker/jquery.datetimepicker.css">
-	<link rel="stylesheet" href="/static/select2/select2.css">
-	<link rel="stylesheet" href="/static/css/header.css">
+<!--	<link rel="stylesheet" href="/static/datetimepicker/jquery.datetimepicker.css">
+	<link rel="stylesheet" href="/static/select2/select2.css">-->
+	<link rel="stylesheet" href="/static/css/header.css"><!--
 	<link rel="stylesheet" href="/static/css/auth_form.css">
-	<link rel="stylesheet" href="/static/css/add_form.css">
-	<script type="text/javascript" src="/static/lib/angular.min.js"></script>
+	<link rel="stylesheet" href="/static/css/add_form.css">-->
+	<script src="/static/lib/angular.min.js"></script>
+	<script src="/static/lib/angular-cookies.min.js"></script>
 	<script src="/static/series/controllers.js"></script>
 </head>
 <body ng-controller="SeriesCtrl">
+	{% load nav_menu %}
+	{% if lst %}
+		{% main_menu header user lst %}
+	{% else %}
+		{% main_menu header user lst %}
+	{% endif %}
 	<main>
 		<section class="series_list_block" ng-repeat="season in seasons">
-			<h2>{{number}}</h2>
+			<h2>{[{season.number}]}</h2>
 			<form class="add-serie-form">
-				<input name="number" type="number">
-				<input name="name" type="text">
-				<input name="start_date" type="datetime-local" class="srtr">
-				<input name="length" type="number">
-				<input type="submit" value="Add">
+				<input ng-model="serie.number" type="number" required>
+				<input ng-model="serie.name" type="text">
+				<input ng-model="serie.start_date" type="text">
+				<input ng-model="serie.length" type="number" required>
+				<input type="submit" value="Add" ng-click="add_serie(serie, this)">
 			</form>
 			<table>
 				<thead>
 					<tr>
-						<td ng-repeat="head in tablehead">{{head}}</td>
+						<td ng-repeat="head in tablehead">{[{head}]}</td>
 					</tr>
 				</thead>
 				<tbody>
 					<tr ng-repeat="serie in season.series">
-						<td>{{serie.number}}</td>
-						<td>{{serie.name}}</td>
-						<td>{{serie.start_date}}</td>
-						<td>{{serie.length}}</td>
+						<td>{[{serie.number}]}</td>
+						<td>{[{serie.name}]}</td>
+						<td>{[{serie.start_date}]}</td>
+						<td>{[{serie.length}]}</td>
+						{% if user.is_authenticated %}
+							<td><img ng-src="{[{serie.imgUrl}]}" ng-click="edit(this)"></td>
+							<td><button class="serie_action" ng-click="add_to(this)">{[{serie.listed}]}</button></td>
+						{% endif %}
 					</tr>
 				</tbody>
 			</table>
 		</section>
 	</main>
+	<nav>
+		<menu>
+			<span>About</span>
+			<a ng-repeat="category in categories" href="{[{category.url}]}">{[{category.title}]}</a>
+		</menu>
+	</nav>
 </body>

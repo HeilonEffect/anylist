@@ -1,3 +1,5 @@
+import json
+
 from django.http import HttpResponse
 from django.shortcuts import render
 
@@ -42,3 +44,5 @@ class SeriesView(generics.ListAPIView):
 			return self.queryset.filter(
 				season__product__id=self.kwargs['pk']).order_by('-season__id', '-number')
 	serializer_class = SerieSerializer
+
+

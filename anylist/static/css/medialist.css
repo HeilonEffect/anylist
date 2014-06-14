@@ -334,8 +334,10 @@ ul {
 	margin-top: 14em;
 	left: -1em;
 }
+/*series.html*/
 .series_list_block {
 	position: relative;
+	left: 2em;
 	width: 75%;
 }
 .series_list_block table {
@@ -349,7 +351,7 @@ ul {
 	text-align: right;
 }
 .series_list_block > table td:nth-child(3) {
-	width: 8em;
+	width: 9em;
 	text-align: right;
 }
 .series_list_block > table td:nth-child(4) {

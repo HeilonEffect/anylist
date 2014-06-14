@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.core.cache import cache
 from django.db.models import F
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseServerError
 from django.shortcuts import render_to_response, render
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, FormView, UpdateView
@@ -23,7 +23,6 @@ from .mixins import *
 
 
 Types = {'anime': Anime, 'manga': Manga}
-
 
 #------------ Base Views -----------------
 class MainPage(ListView):
@@ -62,25 +61,36 @@ def profile(request):
 
 
 def add_list_serie(request):
-    ''' добваляем серию в список просмотренных '''
-    p = Serie.objects.get(number=request.POST['number'],
-        season__product__id=request.POST['product'],
-        season__number=request.POST['season']
-    )
-    product = ListedProduct.objects.get(
-        product__id=request.POST['product'], user=request.user)
-    product.series.add(p)
-    return HttpResponse("ok")
+    ''' добаваляем серию в список просмотренных '''
+    try:
+        p = Serie.objects.get(number=request.POST['number'],
+            season__product__id=request.POST['product'],
+            season__number=request.POST['season']
+        )
+        product = ListedProduct.objects.get(
+            product__id=request.POST['product'], user=request.user)
+        product.series.add(p)
+        return HttpResponse("ok")
+    except Exception as e:
+        print(e)
+        return HttpResponseServerError()
 
 
 def del_list_serie(request):
-    p = Serie.objects.get(number=request.POST['number'],
-        season__product=request.POST['product'],
-        season__number=request.POST['season']
-    )
-    product = ListedProduct.objects.get(product=request.POST['product'])
-    product.series.remove(p)
-    return HttpResponse('Ok')
+    try:
+        cd = {}
+        for key in request.POST.keys():
+            cd[key] = re.search(r'(\d+)', request.POST[key]).group()
+        p = Serie.objects.get(number=cd['number'],
+            season__product=cd['product'],
+            season__number=cd['season']
+        )
+        product = ListedProduct.objects.get(product=cd['product'])
+        product.series.remove(p)
+        return HttpResponse('Ok')
+    except Exception as e:
+        print(e)
+        return HttpResponseServerError()
 
 
 class UserList(LoginRequiredMixin, ListView):
@@ -174,12 +184,16 @@ class ProductionEdit(UpdateView):
 
 def add_serie(request, category, pk):
     ''' Добавляем новую серию в указанный сезон '''
+    print(request.POST)
     cd = request.POST.copy()
     pk = Production.objects.get(id=pk)
     p = SeriesGroup.objects.get_or_create(product=pk, number=cd['season'])
+    print(p)
+    # если ещё нет ни одного сезона, то срабатывает create, возвращающий кортеж
     if isinstance(p, tuple):
         p = p[0]
     cd['season'] = p.id
+    print(cd)
     form = AddSerieForm(cd)
     if form.is_valid():
         form.save()
@@ -314,6 +328,32 @@ class ProductionSeriesView(ListView):
                 product=self.kwargs['pk']) for i in item.series.all()]
         context['numbers'] = json.dumps(context['numbers'])
         return context
+
+
+def seasons_view(request, category, pk):
+    js = []
+    for item in SeriesGroup.objects.filter(product=pk):
+        js.append({'number': item.number, 'name': item.name, 'series':
+            [{'number': elem.number, 'name': elem.name,
+                'start_date': str(elem.start_date).split('+')[0][:-3],
+                'length': elem.length, 'id': elem.id}
+                for elem in item.series]
+        })
+    if request.user.is_authenticated():
+        listed = [i.id for item in
+            ListedProduct.objects.filter(user=request.user, product=pk)
+            for i in item.series.all()]
+        for season in js:
+            for serie in season['series']:
+                if serie['id'] in listed:
+                    serie['listed'] = 'Удалить из списка'
+                else:
+                    serie['listed'] = 'Добавить в список'
+                serie['imgUrl'] = '/static/edit.png'
+    for season in js:
+        for serie in season['series']:
+            del serie['id']
+    return HttpResponse(json.dumps(js, ensure_ascii=False), content_type='application/json')
 
 
 class ProductionChoiceView(BaseChoiceMixin, ListView):
