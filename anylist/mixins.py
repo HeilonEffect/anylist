@@ -3,13 +3,24 @@ import json
 import functools
 import operator
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import F, Q
+from django.http import HttpResponseNotFound
 
 from apps.forms import *
 from apps.models import *
 
 
 Types = {'anime': Anime, 'manga': Manga}
+
+
+class BasePageMixin(object):
+	def dispatch(self, *args, **kwargs):
+		if 'category' not in kwargs or kwargs['category'] not in Types:
+			return HttpResponseNotFound('<h1>Page Not Found</h1>')
+		else:
+			return super(BasePageMixin, self).dispatch(*args, **kwargs)
+
 
 class ListPageMixin(object):
 	model = Production
@@ -21,6 +32,7 @@ class ListPageMixin(object):
 			return self.queryset
 		else:
 			return self.queryset
+
 
 	def get_context_data(self, **kwargs):
 		context = super(ListPageMixin, self).get_context_data(**kwargs)

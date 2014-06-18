@@ -1,14 +1,17 @@
 # -*- encoding: utf-8 -*-
 import json
+import logging
 import re
 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.core.cache import cache
 from django.db.models import F
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseServerError
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseServerError, HttpResponseNotFound
 from django.shortcuts import render_to_response, render
+from django.views.decorators.http import require_http_methods
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, FormView, UpdateView
 from django.views.generic.detail import DetailView
@@ -22,6 +25,7 @@ from apps.serializers import ProductSerializer
 from .mixins import *
 
 
+logger = logging.getLogger(__name__)
 Types = {'anime': Anime, 'manga': Manga}
 
 #------------ Base Views -----------------
@@ -30,6 +34,7 @@ class MainPage(ListView):
     template_name = 'index.html'
 
 
+@require_http_methods(['GET'])
 def search(request):
     ''' Простейший поиск по названиям произведений '''
     result = dict(map(
@@ -42,6 +47,8 @@ def search(request):
         json.dumps(result), content_type='application/json')
 
 
+@login_required(login_url='/')
+@require_http_methods(['GET'])
 def profile(request):
     ''' страница профиля пользователя '''
     result = {}
@@ -60,6 +67,7 @@ def profile(request):
     return render(request, 'profile.html', result)
 
 
+@require_http_methods(['POST'])
 def add_list_serie(request):
     ''' добаваляем серию в список просмотренных '''
     try:
@@ -119,6 +127,7 @@ class UserList(LoginRequiredMixin, ListView):
         return context
 
 
+@require_http_methods(['POST'])
 def add_list(request):
     ''' Добавляем произведение в список '''
     cd = request.POST.copy()
@@ -131,13 +140,19 @@ def add_list(request):
     return HttpResponse(str(form))
 
 
-#------- views for anime ---------
 class ProductionList(ListPageMixin, ListView):
     genre_groups =\
         ['Anime Male', 'Anime Female', 'Standart', 'Anime Porn', 'Anime School']
 
+    def dispatch(self, *args, **kwargs):
+        if 'category' not in kwargs or kwargs['category'] not in Types:
+            return HttpResponseNotFound('<h1>Page not Found</h1>')
+        else:
+            return super(ProductionList, self).dispatch(*args, **kwargs)
+
 
 def status_update(request, pk):
+    ''' Меняем статус просмотра произведения '''
     p = ListedProduct.objects.get(user=request.user, product__id=pk)
     p.status=Status.objects.get(name=request.POST['name'])
     p.save()
@@ -153,12 +168,19 @@ class ProductDetail(DetailView):
     model = Production
     template_name = 'detail.html'
 
+    def dispatch(self, *args, **kwargs):
+        if 'pk' not in kwargs:
+            return HttpResponseNotFound('<h1>PageNotFound</h1>')
+        else:
+            return super(ProductDetail, self).dispatch(*args, **kwargs)
+
+
     def get_context_data(self, **kwargs):
         context = super(ProductDetail, self).get_context_data(**kwargs)
         context['header'] = context['object'].title
         context['category'] = self.kwargs['category']
         context['is_listed'] = ListedProduct.objects.filter(
-            user=self.request.user, product__title=context['object'].title
+            user=self.request.user.id, product__title=context['object'].title
             ).first()
         return context
 
@@ -182,23 +204,27 @@ class ProductionEdit(UpdateView):
         return context
 
 
+@require_http_methods(['POST'])
 def add_serie(request, category, pk):
     ''' Добавляем новую серию в указанный сезон '''
-    print(request.POST)
-    cd = request.POST.copy()
-    pk = Production.objects.get(id=pk)
-    p = SeriesGroup.objects.get_or_create(product=pk, number=cd['season'])
-    print(p)
-    # если ещё нет ни одного сезона, то срабатывает create, возвращающий кортеж
-    if isinstance(p, tuple):
-        p = p[0]
-    cd['season'] = p.id
-    print(cd)
-    form = AddSerieForm(cd)
-    if form.is_valid():
-        form.save()
-        return HttpResponse('success')
-    return HttpResponse('Invalid form data')
+    try:
+        cd = request.POST.copy()
+        pk = Production.objects.get(id=pk)
+        p = SeriesGroup.objects.get_or_create(product=pk, number=cd['season'])
+
+        # если ещё нет ни одного сезона, то срабатывает create, возвращающий кортеж
+        if isinstance(p, tuple):
+            p = p[0]
+        cd['season'] = p.id
+
+        form = AddSerieForm(cd)
+        if form.is_valid():
+            form.save()
+            return HttpResponse('success')
+        return HttpResponse('Invalid form data')
+    except Exception as e:
+        logger.error(e)
+        return HttpResponseServerError()
 
 
 def edit_serie(request):
@@ -215,6 +241,7 @@ def edit_serie(request):
     return HttpResponse(result)
 
 
+@require_http_methods(['POST', 'GET'])
 def auth1(request, url):
     url = "/%s" % url
     username = request.POST['username']
@@ -230,6 +257,7 @@ def auth1(request, url):
         return HttpResponse('Username or password incorrect')
 
 
+@require_http_methods(['POST', 'GET'])
 def register(request, url):
     if request.POST:
         form = RegisterForm(request.POST)
@@ -243,6 +271,7 @@ def register(request, url):
         return HttpResponseRedirect('/%s' % url)
 
 
+@require_http_methods(['POST', 'GET'])
 def auth(request, url):
     if request.POST:
         form = LoginForm(request.POST)
@@ -255,6 +284,7 @@ def auth(request, url):
         return HttpResponseRedirect('/%s' % url)
 
 
+@require_http_methods(['POST', 'GET'])
 def log_out(request, url):
     logout(request)
     if 'profile' in url:
@@ -262,29 +292,31 @@ def log_out(request, url):
     return HttpResponseRedirect('/' + url)
 
 
-#----------views for manga------------
-class AddProduct(CreateView):
+class AddProduct(LoginRequiredMixin, BasePageMixin, CreateView):
     template_name = 'forms/add_form.html'
     model = Production
-    form_class = AddForm
-    
-    def get_success_url(self):
-        # Создаём запись в базе с продуктом
-        p = Production.objects.last()
-        Types[self.kwargs['category']].objects.create(link=p)
+    form_class = AddForm    
 
-        return '/%s/' % self.kwargs['category']
+    def get_success_url(self):
+        try:
+            p = Production.objects.last()
+            Types[self.kwargs['category']].objects.create(link=p)
+            return '/%s/' % self.kwargs['category']
+        except Exception as e:
+            logger.error(e)
+            raise
     
     def get_context_data(self, **kwargs):
         context = super(AddProduct, self).get_context_data(**kwargs)
 
         context['genres'] = Genre.objects.all()
-        context['header'] = 'Create new %s' % self.kwargs['category']
+        context['header'] = 'Create new %s' % self.kwargs.get('category')
         context['raiting'] = Raiting.objects.all()
 
         return context
 
 
+@require_http_methods(['POST'])
 def add_manga_vol(request):
     ''' Т.к у манги несколько томов (SeriesGroup), то
     кнопка добавления серии появляется возле каждого конкретного
@@ -301,59 +333,46 @@ def add_manga_vol(request):
     return HttpResponse(str(form))
 
 
-class ProductionSeriesView(ListView):
-    ''' передаёт дополнительную информацию в страницы, где
-    указаны серии, герои, создатели и т.д '''
-    template_name = 'series.html'
-    
-    def get_queryset(self):
-        self.queryset = SeriesGroup.objects.filter(product=self.kwargs['pk'])
-        return self.queryset
+@require_http_methods(['GET'])
+def production_series_view(request, category, pk):
+    try:
+        result = {}
+        result['nav_groups'] = ThematicGroup.objects.all()
+        return render(request, 'series.html', result)
+    except Exception as e:
+        logger.error(e)
+        return HttpResponseServerError()
 
-    def get_context_data(self, **kwargs):
-        context = super(ProductionSeriesView, self).get_context_data(**kwargs)
 
+@require_http_methods(['GET'])
+def seasons_view(request, category, pk):
+    try:
         js = []
-        for item in self.queryset:
+        for item in SeriesGroup.objects.filter(product=pk):
             js.append({'number': item.number, 'name': item.name, 'series':
                 [{'number': elem.number, 'name': elem.name,
-                    'start_date': str(elem.start_date), 'length': elem.length}
+                    'start_date': str(elem.start_date).split('+')[0][:-3],
+                    'length': elem.length, 'id': elem.id}
                     for elem in item.series]
             })
-        context['object'] = json.dumps(js, ensure_ascii=False)
-
-        # Список тех серий, что мы посмотрели
-        context['numbers'] = [i.id for item in
-            ListedProduct.objects.filter(user=self.request.user,
-                product=self.kwargs['pk']) for i in item.series.all()]
-        context['numbers'] = json.dumps(context['numbers'])
-        return context
-
-
-def seasons_view(request, category, pk):
-    js = []
-    for item in SeriesGroup.objects.filter(product=pk):
-        js.append({'number': item.number, 'name': item.name, 'series':
-            [{'number': elem.number, 'name': elem.name,
-                'start_date': str(elem.start_date).split('+')[0][:-3],
-                'length': elem.length, 'id': elem.id}
-                for elem in item.series]
-        })
-    if request.user.is_authenticated():
-        listed = [i.id for item in
-            ListedProduct.objects.filter(user=request.user, product=pk)
-            for i in item.series.all()]
+        if request.user.is_authenticated():
+            listed = [i.id for item in
+                ListedProduct.objects.filter(user=request.user, product=pk)
+                for i in item.series.all()]
+            for season in js:
+                for serie in season['series']:
+                    if serie['id'] in listed:
+                        serie['listed'] = 'Удалить из списка'
+                    else:
+                        serie['listed'] = 'Добавить в список'
+                    serie['imgUrl'] = '/static/edit.png'
         for season in js:
             for serie in season['series']:
-                if serie['id'] in listed:
-                    serie['listed'] = 'Удалить из списка'
-                else:
-                    serie['listed'] = 'Добавить в список'
-                serie['imgUrl'] = '/static/edit.png'
-    for season in js:
-        for serie in season['series']:
-            del serie['id']
-    return HttpResponse(json.dumps(js, ensure_ascii=False), content_type='application/json')
+                del serie['id']
+        return HttpResponse(json.dumps(js, ensure_ascii=False), content_type='application/json')
+    except Exception as e:
+        logger.error(e)
+        return HttpResponseServerError()
 
 
 class ProductionChoiceView(BaseChoiceMixin, ListView):

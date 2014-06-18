@@ -4,6 +4,8 @@ from django.db import models
 from django.db.models import F
 from django.contrib.auth.models import User
 
+from easy_thumbnails.files import get_thumbnailer
+
 from anylist.settings import MEDIA_ROOT, MEDIA_URL, first_static
 
 
@@ -35,8 +37,9 @@ class Genre(models.Model):
         return "%i-%s" % (self.id, self.name)
 
 
+# возможно избыточная структура и её следует удалить
 class ThematicGroup(models.Model):
-    ''' Разделы сайта, объединенниые в группы '''
+    ''' Разделы сайта, объединенные в группы '''
     name = models.CharField(max_length=50, unique=True)
 
     def _children(self):
@@ -85,16 +88,21 @@ class Category(models.Model):
 class Production(models.Model):
     title = models.CharField(max_length=255, unique=True)
     description = models.TextField(null=True)
-    avatar = models.ImageField(upload_to=MEDIA_ROOT)
-#    avatar = models.FileField(upload_to=MEDIA_ROOT)
 
     genres = models.ManyToManyField(Genre)
     old_limit = models.ForeignKey(Raiting)
 
     pub_date = models.DateTimeField(auto_now=True)
 
+    avatar = models.ImageField(upload_to=MEDIA_ROOT)
+
+#    def avatar_path(self):
+#        return '/media/' + str(self.avatar).split('/')[-1]
+
     def avatar_path(self):
-        return '/media/' + str(self.avatar).split('/')[-1]
+        options = {'size': (250, 310), 'crop': True}
+        thumb_url = get_thumbnailer(self.avatar).get_thumbnail(options).url
+        return '/media/' + thumb_url.split('/')[-1]
 
     def get_category(self):
         for category in Category.objects.all():

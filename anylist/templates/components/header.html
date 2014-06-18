@@ -68,9 +68,9 @@
 	$("#log_out").click(function () {
 		var url = window.location.pathname;
 		if (url.endsWith("/"))
-			window.location.pathname += "logout";
+			window.location.pathname += "logout/";
 		else
-			window.location.pathname += "/logout";
+			window.location.pathname += "/logout/";
 	});
 	$("#show_main_menu").click(function () {
 		var global_menu = $("#global_menu");

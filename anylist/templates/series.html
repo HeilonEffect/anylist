@@ -1,34 +1,59 @@
+{% spaceless %}
 <!doctype html>
 <html lang="ru" ng-app="series">
 <head>
   	<meta charset="utf-8">
   	<title>Series page</title>
-  	<link rel="stylesheet" href="/static/css/medialist.css">
-<!--	<link rel="stylesheet" href="/static/datetimepicker/jquery.datetimepicker.css">
-	<link rel="stylesheet" href="/static/select2/select2.css">-->
-	<link rel="stylesheet" href="/static/css/header.css"><!--
-	<link rel="stylesheet" href="/static/css/auth_form.css">
-	<link rel="stylesheet" href="/static/css/add_form.css">-->
 	<script src="/static/lib/angular.min.js"></script>
 	<script src="/static/lib/angular-cookies.min.js"></script>
+
+	<link rel="stylesheet" href="/static/series/style.css">
 	<script src="/static/series/controllers.js"></script>
 </head>
 <body ng-controller="SeriesCtrl">
-	{% load nav_menu %}
-	{% if lst %}
-		{% main_menu header user lst %}
-	{% else %}
-		{% main_menu header user lst %}
-	{% endif %}
+	<header>
+		<h1>Series</h1>
+		<section>
+			<input type="search" placeholder="Start enter name">
+			{% if user.is_authenticated %}
+				<a href="/profile">{{ user.username }}</a>
+			{% endif %}
+			<img src="/static/show_main_menu.png" ng-click="show_menu()">
+			{% if user.is_authenticated %}
+				<button ng-click="logout()">Log Out</button>
+			{% else %}
+				<button ng-click="login()">Log In</button>
+			{% endif %}
+		</section>
+	</header>
+	{% comment %}Навигация по разделам{% endcomment %}
+	<details style="visibility:hidden">
+		{% for group in nav_groups %}
+			<p>{{ group.name }}</p>
+			<ul>
+				{% for value in group.dashs %}
+				<li>
+					<a href="/{{ value.get_absolute_url }}">
+						<figure>
+							<img src="{{ value.avatar_path }}">
+							<figcaption>{{ value }}</figcaption>
+						</figure>
+					</a>
+				</li>
+				{% endfor %}
+			</ul>
+		{% endfor %}
+	</details>
+	<div></div>
 	<main>
-		<section class="series_list_block" ng-repeat="season in seasons">
+		<section ng-repeat="season in seasons">
 			<h2>{[{season.number}]}</h2>
-			<form class="add-serie-form">
+			<form>
 				<input ng-model="serie.number" type="number" required>
 				<input ng-model="serie.name" type="text">
 				<input ng-model="serie.start_date" type="text">
 				<input ng-model="serie.length" type="number" required>
-				<input type="submit" value="Add" ng-click="add_serie(serie, this)">
+				<button ng-click="add_serie(serie, this)">Add</button>
 			</form>
 			<table>
 				<thead>
@@ -53,8 +78,10 @@
 	</main>
 	<nav>
 		<menu>
-			<span>About</span>
+			<h3>About</h3>
 			<a ng-repeat="category in categories" href="{[{category.url}]}">{[{category.title}]}</a>
 		</menu>
 	</nav>
 </body>
+</html>
+{% endspaceless %}

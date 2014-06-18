@@ -145,9 +145,9 @@ var authFormModule = (function () {
 			$(id1).append("<input type='checkbox' id='is_reg'><label for='is_reg'>Register Me</label>");
 			$(id1).submit(function () {
 				var check = document.getElementById("is_reg").checked;
-				var url = "login";
+				var url = "login/";
 				if (check)
-					url = "register";
+					url = "register/";
 				$.ajax({
 					url: url,
 					data: $(id1).serialize(),

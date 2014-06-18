@@ -1,3 +1,4 @@
+<% for season in season.series[] %>
 <section class="series_list_block">
 	<h2><%= number %></h2>
 	<form class="add-serie-form" id="<%= number %>">
@@ -26,8 +27,3 @@
 		<% } %>
 	</table>
 <section>
-<!--
-	Используемые переменные: series - массив объектов, описывающих серию,
-	is_auth - true, если пользователь авторизован, иначе false
-	number - номер данного сезона
--->

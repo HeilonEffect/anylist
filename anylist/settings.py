@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'south',
     'apps.templatetags.nav_menu',
     'django_wysiwyg',
+    'easy_thumbnails',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -66,6 +67,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    },
+    'slave': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'TEST_MIRROR': 'default'
     }
 }
 
@@ -113,6 +119,8 @@ MEDIA_URL = '/media/'
 #}
 DJANGO_WYSIWYG_FLAVOR = "ckeditor"
 
+#SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+#SESSION_CACHE_ALIAS = 'default'
 
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.
@@ -125,4 +133,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
+}
+
+
+THUMBNAIL_ALIASES = {
+    '': {
+        'avatar': {'size': (50,50), 'crop': True},
+    },
 }
