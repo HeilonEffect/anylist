@@ -1,7 +1,10 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.test import LiveServerTestCase
 from django.test import TestCase
 from django.test.client import Client, RequestFactory
+
+from selenium import webdriver
 
 from .models import *
 from anylist.views import *
@@ -83,7 +86,6 @@ class AddProductPageTest(TestCase):
 		self.factory = RequestFactory()
 		self.user = User.objects.create_user(username='jacob', email='jacob@_',
 			password='top_secret')
-#		self.user = authenticate(username='jacob', password='top_secret')
 		self.view = AddProduct.as_view()
 
 
@@ -93,17 +95,19 @@ class AddProductPageTest(TestCase):
 #		view = AddProduct.as_view()
 #		for category in Types:
 #			request = self.factory.get('/%s/add' % category)
-#			request.user = User.objects.get(id=1)
+#			#request.user = User.objects.get(id=1)
 #
+#			self.assertTrue(self.user.is_authenticated())
 #			user = authenticate(username='jacob', password='top_secret')
-#			login(request, user)
+#			#login(request, user)
+#			request.user = user
 #
 #			response = view(request)
 #
 #			self.assertEqual(response.status_code, 200)
 #			self.assertEqual(response.template_name[0], 'forms/add_form.html')
-
-
+#
+#
 	def test_get_add_product_unregister(self):
 		''' Недоступность страницы для добавления нового продукта для
 		незарегистрированных пользователей '''
@@ -115,6 +119,7 @@ class AddProductPageTest(TestCase):
 
 
 	def test_get_not_exits_product(self):
+		''' Страничка для добавления продукта несуществующей категории '''
 		view = AddProduct.as_view()
 		request = RequestFactory().get('yob/add')
 		request.user = User.objects.get(id=1)
@@ -124,5 +129,3 @@ class AddProductPageTest(TestCase):
 		self.assertEqual(response.status_code, 404)
 
 
-class SeriesPageTest(TestCase):
-	pass

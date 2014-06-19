@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.formtools.wizard.views import SessionWizardView
 from django.core.cache import cache
-from django.db.models import F
+from django.db.models import F, Max, Q
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseServerError, HttpResponseNotFound
 from django.shortcuts import render_to_response, render
 from django.views.decorators.http import require_http_methods
@@ -208,20 +208,13 @@ class ProductionEdit(UpdateView):
 def add_serie(request, category, pk):
     ''' Добавляем новую серию в указанный сезон '''
     try:
-        cd = request.POST.copy()
-        pk = Production.objects.get(id=pk)
-        p = SeriesGroup.objects.get_or_create(product=pk, number=cd['season'])
-
-        # если ещё нет ни одного сезона, то срабатывает create, возвращающий кортеж
-        if isinstance(p, tuple):
-            p = p[0]
-        cd['season'] = p.id
-
-        form = AddSerieForm(cd)
+        form = AddSerieForm(request.POST)
+        print(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponse('success')
-        return HttpResponse('Invalid form data')
+            return HttpResponse()
+        else:
+            return HttpResponseServerError(json.dumps(form.errors))
     except Exception as e:
         logger.error(e)
         return HttpResponseServerError()
@@ -316,23 +309,6 @@ class AddProduct(LoginRequiredMixin, BasePageMixin, CreateView):
         return context
 
 
-@require_http_methods(['POST'])
-def add_manga_vol(request):
-    ''' Т.к у манги несколько томов (SeriesGroup), то
-    кнопка добавления серии появляется возле каждого конкретного
-    тома '''
-    cd = request.POST.copy()
-    cd['number'] = SeriesGroup.objects.filter(
-        product=cd['product']).last() or 1
-    if cd['number'] != 1:
-        cd['number'] = cd['number'].number + 1
-    form = AddMangaVolumeForm(cd)
-    if form.is_valid():
-        form.save()
-        return HttpResponse('success')
-    return HttpResponse(str(form))
-
-
 @require_http_methods(['GET'])
 def production_series_view(request, category, pk):
     try:
@@ -346,30 +322,47 @@ def production_series_view(request, category, pk):
 
 @require_http_methods(['GET'])
 def seasons_view(request, category, pk):
+    '''
+    Сериализует в json список серий, сгруппированных по сезонам, с учетом
+    прав пользователя (модераторы пока не)
+    Формат: {'number': <int>, 'name': <str>, 'series': [{
+        'number': <int>, 'name': <str>, 'start_date': <date_time>,
+        'length': <int>
+    }]}'''
     try:
         js = []
-        for item in SeriesGroup.objects.filter(product=pk):
-            js.append({'number': item.number, 'name': item.name, 'series':
-                [{'number': elem.number, 'name': elem.name,
-                    'start_date': str(elem.start_date).split('+')[0][:-3],
-                    'length': elem.length, 'id': elem.id}
-                    for elem in item.series]
-            })
-        if request.user.is_authenticated():
+        listed = []
+        queryset = Serie.objects.filter(product=pk)
+        seasons = queryset.aggregate(Max('num_season'))
+
+        # Получаем список серий, просмотренных текущим юзером
+        if seasons['num_season__max'] and request.user.is_authenticated():
             listed = [i.id for item in
                 ListedProduct.objects.filter(user=request.user, product=pk)
                 for i in item.series.all()]
-            for season in js:
-                for serie in season['series']:
-                    if serie['id'] in listed:
-                        serie['listed'] = 'Удалить из списка'
+        
+        # "Обходим" по сезонам список серий
+        for season in range(1, (seasons['num_season__max'] or 0) + 1):
+            series = queryset.filter(num_season=season)
+            item = []
+            for i, serie in enumerate(series):
+                tmp = {'name': serie.name, 'number': serie.number,
+                    'start_date': str(serie.start_date or '-'),
+                    'length': serie.length
+                    }
+                if request.user.is_authenticated():
+                    if serie.id in listed:
+                        tmp['listed'] = 'Remove from list'
                     else:
-                        serie['listed'] = 'Добавить в список'
-                    serie['imgUrl'] = '/static/edit.png'
-        for season in js:
-            for serie in season['series']:
-                del serie['id']
-        return HttpResponse(json.dumps(js, ensure_ascii=False), content_type='application/json')
+                        tmp['listed'] = 'Add to list'
+                    tmp['imgUrl'] = '/static/edit.png'
+                item.append(tmp)
+            js.append({'number': season, 'series': item})
+
+        return HttpResponse(
+            json.dumps(js[::-1], ensure_ascii=False),
+            content_type='application/json')
+    
     except Exception as e:
         logger.error(e)
         return HttpResponseServerError()

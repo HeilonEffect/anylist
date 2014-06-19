@@ -32,6 +32,14 @@ header > section {
 	position: inherit;
 	width: 21em;
 }
+header > section > img {
+	border: .5px solid white;
+	padding: .5em;
+	margin-top: .5em;
+}
+header > section > img:hover {
+	border: 1px solid black;
+}
 header h1 {
 	position: inherit;
 	right: 11em;
@@ -79,6 +87,10 @@ nav menu > a{
 	text-indent: 1.5em;
 	border: .3px solid black;
 }
+nav menu > a:hover {
+	background-color: #BDC3C7;
+	cursor: pointer;
+}
 main section {
 	width: 100%;
 	display: block;
@@ -86,9 +98,9 @@ main section {
 main section > h2 {
 	text-indent: 1.8em;
 }
-main section > form {
+main form {
 }
-main section > form input {
+main form input {
 	margin: .5em;
 	height: 2em;
 	border: .5px solid #F1C40F;
@@ -118,4 +130,13 @@ details {
 }
 details li {
 	display: inline-block;
+}
+#space {
+	background-color: rgba(50, 50, 50, .3);
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 5em;
+	z-index: 5;
 }

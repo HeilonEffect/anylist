@@ -8,6 +8,7 @@ from apps.models import *
 class AddForm(ModelForm):
 	class Meta:
 		model = Production
+		fields = '__all__'
 
 
 class LoginForm(forms.Form):
@@ -22,18 +23,17 @@ class RegisterForm(forms.Form):
 
 
 class AddSerieForm(ModelForm):
-	start_date = forms.DateTimeField(required=False,
-		input_formats=['%Y/%m/%d %H:%M', '%Y-%m-%d %H:%M'])
+	''' Добавляем новую серию '''
+	start_date = forms.DateField(required=False,
+		input_formats=['%Y-%m-%d', '%d/%m/%Y'])
 	length = forms.IntegerField(required=False)
 	name = forms.CharField(required=False)
+	num_season = forms.CharField(required=False)
+	season = forms.ChoiceField(required=False)
+
 	class Meta:
 		model = Serie
-
-
-class AddMangaVolumeForm(ModelForm):
-	name = forms.CharField(required=False)
-	class Meta:
-		model = SeriesGroup
+		fields = '__all__'
 
 
 class AddToListForm(ModelForm):

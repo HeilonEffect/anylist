@@ -139,27 +139,15 @@ class Manga(models.Model):
         return self.link.title
 
 
-class SeriesGroup(models.Model):
-    number = models.PositiveSmallIntegerField(default=1)
-    name = models.CharField(max_length=255, null=True)
-    product = models.ForeignKey(Production)
-
-    def _series(self):
-        return Serie.objects.filter(season=self.id)
-    series = property(_series)
-
-    def __str__(self):
-        return '%i-%s' % (self.number, self.product.title)
-
-    class Meta:
-        ordering = ['-number']
-
-
+# Насчёт названия сезона - везде, где у сезона есть название - 
+# можно создать новый Production
 class Serie(models.Model):
     number = models.IntegerField()
-    name = models.CharField(max_length=255)
-    season = models.ForeignKey(SeriesGroup)
-    start_date = models.DateTimeField(null=True)
+    name = models.CharField(max_length=255, null=True)
+    num_season = models.PositiveSmallIntegerField(null=True, blank=True)
+    product = models.ForeignKey(Production)
+    start_date = models.DateField(null=True, blank=True)
+#    start_date = models.DateTimeField(null=True)
     length = models.IntegerField(null=True)
 
     def __str__(self):

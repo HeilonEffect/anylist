@@ -15,8 +15,6 @@ from apps.views import *
 admin.autodiscover()
 
 urlpatterns = patterns('',
-#    url(r'^', include(router.urls)),
-#    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^$', MainPage.as_view()),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^(?P<url>.*)register$', register),
@@ -29,7 +27,6 @@ urlpatterns = patterns('',
     url(r'^mylist/series/del$', del_list_serie),
     url(r'^profile/list/(?P<category>\w+)/(?P<status>\w+)$', UserList.as_view()),
 
-    # Новые url'ы, для более универсальных вьюх
     url(r'^(?P<category>\w+)/add$', AddProduct.as_view()),
     url(r'^\w+/(?P<pk>\d+)-\w+/remove_from_list$', remove_from_list),
     url(r'^\w+/(?P<pk>\d+)-\w+/series/remove_from_list$', remove_from_list),
@@ -37,7 +34,6 @@ urlpatterns = patterns('',
     url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+$', ProductDetail.as_view()),
     url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+/edit$', ProductionEdit.as_view()),
     url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+/series/$', production_series_view),
-#    url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+/series/$', ProductionSeriesView.as_view()),
     url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+/series/list$', seasons_view),
     url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+/series/add$', add_serie),
     url(r'^(?P<category>\w+)/$', ProductionList.as_view()),
@@ -45,13 +41,10 @@ urlpatterns = patterns('',
     url(r'^\w+/series/edit$', edit_serie),
     url(r'^add_to_list$', add_list),
 
-    url(r'^manga/volume/add$', add_manga_vol),
-
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 )
 
 urlpatterns += patterns('apps.views',
-#    url(r'^$', 'api_root'),
     url(r'^api/products$', ProductList.as_view(), name='product-list'),
     url(r'^api/status$', StatusList.as_view()),
     url(r'^api/product:(?P<pk>\d+)/season:(?P<number>\d+)$', SeriesView.as_view(), name='series-list'),

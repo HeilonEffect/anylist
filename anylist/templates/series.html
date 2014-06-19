@@ -6,6 +6,7 @@
   	<title>Series page</title>
 	<script src="/static/lib/angular.min.js"></script>
 	<script src="/static/lib/angular-cookies.min.js"></script>
+	<script src="/static/datetimepicker_css.js"></script>
 
 	<link rel="stylesheet" href="/static/series/style.css">
 	<script src="/static/series/controllers.js"></script>
@@ -14,7 +15,7 @@
 	<header>
 		<h1>Series</h1>
 		<section>
-			<input type="search" placeholder="Start enter name">
+			<input type="search" ng-model="search" placeholder="Start enter name" ng-change="searcher()">
 			{% if user.is_authenticated %}
 				<a href="/profile">{{ user.username }}</a>
 			{% endif %}
@@ -26,6 +27,12 @@
 			{% endif %}
 		</section>
 	</header>
+	<form>
+		<input ng-model="auth.username" name="username" type="text">
+		<input ng-model="auth.password" name="password" type="password">
+		<input ng-model="auth.email" name="email" type="email">
+		<button>Auth</button>
+	</form>
 	{% comment %}Навигация по разделам{% endcomment %}
 	<details style="visibility:hidden">
 		{% for group in nav_groups %}
@@ -44,15 +51,23 @@
 			</ul>
 		{% endfor %}
 	</details>
-	<div></div>
+	<div style="visibility:hidden" id="space" ng-click="hide_menu()"></div>
 	<main>
+		{% comment %}Добавляем серию из нового сезона{% endcomment %}
+		<h2>Season {[{num_seasons}]}</h2>
+		<form>
+			<input name="name" ng-model="serie1.name" type="text" placeholder="Name">
+			<input name="start_date" ng-model="serie1.start_date" type="text" placeholder="Date" id="demo2" onclick="javascript:NewCssCal('demo2')">
+			<input name="length" ng-model="serie1.length" type="number" placeholder="Length">
+			<button ng-click="add_serie_new_vol(serie1, this)">Add</button>
+		</form>
+		{% comment %}Список сезонов{% endcomment %}
 		<section ng-repeat="season in seasons">
-			<h2>{[{season.number}]}</h2>
+			<h2>Season {[{season.number}]}</h2>
 			<form>
-				<input ng-model="serie.number" type="number" required>
-				<input ng-model="serie.name" type="text">
-				<input ng-model="serie.start_date" type="text">
-				<input ng-model="serie.length" type="number" required>
+				<input name="name" ng-model="serie.name" type="text" placeholder="Name">
+				<input name="start_date" ng-model="serie.start_date" type="text" id="demo1" onclick="javascript:NewCssCal('demo1')" placeholder="Date">
+				<input name="length" ng-model="serie.length" type="number" placeholder="Length">
 				<button ng-click="add_serie(serie, this)">Add</button>
 			</form>
 			<table>

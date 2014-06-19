@@ -7,12 +7,15 @@ series.config(function($interpolateProvider) {
 	$interpolateProvider.endSymbol('}]}');
 });
 
-series.controller('SeriesCtrl', function ($scope, $http, $location) {
+series.controller('SeriesCtrl', function ($scope, $http, $location, $compile, $element) {
 	$scope.tablehead = ['Number', 'Name', 'Datetime', 'Length'];
 	
+	// Получаем список серий
 	$http.get($location.absUrl() + 'list').success(function (data) {
+		$scope.num_seasons = data.length + 1;
 		$scope.seasons = data;
 		// если серий не ноль и у нас есть права на добавление и редактирование
+		// добавляем соотвествующие заголовки в таблицу
 		if (data.length > 0)
 			if ('listed' in data[0].series[0]) {
 				$scope.tablehead = ['Number', 'Name', 'Datetime', 'Length', 'Edit', 'Add'];
@@ -28,12 +31,23 @@ series.controller('SeriesCtrl', function ($scope, $http, $location) {
 		{'title': 'Creators', 'url': [head_url, 'creators'].join('/')}
 	];
 
+	// Показываем/скрываем главное меню
 	$scope.show_menu = function () {
 		var elem = document.getElementsByTagName('details')[0];
-		if (elem.style.visibility == 'hidden')
+		var el = document.getElementById('space');
+		if (elem.style.visibility == 'hidden') {
 			elem.style.visibility = "visible";
-		else
+			el.style.visibility = 'visible';
+		} else {
 			elem.style.visibility = "hidden";
+			el.style.visibility = 'hidden';
+		}
+	}
+
+	// скрываем главное меню по нажатию на на свободную область
+	$scope.hide_menu = function () {
+		document.getElementsByTagName('details')[0].style.visibility = "hidden";
+		document.getElementById("space").style.visibility = "hidden";
 	}
 
 	$scope.logout = function () {
@@ -47,15 +61,57 @@ series.controller('SeriesCtrl', function ($scope, $http, $location) {
 	$scope.login = function () {
 	}
 
-	$scope.add_serie = function (data, elem) {
-		data = "number=" + data['number'] + "&start_date=" + data['start_date'] +
-			 "&length=" + data['length'] + "&season=" + elem.season.number;
+	$scope.searcher = function () {
+		;
+	}
+
+	$scope.add_serie_new_vol = function (data, elem) {
+		// Посылаем серию из нового сезона
+		data = "name=" + data['name'] + "&start_date=" + data['start_date'] +
+			"&length=" + data['length'] + "&number=1";
+		data += "&product=" + $location.absUrl().split("/")[4].split("-")[0];
+ 		data += "&num_season=" + elem.num_seasons;
+	 	data = data.replace("undefined", "", "g");
+
 		$http({
 			method: "POST",
 			url: $location.absUrl() + "add",
 			data: data,
 			headers: {
 				'Content-Type': "application/x-www-form-urlencoded"
+			}
+		});
+	}
+
+	$scope.add_serie = function (data, elem) {
+		// посылаем новую серию из существующего сезона
+		var d = data;
+		data = "name=" + data['name'] + "&start_date=" + data['start_date'] +
+			 "&length=" + data['length'] + "&num_season=" + elem.season.number;
+		data = data.replace("undefined", "", "g");
+
+		var number = elem.season.series.length + 1;
+		data += "&number=" + number;
+		data += "&product=" + $location.absUrl().split("/")[4].split("-")[0];
+		
+		$http({
+			method: "POST",
+			url: $location.absUrl() + "add",
+			data: data,
+			headers: {
+				'Content-Type': "application/x-www-form-urlencoded"
+			}
+		}).success(function (data, status, headers, config) {
+			// в случае успешного добавления серии немедленно отображаем её на странице
+			$scope.seasons[elem.season.number - 1].series.unshift(
+				{'number': number, 'name': d['name'], 'start_date': d['start_date'],
+				'length': d['length'], 'imgUrl': '/static/edit.png', 'listed': 'Add to List'});
+		}).error(function (data, status, headers, config) {
+			// в случае неуспешного недобавления подсвечиваем нужное поле
+			for (var key in data) {
+				var el = document.querySelectorAll('input[name="' + key + '"]')[1];
+				el.style.border = "2px solid red";
+				el.value = data[key];
 			}
 		});
 	}
