@@ -1,4 +1,6 @@
-var series = angular.module('series', ['ngCookies']).run(function ($http, $cookies) {
+var series = angular.module('series', [
+		'ngCookies'
+	]).run(function ($http, $cookies) {
 	$http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
 });
 
@@ -7,7 +9,8 @@ series.config(function($interpolateProvider) {
 	$interpolateProvider.endSymbol('}]}');
 });
 
-series.controller('SeriesCtrl', function ($scope, $http, $location, $compile, $element) {
+series.controller('SeriesCtrl', ['$scope', '$http', '$location', '$compile', '$element',
+	function ($scope, $http, $location, $compile, $element) {
 	$scope.tablehead = ['Number', 'Name', 'Datetime', 'Length'];
 	
 	// Получаем список серий
@@ -59,10 +62,44 @@ series.controller('SeriesCtrl', function ($scope, $http, $location, $compile, $e
 	}
 
 	$scope.login = function () {
+		var elem = document.getElementById("auth_form");
+		if (elem.style.visibility == "hidden")
+			elem.style.visibility = "visible";
+		else 
+			elem.style.visibility = "hidden";
 	}
 
-	$scope.searcher = function () {
-		;
+
+	$scope.start_auth = function (data) {
+		// Не работает автозаполнение
+		data = "username=" + data['username'] + "&password=" + data['password'] + "&email=" + data['email'];
+		data = data.replace("undefined", "", "g");
+		var url = $location.absUrl();
+		if (data['is_reg'])
+			url += 'register/';
+		else
+			url += "login/";
+		$http({
+			method: "POST",
+			url: $location.absUrl() + "login/",
+			data: data,
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded"
+			}
+		}).success(function () {
+			window.location.href = window.location.href;
+		});
+	}
+
+	$scope.searcher = function (data) {
+		$http.get('/search?key=' + data).success(function (data) {
+			$scope.search_result = [];
+			if ($scope.search_result) {
+				document.getElementById("search_result").style.visibility = "visible";
+				for (key in data)
+					$scope.search_result.push({'key': key, 'value': data[key]});
+			}
+		});
 	}
 
 	$scope.add_serie_new_vol = function (data, elem) {
@@ -124,13 +161,14 @@ series.controller('SeriesCtrl', function ($scope, $http, $location, $compile, $e
 		var len_seasons = elem.$parent.$parent.seasons.length;
 
 		if ($scope.seasons[len_seasons - season].series[len_ser - serie].imgUrl.endsWith("edit.png")) {
-			$scope.seasons[len_seasons - season].series[len_ser - serie].imgUrl = "/static/check.png";
+			$scope.seasons[len_seasons - season].series[len_ser - serie].imgUrl = "/static/img/check.png";
 		} else {
-			$scope.seasons[len_seasons - season].series[len_ser - serie].imgUrl = "/static/edit.png";
+			$scope.seasons[len_seasons - season].series[len_ser - serie].imgUrl = "/static/img/edit.png";
 		}
 	}
 
 	$scope.add_to = function (elem) {
+		// Добавляем, либо удаляем серию из списка пользователя
 		var season = elem.$parent.season;
 		var serie = elem.serie;
 		var product = $location.absUrl().split("/")[4].split("-")[0];
@@ -140,24 +178,27 @@ series.controller('SeriesCtrl', function ($scope, $http, $location, $compile, $e
 
 		var txt = elem.$$watchers[0].last;
 		var url;
-		if (txt == "Удалить из списка")
+		if (txt == "Remove from list")
 			url = "/mylist/series/del";
 		else
 			url = "/mylist/series/add";
-
 		$http({
 			method: "POST",
 			url: url,
-			data: "number="+ serie.number+ "&season="+ season.number+ "&product="+ product,
+			data: "number="+ serie.number+ "&num_season="+ season.number+ "&product="+ product,
 			headers: {
 				//'Content-Type': 'multipart/form-data'
 				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
 			}
 		}).success(function (data) {
 			if (url.endsWith("add"))
-				$scope.seasons[len_seasons - season.number].series[len_ser - serie.number].listed = "Удалить из списка";
+				$scope.seasons[len_seasons - season.number].series[len_ser - serie.number].listed = "Remove from list";
 			else
-				$scope.seasons[len_seasons - season.number].series[len_ser - serie.number].listed = "Добавить в список";
+				$scope.seasons[len_seasons - season.number].series[len_ser - serie.number].listed = "Add to List";
 		});
 	}
-});
+}]);
+
+series.controller('DetailCtrl', ['$scope', function ($scope) {
+	;
+}]);

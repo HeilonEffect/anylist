@@ -147,7 +147,6 @@ class Serie(models.Model):
     num_season = models.PositiveSmallIntegerField(null=True, blank=True)
     product = models.ForeignKey(Production)
     start_date = models.DateField(null=True, blank=True)
-#    start_date = models.DateTimeField(null=True)
     length = models.IntegerField(null=True)
 
     def __str__(self):
@@ -176,7 +175,7 @@ class ListedProduct(models.Model):
     product = models.ForeignKey(Production)
     status = models.ForeignKey(Status, default=1)
     series = models.ManyToManyField(Serie, null=True)
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User, null=True)  # null=True - на самом деле нет
     score = models.PositiveSmallIntegerField(null=True)
 
     def __str__(self):

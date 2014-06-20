@@ -15,24 +15,28 @@
 	<header>
 		<h1>Series</h1>
 		<section>
-			<input type="search" ng-model="search" placeholder="Start enter name" ng-change="searcher()">
+			<input type="search" ng-model="search" placeholder="Start enter name" ng-change="searcher(search)">
+			<ul id="search_result" style="visibility:hidden">
+				<li ng-repeat="item in search_result"><a href="{[{item.value}]}">{[{item.key}]}</a></li>
+			</ul>
 			{% if user.is_authenticated %}
 				<a href="/profile">{{ user.username }}</a>
 			{% endif %}
-			<img src="/static/show_main_menu.png" ng-click="show_menu()">
+			<img src="/static/img/show_main_menu.png" ng-click="show_menu()">
 			{% if user.is_authenticated %}
 				<button ng-click="logout()">Log Out</button>
 			{% else %}
 				<button ng-click="login()">Log In</button>
 			{% endif %}
 		</section>
+		<form style="visibility:hidden" id="auth_form">
+			<input ng-model="auth.username" name="username" type="text" placeholder="Username">
+			<input ng-model="auth.password" name="password" type="password" placeholder="Password">
+			<input ng-model="auth.email" name="email" type="email" placeholder="Email">
+			<input ng-model="auth.is_reg" type="checkbox" id="auth_check"><label for="auth_check">Register Me</label>
+			<button ng-click="start_auth(auth)">Auth</button>
+		</form>
 	</header>
-	<form>
-		<input ng-model="auth.username" name="username" type="text">
-		<input ng-model="auth.password" name="password" type="password">
-		<input ng-model="auth.email" name="email" type="email">
-		<button>Auth</button>
-	</form>
 	{% comment %}Навигация по разделам{% endcomment %}
 	<details style="visibility:hidden">
 		{% for group in nav_groups %}
@@ -52,8 +56,11 @@
 		{% endfor %}
 	</details>
 	<div style="visibility:hidden" id="space" ng-click="hide_menu()"></div>
+
+	<div ng-view>
 	<main>
 		{% comment %}Добавляем серию из нового сезона{% endcomment %}
+		{% if user.is_authenticated %}
 		<h2>Season {[{num_seasons}]}</h2>
 		<form>
 			<input name="name" ng-model="serie1.name" type="text" placeholder="Name">
@@ -61,15 +68,18 @@
 			<input name="length" ng-model="serie1.length" type="number" placeholder="Length">
 			<button ng-click="add_serie_new_vol(serie1, this)">Add</button>
 		</form>
+		{% endif %}
 		{% comment %}Список сезонов{% endcomment %}
 		<section ng-repeat="season in seasons">
 			<h2>Season {[{season.number}]}</h2>
+			{% if user.is_authenticated %}
 			<form>
 				<input name="name" ng-model="serie.name" type="text" placeholder="Name">
 				<input name="start_date" ng-model="serie.start_date" type="text" id="demo1" onclick="javascript:NewCssCal('demo1')" placeholder="Date">
 				<input name="length" ng-model="serie.length" type="number" placeholder="Length">
 				<button ng-click="add_serie(serie, this)">Add</button>
 			</form>
+			{% endif %}
 			<table>
 				<thead>
 					<tr>
@@ -97,6 +107,7 @@
 			<a ng-repeat="category in categories" href="{[{category.url}]}">{[{category.title}]}</a>
 		</menu>
 	</nav>
+	</div>
 </body>
 </html>
 {% endspaceless %}

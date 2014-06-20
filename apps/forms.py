@@ -29,7 +29,6 @@ class AddSerieForm(ModelForm):
 	length = forms.IntegerField(required=False)
 	name = forms.CharField(required=False)
 	num_season = forms.CharField(required=False)
-	season = forms.ChoiceField(required=False)
 
 	class Meta:
 		model = Serie
@@ -46,16 +45,3 @@ class AddToListForm(ModelForm):
 class UpdateStatusForm(ModelForm):
 	class Meta:
 		model = Status
-
-
-# Wizard Form
-class CreateForm1(forms.Form):
-	name = forms.CharField(max_length=255)
-	description = forms.CharField()
-	avatar = forms.FileField()
-	old_limit = forms.ChoiceField()
-
-
-class CreateForm2(forms.Form):
-	genres = forms.MultipleChoiceField()
-

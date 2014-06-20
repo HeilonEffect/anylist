@@ -37,14 +37,21 @@ class MainPage(ListView):
 @require_http_methods(['GET'])
 def search(request):
     ''' Простейший поиск по названиям произведений '''
-    result = dict(map(
-        lambda item:
-        (item.title, '/' + item.get_category() + '/' + item.get_absolute_url()),
-        Production.objects.filter(Q(title__icontains=request.GET['key']))
-    ))
+    try:
+        if len(request.GET['key']) > 1:
+            result = dict(map(
+                lambda item:
+                (item.title, '/' + item.get_category() + '/' + item.get_absolute_url()),
+                Production.objects.filter(Q(title__icontains=request.GET['key']))
+            ))
 
-    return HttpResponse(
-        json.dumps(result), content_type='application/json')
+            return HttpResponse(
+                json.dumps(result), content_type='application/json')
+        else:
+            return HttpResponse()
+    except Exception as e:
+        logger.error(e)
+        return HttpResponseServerError()
 
 
 @login_required(login_url='/')
@@ -71,33 +78,35 @@ def profile(request):
 def add_list_serie(request):
     ''' добаваляем серию в список просмотренных '''
     try:
-        p = Serie.objects.get(number=request.POST['number'],
-            season__product__id=request.POST['product'],
-            season__number=request.POST['season']
-        )
-        product = ListedProduct.objects.get(
-            product__id=request.POST['product'], user=request.user)
-        product.series.add(p)
-        return HttpResponse("ok")
+        form = AddSerieForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            ListedProduct.objects.get(product=cd['product'], user=request.user
+                ).series.add(Serie.objects.get(product=cd['product'],
+                    num_season=cd['num_season'], number=cd['number']))
+            return HttpResponse('ok')
+        else:
+            return HttpResponseServerError()
     except Exception as e:
-        print(e)
+        logger.error(e)
         return HttpResponseServerError()
 
 
+@require_http_methods(['POST'])
 def del_list_serie(request):
+    ''' Удаляем серию из списка просмотренных '''
     try:
-        cd = {}
-        for key in request.POST.keys():
-            cd[key] = re.search(r'(\d+)', request.POST[key]).group()
-        p = Serie.objects.get(number=cd['number'],
-            season__product=cd['product'],
-            season__number=cd['season']
-        )
-        product = ListedProduct.objects.get(product=cd['product'])
-        product.series.remove(p)
-        return HttpResponse('Ok')
+        form = AddSerieForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            ListedProduct.objects.get(product=cd['product'], user=request.user
+                ).series.remove(Serie.objects.get(product=cd['product'],
+                    num_season=cd['num_season'], number=cd['number']))
+            return HttpResponse('Ok')
+        else:
+            return HttpResponseServerError()
     except Exception as e:
-        print(e)
+        logger.error(e)
         return HttpResponseServerError()
 
 
@@ -141,6 +150,7 @@ def add_list(request):
 
 
 class ProductionList(ListPageMixin, ListView):
+    ''' Список произведений указанной категории '''
     genre_groups =\
         ['Anime Male', 'Anime Female', 'Standart', 'Anime Porn', 'Anime School']
 
@@ -355,7 +365,7 @@ def seasons_view(request, category, pk):
                         tmp['listed'] = 'Remove from list'
                     else:
                         tmp['listed'] = 'Add to list'
-                    tmp['imgUrl'] = '/static/edit.png'
+                    tmp['imgUrl'] = '/static/img/edit.png'
                 item.append(tmp)
             js.append({'number': season, 'series': item})
 
