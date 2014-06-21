@@ -40,8 +40,3 @@ class AddToListForm(ModelForm):
 	score = forms.IntegerField(required=False)
 	class Meta:
 		model = ListedProduct
-
-
-class UpdateStatusForm(ModelForm):
-	class Meta:
-		model = Status

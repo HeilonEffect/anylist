@@ -33,6 +33,11 @@ class MainPage(ListView):
     model = ThematicGroup
     template_name = 'index.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(MainPage, self).get_context_data(**kwargs)
+        context['nav_groups'] = context['object_list']
+        return context
+
 
 @require_http_methods(['GET'])
 def search(request):
@@ -59,6 +64,7 @@ def search(request):
 def profile(request):
     ''' страница профиля пользователя '''
     result = {}
+    result['nav_groups'] = ThematicGroup.objects.all()
     result['category'] = Category.objects.all()
     st = Status.objects.all()
     for cat in result['category']:
@@ -126,6 +132,8 @@ class UserList(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super(UserList, self).get_context_data(**kwargs)
+        print(context['object_list'])
+        context['nav_groups'] = ThematicGroup.objects.all()
 
         category = self.kwargs['category'][:1].upper() +\
             self.kwargs['category'][1:]
@@ -161,12 +169,18 @@ class ProductionList(ListPageMixin, ListView):
             return super(ProductionList, self).dispatch(*args, **kwargs)
 
 
+@require_http_methods(['POST'])
 def status_update(request, pk):
     ''' Меняем статус просмотра произведения '''
-    p = ListedProduct.objects.get(user=request.user, product__id=pk)
-    p.status=Status.objects.get(name=request.POST['name'])
-    p.save()
-    return HttpResponse('Ok')
+    try:
+        status = Status.objects.get(name=request.POST['name'])
+        p = ListedProduct.objects.get(user=request.user, product__id=pk)
+        p.status__name = status
+        p.save()
+        return HttpResponse('Ok')
+    except Exception as e:
+        logger.error(e)
+        return HttpResponseServerError()
 
 
 def remove_from_list(request, pk):
@@ -189,6 +203,7 @@ class ProductDetail(DetailView):
         context = super(ProductDetail, self).get_context_data(**kwargs)
         context['header'] = context['object'].title
         context['category'] = self.kwargs['category']
+        context['nav_groups'] = ThematicGroup.objects.all()
         context['is_listed'] = ListedProduct.objects.filter(
             user=self.request.user.id, product__title=context['object'].title
             ).first()
@@ -315,6 +330,8 @@ class AddProduct(LoginRequiredMixin, BasePageMixin, CreateView):
         context['genres'] = Genre.objects.all()
         context['header'] = 'Create new %s' % self.kwargs.get('category')
         context['raiting'] = Raiting.objects.all()
+        context['nav_groups'] = ThematicGroup.objects.all()
+        context['category'] = self.kwargs['category']
 
         return context
 

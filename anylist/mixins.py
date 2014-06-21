@@ -37,8 +37,8 @@ class ListPageMixin(object):
 	def get_context_data(self, **kwargs):
 		context = super(ListPageMixin, self).get_context_data(**kwargs)
 		context['raiting'] = Raiting.objects.all()
-		#context['header'] = self.header
 		context['header'] = 'This list of %s' % self.kwargs['category']
+		context['nav_groups'] = ThematicGroup.objects.all()
 
 		context['listed'] =\
 			[item.product for item in ListedProduct.objects.filter(

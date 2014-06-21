@@ -12,7 +12,6 @@ main {
 	margin-top: 4em;
 	bottom: 0;
 	margin-left: 2em;
-	margin-right: 12em;
 	padding: .5em;
 }
 header {
@@ -30,7 +29,7 @@ header > section {
 	top: .5em;
 	right: 1em;
 	position: inherit;
-	width: 21em;
+	width: 22em;
 }
 header > section > img {
 	border: .5px solid white;
@@ -66,6 +65,7 @@ input[type="search"] {
 	border: 1.2px solid #F1c40F;
 }
 nav {
+	background-color: white;
 	position: absolute;
 	top: 5.5em;
 	right: 2em;
@@ -75,26 +75,27 @@ nav {
 h3 {
 	text-indent: 1em;
 }
-nav > section {
-
-}
-menu h3 {
+nav >menu h3, nav > section h3 {
 	background-color: #BDC3C7;
 	padding: .45em;
 	margin-bottom: 0;
 	border-bottom: 0.2px solid rgba(0, 0, 0, 0.3);
 }
-nav > menu {
+nav > menu, nav > section {
 	display: block;
-	margin-top: 0;
+	margin-top: -1em;
 }
-nav menu > a {
+nav section {
+	width: 8.4em;
+	margin-left: 1.65em;
+}
+nav menu > a, nav > section > span {
 	display: block;
 	padding: .35em;
 	text-indent: 1.5em;
 	border: 0.2px solid rgba(0, 0, 0, 0.3);
 }
-nav menu > a:hover {
+nav menu > a:hover, nav > section > span:hover {
 	background-color: #BDC3C7;
 	border: none;
 	cursor: pointer;
@@ -153,6 +154,7 @@ td img {
 #auth_form {
 	position: fixed;
 	top: 5em;
+	z-index: 13;
 	width: 10em;
 	right: 3em;
 	background-color: #F1c40F;
@@ -160,7 +162,6 @@ td img {
 #auth_form > input {
 	height: 1.6em;
 	border: 1px solid red;
-	z-index: 13;
 }
 form > label {
 	cursor: pointer;
@@ -183,4 +184,84 @@ form > label {
 	overflow: hidden;
 	height: 1.5em;
 	border: 1px solid black;
+}
+article img {
+	float: right;
+	margin: 1em 13em 7px 7px;
+	width: 11em;
+}
+article a {
+	color: blue;
+}
+main > ul {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+main > ul > li {
+	list-style-type: none;
+	display: inline-block;
+	margin: 0;
+	width: 9.2em;
+}
+main > ul > li > a {
+	padding: 0;
+	margin: 0;
+}
+main figure {
+	width: 100%;
+}
+main figure img {
+	width: 8.6em;
+	height: 11.6em;
+	margin: 0;
+	padding: 0;
+	max-height: 15em;
+}
+main figcaption {
+	margin-bottom: .3em;
+	margin-left: .4em;
+	height: 3em;
+	width: 8em;
+	overflow: hidden;
+}
+.list {
+	margin-left: 0;
+	margin-right: 0;
+	padding: 1em;
+}
+.edit_me {
+	position: absolute;
+	margin-left: 5em;
+	margin-top: .3em;
+	border-radius: 1.5em;
+	width: 1.45em;
+	height: 1.45em;
+	background-color: white;
+}
+.edit_me img {
+	width: 1.5em;
+	height: 1.5em;
+}
+
+.add_me, .del_me {
+	position: absolute;
+	margin-left: 6.8em;
+	margin-top: .3em;
+	width: 1.5em;
+	height: 1.5em;
+	background: white;
+	border: 1px solid black;
+}
+.add_me img, .del_me img {
+	width: 1.5em;
+	height: 1.5em;
+}
+.panel_display {
+	position: fixed;
+	right: 1em;
+	top: 5em;
+}
+.active {
+	border-left: 1px solid black;
 }

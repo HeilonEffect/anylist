@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% block content %}
+{% block body %}
+	<main>
 	<table class="user-series-list">
 		<tr>
 			<td>Name</td>
@@ -20,28 +21,5 @@
 		</tr>
 	{% endfor %}
 	</table>
-{% endblock %}
-{% block script %}
-	{{ block.super }}
-	<script type="text/javascript">
-		var url;
-		$(".get_status").click(function (eventObject) {
-			var id = eventObject.target.id;
-			if (!url)
-				url = eventObject.target.id;
-			$("#" + id).html("<select id='sel'></select>");
-			{% for item in status %}
-				$("#sel").append("<option value='{{ item.id }}' class='upp'>{{ item.name }}</option>");
-			{% endfor %}
-			$(".upp").click(function (eventObject) {
-				var name = eventObject.target.textContent;
-				var url = eventObject.target.parentElement.parentElement.id;
-				var category = window.location.pathname.split("/")[3];
-				$.post(
-					"/" + category + "/" + url + "/status",
-					"name=" + name
-				);
-			});
-		});
-	</script>
+	</main>
 {% endblock %}

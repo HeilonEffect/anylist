@@ -1,33 +1,47 @@
 {% extends "base.html" %}
-{% block header %}
-	<h1>{{ object.title }}</h1>
-	{{ block.super }}
-	<!--<span>Следующая глава: 17 мая 2014 | Оценка: 8 из 10 <sub>5 голосов</sub> | Добавить в список | Редактировать</span>-->
+{% block title %}{{ header }}{% endblock %}
+{% block header %}{{ header }}{% endblock %}
+{% block body %}
+	<main>
+		<article>
+				<img src="{{ object.avatar_path }}">
+				Жанры: {% for genre in object.genres.all %}
+					<a href="/{{ category }}/filter/genres/{{ genre.name }}">{{ genre.name }}</a>
+				{% endfor %}
+			<p>Возраст: <a href="/{{ category }}/filter/old_limit/{{ object.old_limit }}">{{ object.old_limit }}</a></p>
+				<br>
+				{{ object.description|safe }}
+		</article>
+	</main>
+	<nav ng-controller="DetailCtrl">
+		<menu>
+			<h3>About</h3>
+			<a ng-repeat="category in categories" href="{[{category.url}]}">{[{category.title}]}</a>
+		</menu>
+		<section>
+			<h3>Status</h3>
+			<span ng-repeat="status in statuses" ng-click="status_move(this)">{[{status}]}</span>
+		</section>
+	</nav>
 {% endblock %}
-{% block content %}
-	<article>
-		<p>
-			<img src="{{ object.avatar_path }}">
-			Жанры: {% for genre in object.genres.all %}
-				<a href="/{{ category }}/filter/genres/{{ genre.name }}">{{ genre.name }}</a>
-			{% endfor %}
-		</p>
-		<p>Возраст: <a href="/{{ category }}/filter/old_limit/{{ object.old_limit }}">{{ object.old_limit }}</a></p>
-			<br>
-			{{ object.description|safe }}
-	</article>
-{% endblock %}
-
 {% block script %}
-	{{ block.super }}
-	<script type="text/javascript">
-		// меню переключения между разделами карточки описания
-		infoBlockModule.renderLeftMenu("nav");
-		{% if is_listed %}
-			addToListModule.renderOptionsBlock("nav", true)
-			addToListModule.renderStatusBlock("nav", "{{ is_listed.status }}");
-		{% else %}
-			addToListModule.renderOptionsBlock("nav", false);
-		{% endif %}
+	<script>
+		defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location',
+			function ($scope, $http, $location) {
+				$scope.statuses = ['Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
+				$scope.status_move = function (elem) {
+					$http({
+						method: "POST",
+						url: $location.absUrl() + "status",
+						data: 'name=' + elem.status,
+						headers: {
+							'Content-Type': 'application/x-www-form-urlencoded'
+						}
+					}).success(function (data) {
+						//
+					});
+				}
+			}
+		]);
 	</script>
 {% endblock %}

@@ -1,55 +1,93 @@
 {% extends "base.html" %}
-{% block header %}
-	<h1>{{ header }}</h1>
-	{% include "components/filters.html" %}
-	<img src="/static/glyphicons_158_show_lines.png" class="panel_display" onclick="show_panel()">
-	{{ block.super }}
+{% block head %}<script src="/static/medialist.js"></script>{% endblock %}
+{% block title %}{{ header }}{% endblock %}
+{% block header %}{{ header }}{% endblock %}
+{% block body %}
+<main class="list" ng-controller="ListCtrl">
+	<img src="/static/img/right_menu.png" class="panel_display" ng-click="show_panel()">
+	<ul>
+		{% if user.is_authenticated %}
+		<li>
+			<a href="/{{ category }}/add">
+				<figure>
+					<img src="/static/img/add.svg">
+					<figcaption>Add {{ category }}</figcaption>
+				</figure>
+			</a>
+		</li>
+		{% endif %}
+		{% for value in object_list %}
+		<li>
+			<a href="/{{ category }}/{{ value.get_absolute_url }}">
+				<figure>
+					<!--{% if user.is_authenticated %}
+					<div class="edit_me" id="{{ value.id }}-{{ value.title }}">
+						<img src="/static/img/edit.png">
+					</div>
+						{% if value not in listed %}
+						<div class="add_me" id="{{value.id}}-{{ value.title }}">
+							<img src="/static/add-1.png">
+						</div>
+						{% else %}
+						<div class="del_me" id="{{ value.get_absolute_url }}">
+							<img src="/static/cancel.png">
+						</div>
+						{% endif %}
+					{% endif %}-->
+					<img src="{{ value.avatar_path }}">
+					<figcaption>{{ value }}</figcaption>
+				</figure>
+			</a>
+		</li>
+	{% endfor %}
+	</ul>
+</main>
+<nav style="visibility:hidden">
+	<p>Raiting</p>
+	{% for item in raiting %}
+		{% if item.count %}
+			<input type="checkbox" id="old_limit:{{ item }}" onchange="select_genre(this)">
+			<label for="old_limit:{{ item }}">{{ item.name }}</label><br>
+		{% else %}
+			<input type="checkbox" id="{{ item.name }}" disabled>
+			<label style="color:gray">{{ item.name }}</label><br>
+		{% endif %}
+	{% endfor %}
+	<p>Genres</p>
+	{% for group in genre_groups %}
+		{% for genre in group.genres %}
+			{% if genre.count %}
+				<input type="checkbox" id="genres:{{ genre.name }}" onchange="select_genre(this)">
+				<label for="genres:{{ genre.name }}">{{ genre.name }}</label><br>
+			{% else %}
+				<input type="checkbox" disabled>
+				<label style="color:gray">{{ genre.name }}</label><br>
+			{% endif %}
+		{% endfor %}
+	{% endfor %}
+</nav>
 {% endblock %}
-{% block content %}
-	{% include "components/obj_list.html" %}
-{% endblock %}
-{% block navigation %}
-	<div id="left_menu">
-	{% include "components/raitings.html" %}
-	{% include "components/genres.html" %}
-	</div>
-{% endblock %}
-
 {% block script %}
-	{{ block.super }}
-	<script type="text/javascript">
-		$("#right_menu").click(function (eventObject) {
-			eventObject.preventDefault();
-			show_panel();
-		});
-		$(".add_me").click(function (eventObject) {
-			var id = eventObject.target.parentElement.id.split("-")[0]
-			$.ajax({
-				url: "/mylist/add",
-				data: {
-					product: id
-				},
-				type: "POST"
-			});
-			eventObject.preventDefault();
-		});
-		$(".del_me").click(function (eventObject) {
-			var id = eventObject.target.parentElement.id;
-			console.log(id);
-			$.post(
-				window.location.pathname + id + "/remove_from_list"
-			);
-			eventObject.preventDefault();
-		});
-		// Изменение описания продукта
-		$(".edit_me").click(function (eventObject) {
-			{% comment %}Эта срань вычисляет url, на который мы перенаправимся,
-			если нажмем на кнопку edit{% endcomment %}
-			var id = eventObject.target.parentElement.parentElement.parentElement.href.split("/");
-			id = id[id.length - 1];
-
-			eventObject.preventDefault();
-			window.location.pathname += id + "/edit";
-		});
-	</script>
+<script>
+	update_checkboxes(url_resolve());
+	
+	defaultApp.controller('ListCtrl', ['$scope', '$http', '$location',
+			function ($scope, $http, $location) {
+				// Отображает боковое меню
+				$scope.show_panel = function () {
+					var panel = document.getElementsByTagName("nav")[0];
+					var main = document.getElementsByTagName("main")[0];
+					if (panel.style.visibility == "hidden") {
+						panel.style.visibility = "visible";
+						panel.className = "active";
+						main.style.width = "80%";
+					} else {
+						panel.style.visibility = "hidden";
+						panel.className = "";
+						main.style.width = "99%";
+					}
+				}
+			}
+		]);
+</script>
 {% endblock %}

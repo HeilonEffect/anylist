@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block body %}
+	<main>
 	{% for cat in category %}
 		<h3>{{ cat }}</h3>
 		{% for item in cat.status %}
@@ -11,4 +12,5 @@
 		<div class="{{ cat.get_absolute_url }}-list"></div>
 		<br>
 	{% endfor %}
+	</main>
 {% endblock %}

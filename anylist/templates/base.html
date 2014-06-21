@@ -1,54 +1,156 @@
-<!DOCTYPE html>
-<html>
+{% spaceless %}
+<!doctype html>
+<html lang="ru" ng-app="defaultApp">
 <head>
-	<meta charset="utf8">
-	<title>Base title</title>
-	<link rel="stylesheet" href="/static/css/medialist.css">
-	<link rel="stylesheet" href="/static/datetimepicker/jquery.datetimepicker.css">
-	<link rel="stylesheet" href="/static/select2/select2.css">
-	<link rel="stylesheet" href="/static/css/header.css">
-	<link rel="stylesheet" href="/static/css/auth_form.css">
-	<link rel="stylesheet" href="/static/css/add_form.css">
-	
-	<script type="text/javascript" src="/static/jquery.min.js"></script>
-	<script type="text/javascript" src="/static/just.min.js"></script>
-	<script type="text/javascript" src="/static/datetimepicker/jquery.datetimepicker.js"></script>
-	<script type="text/javascript" src="/static/medialist.js"></script>
-	<script type="text/javascript" src="/static/select2/select2.js"></script>
-	<script type="text/javascript">
-		function csrfSafeMethod(method) {
-    		// these HTTP methods do not require CSRF protection
-	    	return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-		}
-		$.ajaxSetup({
-	    	crossDomain: false, // obviates need for sameOrigin test
-    		beforeSend: function(xhr, settings) {
-        		if (!csrfSafeMethod(settings.type)) {
-            		xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
-        		}
-    		}
-		});
-	</script>
+	<meta charset="utf-8">
+	<title>{% block title %}Base title{% endblock %}</title>
+	<script src="/static/lib/angular.min.js"></script>
+	<script src="/static/lib/angular-cookies.min.js"></script>
+	<script src="/static/datetimepicker_css.js"></script>
+	<link rel="stylesheet" href="/static/series/style.css">
+	{% block head %}{% endblock %}
 </head>
-<body>
-	{% load nav_menu %}
-	{% if lst %}
-		{% main_menu header user lst %}
-	{% else %}
-		{% main_menu header user lst %}
-	{% endif %}
-	<main>
-	{% block content %}
+<body ng-controller="DefaultCtrl">
+	<header>
+		<h1>{% block header %}Header{% endblock %}</h1>
+		<section>
+			<input type="search" ng-model="search" placeholder="Start enter name" ng-change="searcher(search)">
+			<ul id="search_result" style="visibility:hidden">
+				<li ng-repeat="item in search_result"><a href="{[{item.value}]}">{[{item.key}]}</a></li>
+			</ul>
+			{% if user.is_authenticated %}
+				<a href="/profile">{{ user.username }}</a>
+			{% endif %}
+			<img src="/static/img/show_main_menu.png" ng-click="show_menu()">
+			{% if user.is_authenticated %}
+				<button ng-click="logout()">Log Out</button>
+			{% else %}
+				<button ng-click="login()">Log In</button>
+			{% endif %}
+		</section>
+		<form style="visibility:hidden" id="auth_form">
+			<input ng-model="auth.username" name="username" type="text" placeholder="Username">
+			<input ng-model="auth.password" name="password" type="password" placeholder="Password">
+			<input ng-model="auth.email" name="email" type="email" placeholder="Email">
+			<input ng-model="auth.is_reg" type="checkbox" id="auth_check"><label for="auth_check">Register Me</label>
+			<button ng-click="start_auth(auth)">Auth</button>
+		</form>
+	</header>
+	{% comment %}Навигация по разделам{% endcomment %}
+	<details style="visibility:hidden">
+		{% for group in nav_groups %}
+			<p>{{ group.name }}</p>
+			<ul>
+				{% for value in group.dashs %}
+				<li>
+					<a href="/{{ value.get_absolute_url }}">
+						<figure>
+							<img src="{{ value.avatar_path }}">
+							<figcaption>{{ value }}</figcaption>
+						</figure>
+					</a>
+				</li>
+				{% endfor %}
+			</ul>
+		{% endfor %}
+	</details>
+	<div style="visibility:hidden" id="space" ng-click="hide_menu()"></div>
+	{% block body %}
 	{% endblock %}
-	</main>
-	<nav>
-	{% block navigation %}
-	{% endblock %}
-	</nav>
+	<script>
+		var defaultApp = angular.module('defaultApp', [
+			'ngCookies'
+		]).run(function ($http, $cookies) {
+			$http.defaults.headers.post['X-CSRFToken'] = '{{ csrf_token }}';
+		});
+
+		defaultApp.config(function ($interpolateProvider) {
+			$interpolateProvider.startSymbol('{[{');
+			$interpolateProvider.endSymbol('}]}');
+		});
+		defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location',
+			function ($scope, $http, $location) {
+
+				$scope.show_menu = function () {
+					var elem = document.getElementsByTagName('details')[0];
+					var el = document.getElementById('space');
+					if (elem.style.visibility == 'hidden') {
+						elem.style.visibility = "visible";
+						el.style.visibility = 'visible';
+					} else {
+						elem.style.visibility = "hidden";
+						el.style.visibility = 'hidden';
+					}
+				}
+
+				// скрываем главное меню по нажатию на на свободную область
+				$scope.hide_menu = function () {
+					document.getElementsByTagName('details')[0].style.visibility = "hidden";
+					document.getElementById("space").style.visibility = "hidden";
+				}
+
+				$scope.logout = function () {
+					var url = window.location.pathname;
+					if (url.endsWith("/"))
+						window.location.pathname += "logout";
+					else
+						window.location.pathname += "/logout";
+				}
+
+				$scope.login = function () {
+					var elem = document.getElementById("auth_form");
+					if (elem.style.visibility == "hidden")
+						elem.style.visibility = "visible";
+					else 
+						elem.style.visibility = "hidden";
+				}
+
+
+				$scope.start_auth = function (data) {
+					// Не работает автозаполнение
+					data = "username=" + data['username'] + "&password=" + data['password'] + "&email=" + data['email'];
+					data = data.replace("undefined", "", "g");
+					var url = $location.absUrl();
+					if (data['is_reg'])
+						url += 'register/';
+					else
+						url += "login/";
+					$http({
+						method: "POST",
+						url: $location.absUrl() + "login/",
+						data: data,
+						headers: {
+							"Content-Type": "application/x-www-form-urlencoded"
+						}
+					}).success(function () {
+						window.location.href = window.location.href;
+					});
+				}
+
+				$scope.searcher = function (data) {
+					$http.get('/search?key=' + data).success(function (data) {
+						$scope.search_result = [];
+						if ($scope.search_result) {
+							document.getElementById("search_result").style.visibility = "visible";
+							for (key in data)
+								$scope.search_result.push({'key': key, 'value': data[key]});
+						}
+					});
+				}
+				// отрисовываем боковое меню
+				var head_url = $location.absUrl().split("/").slice(0, 5).join("/");
+				$scope.categories = [
+					{'title': 'Main', 'url': head_url + '/'},
+					{'title': 'Series', 'url': [head_url, 'series'].join('/')},
+					{'title': 'Heroes', 'url': [head_url, 'heroes'].join('/')},
+					{'title': 'Creators', 'url': [head_url, 'creators'].join('/')}
+				];
+				
+			}
+		]);
+	</script>
 	{% block script %}
 	{% endblock %}
-	<script type="text/javascript">
-		update_checkboxes(url_resolve());
-	</script>
 </body>
 </html>
+{% endspaceless %}

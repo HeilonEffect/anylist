@@ -1,8 +1,16 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "base1.html" %}
+{% block head %}
+<link rel="stylesheet" href="/static/select2/select2.css">
+<script src="/static/jquery.min.js"></script>
+<script src="/static/select2/select2.js"></script>
+{% endblock %}
+{% block header %}{{ header }}{% endblock %}
+{% block title %}{{ header }}{% endblock %}
+{% block body %}
+<main>
 	{% load wysiwyg %}
 	{% wysiwyg_setup %}
-	<form enctype="multipart/form-data" method="post" id="add_form">
+	<form enctype="multipart/form-data" method="post" id="add_form" action="/{{ category }}/add">
 			<input name="title" type="text" placeholder="Enter title here" class="form-title">
 			<ul class="dropdown-title"></ul>
 			<textarea class="form-textarea" rows="15" name="description" id="description"></textarea>
@@ -30,13 +38,10 @@
 		</div>
 	</form>
 	{% wysiwyg_editor "description" %}
+</main>
 {% endblock %}
 {% block script %}
 <script type="text/javascript">
-	$("#datetimepick1").datetimepicker({
-		timepicker: false,
-		format: 'd/m/Y'
-	});
 	$("#genres").select2({
 		width: 400,
 		placeholder: "Выберите жанры"
@@ -48,11 +53,11 @@
 	/* --------------------------------------
 	// отправка данных формы
 	*///-------------------------------------
-	$("#add_form").submit({genres: genres}, function (eventObject) {
+	/*$("#add_form").submit({genres: genres}, function (eventObject) {
 		// указываем, куда отсылать запрос
 		var link = window.location.pathname.split("/")[1];
 		$("#add_form").attr("action", "/" + link + "/add");
-	});
+	});*/
 	// добавляем id жанра в коллекцию, если установлен соответсвующий флажок
 	$(".genre_check").click(function (eventObject) {
 		var box = eventObject.currentTarget;
