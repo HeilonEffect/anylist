@@ -66,7 +66,10 @@ class DashBoard(models.Model):
         return self.name
 
     def avatar_path(self):
-        return '/media/' + str(self.icon).split('/')[-1]
+        options = {'size': (100, 100), 'crop': True}
+        thumb_url = get_thumbnailer(self.icon).get_thumbnail(options).url
+        return '/media/' + thumb_url.split('/')[-1]
+        #return '/media/' + str(self.icon).split('/')[-1]
 
 
 class Category(models.Model):
@@ -133,6 +136,13 @@ class Anime(models.Model):
 
 
 class Manga(models.Model):
+    link = models.OneToOneField(Production)
+
+    def __str__(self):
+        return self.link.title
+
+
+class Criminalystic(models.Model):
     link = models.OneToOneField(Production)
 
     def __str__(self):

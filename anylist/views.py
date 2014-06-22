@@ -26,7 +26,7 @@ from .mixins import *
 
 
 logger = logging.getLogger(__name__)
-Types = {'anime': Anime, 'manga': Manga}
+Types = {'anime': Anime, 'manga': Manga, 'criminalystic': Criminalystic}
 
 #------------ Base Views -----------------
 class MainPage(ListView):
@@ -78,6 +78,9 @@ def profile(request):
             cat.status.append({'name': item, 'count': 
                 ListedProduct.objects.filter(**kwargs).count()})
     return render(request, 'profile.html', result)
+
+
+
 
 
 @require_http_methods(['POST'])
@@ -374,7 +377,7 @@ def seasons_view(request, category, pk):
             item = []
             for i, serie in enumerate(series):
                 tmp = {'name': serie.name, 'number': serie.number,
-                    'start_date': str(serie.start_date or '-'),
+                    'start_date': str(serie.start_date),
                     'length': serie.length
                     }
                 if request.user.is_authenticated():
@@ -403,3 +406,5 @@ class ProductionChoiceView(BaseChoiceMixin, ListView):
     genre_groups =\
         ['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
     model1 = Manga
+
+

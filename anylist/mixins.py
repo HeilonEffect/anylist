@@ -11,7 +11,7 @@ from apps.forms import *
 from apps.models import *
 
 
-Types = {'anime': Anime, 'manga': Manga}
+Types = {'anime': Anime, 'manga': Manga, 'criminalystic': Criminalystic}
 
 
 class BasePageMixin(object):
