@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 from easy_thumbnails.files import get_thumbnailer
 
-from anylist.settings import MEDIA_ROOT, MEDIA_URL, first_static
+from anylist.settings import MEDIA_ROOT
 
 
 class GenreGroup(models.Model):

@@ -21,6 +21,10 @@ class BasePageMixin(object):
 		else:
 			return super(BasePageMixin, self).dispatch(*args, **kwargs)
 
+	def get_context_data(self, **kwargs):
+		context = super(BasePageMixin, self).get_context_data(**kwargs)
+		return context
+
 
 class ListPageMixin(object):
 	model = Production

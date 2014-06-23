@@ -193,6 +193,11 @@ article img {
 article a {
 	color: blue;
 }
+main p {
+	padding: 0;
+	padding-top: .5em;
+	margin: 0;
+}
 main > ul {
 	width: 100%;
 	margin: 0;
@@ -221,7 +226,7 @@ main figure img {
 main figcaption {
 	margin-bottom: .3em;
 	margin-left: .4em;
-	height: 3em;
+	height: 2.3em;
 	width: 8em;
 	overflow: hidden;
 }
@@ -264,4 +269,7 @@ main figcaption {
 }
 .active {
 	border-left: 1px solid black;
+}
+details > ul {
+	display: inline-block;
 }

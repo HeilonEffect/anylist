@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'south',
     'django_wysiwyg',
     'easy_thumbnails',
+#    'django_nose',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -97,8 +98,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
-first_static = os.path.join(BASE_DIR, 'static')
-
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
@@ -144,3 +143,7 @@ THUMBNAIL_ALIASES = {
 SOUTH_MIGRATION_MODULES = {
     'easy_thumbnails': 'easy_thumbnails.south_migrations',
 }
+
+#TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+# should match SELENIUM_URL_ROOT which defaults to http://127.0.0.1:8000
+#LIVE_SERVER_PORT = 8000

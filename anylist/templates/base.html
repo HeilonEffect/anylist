@@ -39,7 +39,7 @@
 	{% comment %}Навигация по разделам{% endcomment %}
 	<details style="visibility:hidden">
 		{% for group in nav_groups %}
-			<p>{{ group.name }}</p>
+			<span>{{ group.name }}</span>
 			<ul>
 				{% for value in group.dashs %}
 				<li>
