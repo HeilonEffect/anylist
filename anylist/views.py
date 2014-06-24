@@ -177,10 +177,9 @@ def status_update(request, pk):
     ''' Меняем статус просмотра произведения '''
     try:
         status = Status.objects.get(name=request.POST['name'])
-        p = ListedProduct.objects.get(user=request.user, product__id=pk)
-        p.status__name = status
-        p.save()
-        return HttpResponse('Ok')
+        ListedProduct.objects.filter(
+            user=request.user, product__id=pk).update(status=status)
+        return HttpResponse(request.POST['name'])
     except Exception as e:
         logger.error(e)
         return HttpResponseServerError()
@@ -206,10 +205,10 @@ class ProductDetail(DetailView):
         context = super(ProductDetail, self).get_context_data(**kwargs)
         context['header'] = context['object'].title
         context['category'] = self.kwargs['category']
+        context['statuses'] = Status.objects.all()
         context['nav_groups'] = ThematicGroup.objects.all()
-        context['is_listed'] = ListedProduct.objects.filter(
-            user=self.request.user.id, product__title=context['object'].title
-            ).first()
+        context['is_listed'] = ListedProduct.objects.get(
+            user=self.request.user.id, product__title=context['object'].title)
         return context
 
 

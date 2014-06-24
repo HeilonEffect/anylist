@@ -99,18 +99,14 @@ class Production(models.Model):
 
     avatar = models.ImageField(upload_to=MEDIA_ROOT)
 
-#    def avatar_path(self):
-#        return '/media/' + str(self.avatar).split('/')[-1]
-
     def avatar_path(self):
         options = {'size': (250, 310), 'crop': True}
         thumb_url = get_thumbnailer(self.avatar).get_thumbnail(options).url
         return '/media/' + thumb_url.split('/')[-1]
 
     def get_category(self):
-        for category in Category.objects.all():
-            if category.name.lower() in dir(self):
-                return str(category.name.lower())
+        ''' Пофиксить '''
+        return 'anime'
 
     def __str__(self):
         return self.title

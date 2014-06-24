@@ -18,17 +18,29 @@
 			<h3>About</h3>
 			<a ng-repeat="category in categories" href="{[{category.url}]}">{[{category.title}]}</a>
 		</menu>
+		<div class="base_actions">
+			<input type="number">
+			<img src="/static/img/delete.png"><br>
+			<select>
+				<option>--> Add To List</option>
+				<option ng-click="status_move(this)" ng-repeat="status in statuses" ng-selected="{[{status == active_status }]}">{[{status}]}</option>
+			</select>
+		</div>
+		{% comment %}
 		<section>
 			<h3>Status</h3>
-			<span ng-repeat="status in statuses" ng-click="status_move(this)">{[{status}]}</span>
+			<span ng-repeat="status in statuses" ng-select="status_move(this)">{[{status}]}</span>
 		</section>
+		{% endcomment %}
 	</nav>
 {% endblock %}
 {% block script %}
 	<script>
 		defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location',
 			function ($scope, $http, $location) {
+				$scope.active_status = "{{ is_listed.status.name }}";
 				$scope.statuses = ['Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
+
 				$scope.status_move = function (elem) {
 					$http({
 						method: "POST",
@@ -38,7 +50,7 @@
 							'Content-Type': 'application/x-www-form-urlencoded'
 						}
 					}).success(function (data) {
-						//
+						$scope.active_status = elem.status;
 					});
 				}
 			}

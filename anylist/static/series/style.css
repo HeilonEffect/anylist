@@ -273,3 +273,20 @@ main figcaption {
 details > ul {
 	display: inline-block;
 }
+.base_actions {
+	border: 0.2px solid rgba(0, 0, 0, 0.3);
+	width: 8.2em;
+	margin-left: 1.7em;
+	height: 3em;
+}
+.base_actions input {
+	width: 2.5em;
+}
+.base_actions select {
+	bottom: 0;
+	margin: 0;
+}
+.base_actions img {
+	float: right;
+	height: 1.5em;
+}

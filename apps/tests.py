@@ -6,8 +6,7 @@ from django.test import LiveServerTestCase
 from django.test import TestCase
 from django.test.client import Client, RequestFactory
 
-#from noseselenium.cases import SeleniumTestCaseMixin
-#from selenium import webdriver
+from selenium import webdriver
 
 from .models import *
 from anylist.views import *
@@ -15,9 +14,7 @@ from anylist.views import *
 Types = {'anime': Anime, 'manga': Manga, 'criminalystic': Criminalystic}
 
 
-class HomePageTest(TestCase):
-	fixtures = ['initial_data.json']
-	
+class HomePageTest(TestCase):	
 	def test_get_page(self):
 		'Тестируем доступность главной страницы'
 		request = RequestFactory().get('/')
@@ -31,8 +28,8 @@ class HomePageTest(TestCase):
 
 	def test_register(self):
 		''' Возможность залогиниться/разлогиниться '''
-		c = Client()
 		User.objects.create_user(username='first', password='ShockiNg')
+		c = Client()
 		response = c.post('/login/', {'username': 'first', 'password': 'ShockiNg'})
 		self.assertEqual(response.status_code, 302)
 
@@ -49,18 +46,18 @@ class HomePageTest(TestCase):
 
 	def test_search(self):
 		''' Возможность поиска '''
+		Raiting.objects.create(name='NC-17')
+		Production.objects.create(title='Bones', old_limit=Raiting.objects.get(name='NC-17'))
 		c = Client()
 		response = c.get('/search?key=bo')
 		self.assertEqual(response.status_code, 200)
 		
-#		content = json.loads(str(response.content, 'utf-8'))
-		
-#		self.assertIn('Bones', content)
+		content = json.loads(str(response.content, 'utf-8'))
 
+		self.assertIn('Bones', content)
 
 
 class CategoryPageTest(TestCase):
-	fixtures = ['initial_data.json']
 	def test_get_category_page(self):
 		''' Проверка, что все списки с различными категориями либо доступны,
 		либо выдаётся стандартная 404 ошибка '''
@@ -82,7 +79,9 @@ class CategoryPageTest(TestCase):
 
 class DetailPageTest(TestCase):
 	def test_get_anime_page(self):
+		''' страница доступна и выдаёт нужный url '''
 		view = ProductDetail.as_view()
+
 		for item in Anime.objects.all():
 			request = RequestFactory().get('/anime/%s/' % item.link.get_absolute_url())
 
@@ -97,20 +96,36 @@ class DetailPageTest(TestCase):
 		self.assertEqual(response.status_code, 404)
 
 
-	def test_get_manga_page(self):
-		view = ProductDetail.as_view()
-		for item in Manga.objects.all():
-			request = RequestFactory().get('/manga/%s/' % item.link.get_absolute_url())
+class ActionProductTest(TestCase):
+	''' Добавление продукта в список, смена статуса, указание серии '''
 
-			response = view(request)
+	def setUp(self):
+		User.objects.create_user(username='first', password='ShockiNg')
+		Raiting.objects.create(name='PG-13')
+		p = Production.objects.create(
+			title='Angel Beats', old_limit=Raiting.objects.get(name='PG-13'))
+		Anime.objects.create(link=p)
+		Status.objects.create(name='Planned')
+		p = ThematicGroup.objects.create(name='Anime')
+		Category.objects.create(name='Anime', group=p)
+		Status.objects.create(name='Watch')
+	
+	def test_add_product(self):
+		''' Возможность добавления в список '''
+		c = Client()
+		response = c.post('/login/', {'username': 'first', 'password': 'ShockiNg'}, follow=True)
+		self.assertEqual(response.status_code, 200)
+		
+		response = c.post('/anime/1-angelbeats/status', {'name': 'Planned'})
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(str(response.content, 'utf-8'), 'Planned')
 
-			self.assertEqual(response.status_code, 200)
-			self.assertEqual(response.template_name[0], 'detail.html')
-
-		request = RequestFactory().get('/manga/yob')
-		response = view(request)
-
-		self.assertEqual(response.status_code, 404)
+		response = c.get('/profile/list/anime/planned')
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.template_name[0], 'user_list.html')
+		self.assertEqual(
+			re.search('(Angel Beats)', str(response.content, 'utf-8')).group(1),
+			'Angel Beats')
 
 
 class AddProductPageTest(TestCase):
@@ -143,9 +158,7 @@ class AddProductPageTest(TestCase):
 		self.assertEqual(response.status_code, 404)
 
 
-
 class FunctionalHomePageTest(LiveServerTestCase):
-	'''
 	def setUp(self):
 		self.browser = webdriver.Firefox()
 		self.browser.implicitly_wait(3)
@@ -199,4 +212,3 @@ class FunctionalHomePageTest(LiveServerTestCase):
 			self.browser.find_element_by_link_text(category).click()
 			body = self.browser.find_element_by_tag_name('body')
 			self.assertIn(category, body.text)
-'''

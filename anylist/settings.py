@@ -43,7 +43,6 @@ INSTALLED_APPS = (
     'south',
     'django_wysiwyg',
     'easy_thumbnails',
-#    'django_nose',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -70,7 +69,7 @@ DATABASES = {
     },
     'slave': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3.test'),
         'TEST_MIRROR': 'default'
     }
 }
