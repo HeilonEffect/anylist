@@ -7,7 +7,7 @@
 {% block header %}{{ header }}{% endblock %}
 {% block title %}{{ header }}{% endblock %}
 {% block body %}
-	<main>
+<main ng-controller="EditCtrl">
 	{% load wysiwyg %}
 	{% wysiwyg_setup %}
 	<form enctype="multipart/form-data" method="post" id="add_form">
@@ -23,10 +23,13 @@
 			{% endfor %}
 			</select>
 			<p></p>
-			<select name="old_limit" style="width:10em">
+			<!--<select name="old_limit" style="width:10em">
 			{% for item in raiting %}
 				<option value="{{ item.id }}">{{ item }}</option>
 			{% endfor %}
+			</select>-->
+			<select>
+				<option ng-repeat="limit in raiting" ng-selected="{[{limit.key==current_limit}]}">{[{limit.key}]}</option>
 			</select>
 		</div>
 		<div>
@@ -81,5 +84,12 @@
 				return elem != box.id.split("-")[0];
 			});
 	});
+</script>
+<script>
+	defaultApp.controller('EditCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
+		$scope.current_limit = '{{ object.old_limit }}';
+		$scope.raiting = [{'key': 'G', 'value': '0'}, {'key': 'PG', 'value': '1'}, {'key': 'PG-13', 'value': '2'},
+			{'key': 'R', 'value': '3'}, {'key': 'NC-17', 'value': '4'}];
+	}]);
 </script>
 {% endblock %}

@@ -236,7 +236,6 @@ def add_serie(request, category, pk):
     ''' Добавляем новую серию в указанный сезон '''
     try:
         form = AddSerieForm(request.POST)
-        print(request.POST)
         if form.is_valid():
             form.save()
             return HttpResponse()

@@ -7,7 +7,7 @@
 {% block header %}{{ header }}{% endblock %}
 {% block title %}{{ header }}{% endblock %}
 {% block body %}
-<main>
+<main ng-controller="AddCtrl">
 	{% load wysiwyg %}
 	{% wysiwyg_setup %}
 	<form enctype="multipart/form-data" method="post" id="add_form" action="/{{ category }}/add">
@@ -25,10 +25,14 @@
 			</select>
 			<p></p>
 			<!--<button id="sel_genres">Выберите жанры</button>-->
-			<select name="old_limit" style="width:10em">
+			<!--<select name="old_limit" style="width:10em">
 			{% for item in raiting %}
 				<option value="{{ item.id }}">{{ item }}</option>
 			{% endfor %}
+			</select>-->
+			<select>
+				<option>--> Select Old Limit</option>
+				<option ng-repeat="limit in raiting" value="{[{limit.value}]}">{[{limit.key}]}</option>
 			</select>
 			<!--<input type="text" class="select-list" placeholder="Введите возрастное ограничение" name="old_limit">-->
 		</div>
@@ -84,5 +88,10 @@
 			);
 		}
 	});
+	defaultApp.controller('AddCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
+		$scope.raiting = [{'key': 'G', 'value': '0'}, {'key': 'PG', 'value': '1'}, {'key': 'PG-13', 'value': '2'},
+			{'key': 'R', 'value': '3'}, {'key': 'NC-17', 'value': '4'}];
+		//$scope.raiting = {'G': '0', 'PG': '1', 'PG-13': '2', 'R+': '3', 'NC-17': '4'};
+	}]);
 </script>
 {% endblock %}

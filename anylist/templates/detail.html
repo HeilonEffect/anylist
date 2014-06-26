@@ -26,12 +26,6 @@
 				<option ng-click="status_move(this)" ng-repeat="status in statuses" ng-selected="{[{status == active_status }]}">{[{status}]}</option>
 			</select>
 		</div>
-		{% comment %}
-		<section>
-			<h3>Status</h3>
-			<span ng-repeat="status in statuses" ng-select="status_move(this)">{[{status}]}</span>
-		</section>
-		{% endcomment %}
 	</nav>
 {% endblock %}
 {% block script %}
