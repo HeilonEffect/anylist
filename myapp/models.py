@@ -1,3 +1,6 @@
+from abc import ABCMeta, abstractmethod
+import re
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -8,41 +11,87 @@ class Names(models.Model):
 	name = models.CharField(max_length=255, unique=True)
 
 
-class Status(models.Model):
-	name = models.CharField(max_length=10, unique=True)
+class AbstractHero(models.Model):
+	name = models.CharField(max_length=1024)
+	description = models.TextField(blank=True, null=True)
+	avatar = models.ImageField(upload_to=MEDIA_ROOT)
 
 
-class Product(models.Model):
-	''' Абстрактное описание одиночного продукта '''
+class AbstractCreator(models.Model):
+	''' Т.к creator'ов явно меньше, чем остальных, то сделаем одну таблицу
+	на всех '''
+	name = models.CharField(max_length=255)
+	emploe = models.CharField(max_length=100)	# должность
+	avatar = models.ImageField(upload_to=MEDIA_ROOT)
+
+
+class AbstractProduct(models.Model):
 	title = models.CharField(max_length=255, unique=True)
-	alt_name = models.ManyToManyField(Names, null=True, blank=True)
-	description = models.TextField(null=True, blank=True)
-	avatar = models.ImageField(blank=True, upload_to=MEDIA_ROOT)
-	old_limit = models.PositiveSmallIntegerField(default=0)
+	alt_names = models.ManyToManyField(Names, null=True)
+	
+	description = models.TextField(blank=True, null=True)
+	source_description = models.URLField()
+
+	avatar = models.ImageField(upload_to=MEDIA_ROOT)
+
+	creators = models.ManyToManyField(AbstractCreator, null=True)
+	heroes = models.ManyToManyField(AbstractHero, null=True)
 
 	def get_absolute_url(self):
-		category = self.__doc__.split('(')[0].lower()
-		return '%s/%s/' % (category, self.title)
+		orig = re.sub('[ :()]', '_', self.title, flags=re.G)
+		return '/%s/' % orig
 
-	def __str__(self):
-		return self.title
-	
-	class Meta:
-		abstract = True
-		ordering = ('title',)
-
-
-class ListedProduct(models.Model):
-	'''  '''
-	product = models.ForeignKey(Product)
-	status = models.ForeignKey(Status)
-	score = models.PositiveSmallIntegerField(null=True, blank=True)
-	user = models.ForeignKey(User)
 	class Meta:
 		abstract = True
 
 
-class Mutator(object):
-	def mutate(self):
-		Product.objects.create()
+class AbstractRelation(models.Model):
+	''' Связывает произведения, серии и героев (Colleague) '''
+	class Meta:
+		abstract = True
 
+
+class Colleague(metaclass=ABCMeta):
+	def __init__(self, product, hero, creator):
+		self._product = product
+		self._hero = hero
+		self._creator = creator
+
+
+class Japanese(AbstractProduct):
+	pass
+
+
+class Detective(AbstractProduct):
+	pass
+
+
+class Fantastic(AbstractProduct):
+	pass
+
+
+class ProductRouter(object):
+	'''
+	Указывает сохранять все модели в mysql таблицу
+	'''
+	def db_for_read(self, model, **hints):
+		if model._meta.app_label == 'myapp':
+			return 'product_db'
+		return None
+
+	def db_for_write(self, model, **hints):
+		if model._meta.app_label == 'myapp':
+			return 'product_db'
+		return None
+
+	def allow_relation(self, obj1, obj2, **hints):
+		if obj1._meta.app_label == 'myapp' or obj2._meta.app_label == 'myapp':
+			return True
+		return None
+
+	def allow_syncdb(self, db, model):
+		if db == 'product_db':
+			return model._meta.app_label == 'myapp'
+		elif model._meta.app_label == 'myapp':
+			return False
+		return None

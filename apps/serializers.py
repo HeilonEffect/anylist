@@ -20,3 +20,8 @@ class SerieSerializer(serializers.ModelSerializer):
 		model = Serie
 		fields = ('id', 'number', 'name', 'start_date', 'length')
 
+
+class GenreSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Genre
+		fields = ('id', 'name',)

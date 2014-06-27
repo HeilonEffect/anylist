@@ -129,6 +129,7 @@
 
 				$scope.searcher = function (data) {
 					$http.get('/search?key=' + data).success(function (data) {
+						// отрефракторить
 						$scope.search_result = [];
 						if ($scope.search_result) {
 							document.getElementById("search_result").style.visibility = "visible";
@@ -145,7 +146,6 @@
 					{'title': 'Heroes', 'url': [head_url, 'heroes'].join('/')},
 					{'title': 'Creators', 'url': [head_url, 'creators'].join('/')}
 				];
-				
 			}
 		]);
 	</script>

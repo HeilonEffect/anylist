@@ -18,12 +18,23 @@
 				<input type="file" name="avatar" id="file">
 			</div>
 		<div class="form-other">
-			<select name="genres" id="genres" style="width:10em;" multiple>
+			<div id="select_genre_fon" ng-click="hide_lightbox">
+				<div id="select_genre"><ul>
+					<li ng-repeat="genre in genres">
+						<input type="checkbox" id="{[{genre.id}]}" ng-model="genres" ng-true-value="{[{genre.id}]}" ng-click="add(genre.id, this)">
+						<label for="{[{genre.id}]}">{[{genre.name}]}</label>
+					</li>
+				</ul>
+				<button ng-click="add()">Close</button>
+				<button>Clear</button>
+				</div>
+			</div>
+			<!--<select name="genres" id="genres" style="width:10em;" multiple>
 				{% for genre in genres %}
 				<option value="{{ genre.id }}">{{ genre.name }}</option>
 				{% endfor %}
 			</select>
-			<p></p>
+			<p></p>-->
 			<!--<button id="sel_genres">Выберите жанры</button>-->
 			<!--<select name="old_limit" style="width:10em">
 			{% for item in raiting %}
@@ -50,10 +61,10 @@
 		width: 400,
 		placeholder: "Выберите жанры"
 	});
-	$("select[name='old_limit']").select2({
+	/*$("select[name='old_limit']").select2({
 		width: 100
 	});
-
+*/
 	/* --------------------------------------
 	// отправка данных формы
 	*///-------------------------------------
@@ -79,7 +90,6 @@
 				"/search",
 				{ key:  eventObject.target.value + eventObject.key},
 				function (data) {
-					console.log(data);
 					$(".dropdown-title").html("");
 					for (var key in data) {
 						$(".dropdown-title").append("<li><a href='" + data[key] + "'>" + key + "</a></li><br>");
@@ -91,7 +101,26 @@
 	defaultApp.controller('AddCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
 		$scope.raiting = [{'key': 'G', 'value': '0'}, {'key': 'PG', 'value': '1'}, {'key': 'PG-13', 'value': '2'},
 			{'key': 'R', 'value': '3'}, {'key': 'NC-17', 'value': '4'}];
-		//$scope.raiting = {'G': '0', 'PG': '1', 'PG-13': '2', 'R+': '3', 'NC-17': '4'};
+		/*$scope.hide_lightbox = function () {
+			var d = document.getElementById('select_genre');
+			d.style.visibility = 'hidden';
+			var e = document.getElementById('select_genre_fon');
+			e.style.visibility = 'hidden';
+		}*/
+		$http.get('/api/genres').success(function (data) {
+			$scope.genres = data;
+			$scope.genre_model = {};
+		});
+		$scope.selected_genres = [];
+		$scope.add = function (item, elem) {
+			if ($scope.selected_genres.indexOf(item) == -1) {
+				$scope.selected_genres.push(item);
+			} else {
+				$scope.selected_genres = $scope.selected_genres.filter(function (elem) {
+					return elem != item;
+				});
+			}
+		}
 	}]);
 </script>
 {% endblock %}

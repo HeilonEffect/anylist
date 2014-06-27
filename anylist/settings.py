@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apps',
+    'myapp',
     'rest_framework',
     'south',
     'django_wysiwyg',
@@ -71,8 +72,16 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'TEST_MIRROR': 'default'
-    }
+    }#,
+#    'product': {
+ #       'ENGINE': 'django.db.backends.mysql',
+  #      'NAME': 'production_db',
+   #     'USER': 'root',
+    #    'PASSWORD': 'ShockiNg'
+    #}
 }
+
+DATABASE_ROUTERS = ['myapp.models.ProductRouter']
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/

@@ -290,3 +290,28 @@ details > ul {
 	float: right;
 	height: 1.5em;
 }
+#select_genre_fon {
+	position: fixed;
+	top: 0;
+	right: 0;
+	left: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.3);
+	z-index: 20;
+}
+#select_genre {
+	position: fixed;
+	top: 2.3em;
+	bottom: 2.3em;
+	left: 2.3em;
+	right: 2.3em;
+	background-color: white;
+	z-index: 25;
+	-webkit-column-count: 4;
+	-moz-column-count: 4;
+	column-count: 4;
+}
+#select_genre button {
+	float: right;
+	vertical-align: bottom;
+}

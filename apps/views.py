@@ -46,3 +46,6 @@ class SeriesView(generics.ListAPIView):
 	serializer_class = SerieSerializer
 
 
+class GenreView(generics.ListAPIView):
+	queryset = Genre.objects.all()
+	serializer_class = GenreSerializer
