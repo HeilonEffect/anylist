@@ -39,7 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apps',
-    'myapp',
+#    'myapp',
     'rest_framework',
     'south',
     'django_wysiwyg',
@@ -72,13 +72,13 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'TEST_MIRROR': 'default'
-    }#,
-#    'product': {
- #       'ENGINE': 'django.db.backends.mysql',
-  #      'NAME': 'production_db',
-   #     'USER': 'root',
-    #    'PASSWORD': 'ShockiNg'
-    #}
+    },
+    'product': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'product_db',
+        'USER': 'ctulhu',
+        'PASSWORD': ''
+    }
 }
 
 DATABASE_ROUTERS = ['myapp.models.ProductRouter']
@@ -152,6 +152,5 @@ SOUTH_MIGRATION_MODULES = {
     'easy_thumbnails': 'easy_thumbnails.south_migrations',
 }
 
-#TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 # should match SELENIUM_URL_ROOT which defaults to http://127.0.0.1:8000
 #LIVE_SERVER_PORT = 8000

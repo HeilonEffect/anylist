@@ -10,22 +10,24 @@
 <main ng-controller="AddCtrl">
 	{% load wysiwyg %}
 	{% wysiwyg_setup %}
-	<form enctype="multipart/form-data" method="post" id="add_form" action="/{{ category }}/add">
-			<input name="title" type="text" placeholder="Enter title here" class="form-title">
+	<!--<form enctype="multipart/form-data" method="post" id="add_form" action="/{{ category }}/add">-->
+	<form enctype="multipart/form-data" ng-submit="add_product()">
+			<input name="title" type="text" placeholder="Enter title here" class="form-title" ng-model="title">
 			<ul class="dropdown-title"></ul>
-			<textarea class="form-textarea" rows="15" name="description" id="description"></textarea>
+			<textarea class="form-textarea" rows="15" name="description" id="description" ng-model="description"></textarea>
 			<div id="upload_form">
-				<input type="file" name="avatar" id="file">
+				<input type="file" name="avatar" id="file" ng-model="avatar">
 			</div>
 		<div class="form-other">
-			<div id="select_genre_fon" ng-click="hide_lightbox">
+			<button ng-click="show_lightbox()">Select Genres</button>
+			<div id="select_genre_fon" ng-click="hide_lightbox()" style="visibility:hidden">
 				<div id="select_genre"><ul>
 					<li ng-repeat="genre in genres">
 						<input type="checkbox" id="{[{genre.id}]}" ng-model="genres" ng-true-value="{[{genre.id}]}" ng-click="add(genre.id, this)">
 						<label for="{[{genre.id}]}">{[{genre.name}]}</label>
 					</li>
 				</ul>
-				<button ng-click="add()">Close</button>
+				<button ng-click='hide_lightbox()'>Close</button>
 				<button>Clear</button>
 				</div>
 			</div>
@@ -57,14 +59,13 @@
 {% endblock %}
 {% block script %}
 <script type="text/javascript">
-	$("#genres").select2({
+	/*$("#genres").select2({
 		width: 400,
 		placeholder: "Выберите жанры"
 	});
 	/*$("select[name='old_limit']").select2({
 		width: 100
-	});
-*/
+	});*/
 	/* --------------------------------------
 	// отправка данных формы
 	*///-------------------------------------
@@ -74,7 +75,7 @@
 		$("#add_form").attr("action", "/" + link + "/add");
 	});*/
 	// добавляем id жанра в коллекцию, если установлен соответсвующий флажок
-	$(".genre_check").click(function (eventObject) {
+	/*$(".genre_check").click(function (eventObject) {
 		var box = eventObject.currentTarget;
 		if (box.checked)
 			genres.push(box.id.split("-")[0]);
@@ -97,16 +98,10 @@
 				}
 			);
 		}
-	});
+	});*/
 	defaultApp.controller('AddCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
 		$scope.raiting = [{'key': 'G', 'value': '0'}, {'key': 'PG', 'value': '1'}, {'key': 'PG-13', 'value': '2'},
 			{'key': 'R', 'value': '3'}, {'key': 'NC-17', 'value': '4'}];
-		/*$scope.hide_lightbox = function () {
-			var d = document.getElementById('select_genre');
-			d.style.visibility = 'hidden';
-			var e = document.getElementById('select_genre_fon');
-			e.style.visibility = 'hidden';
-		}*/
 		$http.get('/api/genres').success(function (data) {
 			$scope.genres = data;
 			$scope.genre_model = {};
@@ -120,6 +115,17 @@
 					return elem != item;
 				});
 			}
+		}
+		$scope.hide_lightbox = function () {
+			document.getElementById('select_genre_fon').style.visibility = "hidden";
+			document.getElementById('select_genre').style.visibility = 'hidden';
+		}
+		$scope.add_product = function () {
+			;
+		}
+		$scope.show_lightbox = function () {
+			document.getElementById('select_genre_fon').style.visibility = "visible";
+			document.getElementById('select_genre').style.visibility = 'visible';
 		}
 	}]);
 </script>
