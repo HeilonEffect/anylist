@@ -2,21 +2,21 @@
 {% block title %}Main Page{% endblock %}
 {% block header %}Main Page{% endblock %}
 {% block body %}
-	<main>
-	{% for group in object_list %}
-		<p>{{ group.name }}</p>
-		<ul>
-		{% for value in group.children %}
-			<li>
-				<a href="{{ value.get_absolute_url }}">
-					<figure>
-						<img src="{{ value.avatar_path }}">
-						<figcaption>{{ value }}</figcaption>
-					</figure>
-				</a>
-			</li>
-		{% endfor %}
-		</ul>
+<main>
+{% for group in object_list %}
+	<p>{{ group.name }}</p>
+	<ul>
+	{% for value in group.children %}
+		<li>
+			<a href="{{ value.get_absolute_url }}">
+				<figure>
+					<img src="{{ value.avatar_path }}">
+					<figcaption>{{ value }}</figcaption>
+				</figure>
+			</a>
+		</li>
 	{% endfor %}
-	</main>
+	</ul>
+{% endfor %}
+</main>
 {% endblock %}

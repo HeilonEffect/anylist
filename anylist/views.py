@@ -22,6 +22,8 @@ from apps.models import *
 from apps.forms import *
 from apps.serializers import ProductSerializer
 
+from myapp.models import *
+
 from .mixins import *
 
 
@@ -30,7 +32,7 @@ Types = {'anime': Anime, 'manga': Manga, 'criminalystic': Criminalystic}
 
 #------------ Base Views -----------------
 class MainPage(ListView):
-    model = ThematicGroup
+    model = CategoryGroup
     template_name = 'index.html'
 
     def get_context_data(self, **kwargs):

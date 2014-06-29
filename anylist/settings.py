@@ -38,10 +38,10 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps',
-#    'myapp',
+#    'apps',
+    'myapp',
     'rest_framework',
-    'south',
+#    'south',
     'django_wysiwyg',
     'easy_thumbnails',
 )
@@ -64,24 +64,22 @@ WSGI_APPLICATION = 'anylist.wsgi.application'
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
 DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#    },
+#    'slave': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#        'TEST_MIRROR': 'default'
+#    },
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    },
-    'slave': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'TEST_MIRROR': 'default'
-    },
-    'product': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'product_db',
         'USER': 'ctulhu',
         'PASSWORD': ''
     }
 }
-
-DATABASE_ROUTERS = ['myapp.models.ProductRouter']
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
