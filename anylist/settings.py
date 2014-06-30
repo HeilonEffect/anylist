@@ -41,7 +41,7 @@ INSTALLED_APPS = (
 #    'apps',
     'myapp',
     'rest_framework',
-#    'south',
+    'south',
     'django_wysiwyg',
     'easy_thumbnails',
 )
@@ -64,20 +64,23 @@ WSGI_APPLICATION = 'anylist.wsgi.application'
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
 DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#    },
-#    'slave': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#        'TEST_MIRROR': 'default'
-#    },
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'product_db',
         'USER': 'ctulhu',
         'PASSWORD': ''
+    }
+}
+
+DATABASES1 = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    },
+    'slave': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'TEST_MIRROR': 'default'
     }
 }
 

@@ -41,6 +41,10 @@ urlpatterns = patterns('',
     url(r'^\w+/series/edit$', edit_serie),
     url(r'^add_to_list$', add_list),
 
+    # url'ы для myapp
+    url(r'^(?P<group>\w+)/(?P<category>\w+)/$', ProductionList.as_view()),
+    url(r'^(?P<group>)\w+/(?P<category>).+/(?P<slug>)\w+/$', ProductDetail.as_view()),
+
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 )
 

@@ -9,7 +9,7 @@ from django.http import HttpResponseNotFound
 
 from apps.forms import *
 from apps.models import *
-
+#from myapp.models import Types
 
 Types = {'anime': Anime, 'manga': Manga, 'criminalystic': Criminalystic}
 

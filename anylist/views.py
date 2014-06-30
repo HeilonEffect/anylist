@@ -22,8 +22,6 @@ from apps.models import *
 from apps.forms import *
 from apps.serializers import ProductSerializer
 
-from myapp.models import *
-
 from .mixins import *
 
 
@@ -32,7 +30,7 @@ Types = {'anime': Anime, 'manga': Manga, 'criminalystic': Criminalystic}
 
 #------------ Base Views -----------------
 class MainPage(ListView):
-    model = CategoryGroup
+    model = ThematicGroup
     template_name = 'index.html'
 
     def get_context_data(self, **kwargs):
@@ -313,7 +311,7 @@ def log_out(request, url):
     return HttpResponseRedirect('/' + url)
 
 
-class AddProduct(LoginRequiredMixin, BasePageMixin, CreateView):
+class AddProduct(LoginRequiredMixin, CreateView, BasePageMixin):
     template_name = 'forms/add_form.html'
     model = Production
     form_class = AddForm    
@@ -398,7 +396,7 @@ def seasons_view(request, category, pk):
         return HttpResponseServerError()
 
 
-class ProductionChoiceView(BaseChoiceMixin, ListView):
+class ProductionChoiceView(ListView, BaseChoiceMixin):
     model = Production
     template_name = 'list.html'
     header = 'Выборка манги по жанрам'
@@ -406,5 +404,3 @@ class ProductionChoiceView(BaseChoiceMixin, ListView):
     genre_groups =\
         ['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
     model1 = Manga
-
-
