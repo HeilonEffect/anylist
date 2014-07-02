@@ -10,6 +10,7 @@ import anylist.settings as settings
 from anylist.views import *
 from apps.models import *
 from apps.views import *
+from myapp.views import *
 
 
 admin.autodiscover()
@@ -25,7 +26,7 @@ urlpatterns = patterns('',
     url(r'^profile/$', profile),
     url(r'^mylist/series/add$', add_list_serie),
     url(r'^mylist/series/del$', del_list_serie),
-    url(r'^profile/list/(?P<category>\w+)/(?P<status>\w+)$', UserList.as_view()),
+    url(r'^profile/list/(?P<category>\w+)/(?P<status>\w+)$', UserList1.as_view()),
 
     url(r'^(?P<category>\w+)/add$', AddProduct.as_view()),
     url(r'^\w+/(?P<pk>\d+)-\w+/remove_from_list$', remove_from_list),
@@ -33,8 +34,7 @@ urlpatterns = patterns('',
     url(r'^\w+/(?P<pk>\d+)-\w+/status$', status_update),
     url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+/$', ProductDetail.as_view()),
     url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+/edit$', ProductionEdit.as_view()),
-    url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+/series/$', production_series_view),
-    url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+/series/list$', seasons_view),
+    url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+/series/$', SerieView.as_view()),
     url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+/series/add$', add_serie),
     url(r'^(?P<category>\w+)/$', ProductionList.as_view()),
     url(r'^(?P<category>\w+)/filter/(?P<args>(.+))/?$', ProductionChoiceView.as_view()),
@@ -53,7 +53,8 @@ urlpatterns += patterns('apps.views',
     url(r'^api/status$', StatusList.as_view()),
     url(r'^api/genres$', GenreView.as_view()),
     url(r'^api/product:(?P<pk>\d+)/season:(?P<number>\d+)$', SeriesView.as_view(), name='series-list'),
-    url(r'^api/product:(?P<pk>\d+)/seasons$', SeriesView.as_view(), name='seasons-list'),
+    #url(r'^api/product:(?P<pk>\d+)/seasons$', SeriesView.as_view(), name='seasons-list'),
+    url(r'^api/product:(?P<pk>\d+)/series$', APISeriesView.as_view()),
 )
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'api'])

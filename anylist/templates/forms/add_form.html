@@ -7,51 +7,35 @@
 {% block header %}{{ header }}{% endblock %}
 {% block title %}{{ header }}{% endblock %}
 {% block body %}
-<main ng-controller="AddCtrl">
+<main>
 	{% load wysiwyg %}
 	{% wysiwyg_setup %}
-	<!--<form enctype="multipart/form-data" method="post" id="add_form" action="/{{ category }}/add">-->
-	<form enctype="multipart/form-data" ng-submit="add_product()">
-			<input name="title" type="text" placeholder="Enter title here" class="form-title" ng-model="title">
+	<form enctype="multipart/form-data" method="post" id="add_form" action="/{{ category }}/add">
+			<input name="title" type="text" placeholder="Enter title here" class="form-title">
 			<ul class="dropdown-title"></ul>
-			<textarea class="form-textarea" rows="15" name="description" id="description" ng-model="description"></textarea>
+			<textarea class="form-textarea" rows="15" name="description" id="description"></textarea>
 			<div id="upload_form">
-				<input type="file" name="avatar" id="file" ng-model="avatar">
+				<input name="avatar" type="file" />
 			</div>
-		<div class="form-other">
-			<button ng-click="show_lightbox()">Select Genres</button>
-			<div id="select_genre_fon" ng-click="hide_lightbox()" style="visibility:hidden">
-				<div id="select_genre"><ul>
-					<li ng-repeat="genre in genres">
-						<input type="checkbox" id="{[{genre.id}]}" ng-model="genres" ng-true-value="{[{genre.id}]}" ng-click="add(genre.id, this)">
-						<label for="{[{genre.id}]}">{[{genre.name}]}</label>
-					</li>
-				</ul>
-				<button ng-click='hide_lightbox()'>Close</button>
-				<button>Clear</button>
-				</div>
-			</div>
-			<!--<select name="genres" id="genres" style="width:10em;" multiple>
+		<div class="form-other"></div>
+			<select name="genres" id="genres" style="width:10em;" multiple>
 				{% for genre in genres %}
 				<option value="{{ genre.id }}">{{ genre.name }}</option>
 				{% endfor %}
 			</select>
-			<p></p>-->
+			<p></p>
+			<input type="hidden" name="category" value="{{ category_id }}">
 			<!--<button id="sel_genres">Выберите жанры</button>-->
 			<!--<select name="old_limit" style="width:10em">
 			{% for item in raiting %}
-				<option value="{{ item.id }}">{{ item }}</option>
+				<option value="{{ item.value }}">{{ item.key }}</option>
 			{% endfor %}
 			</select>-->
-			<select>
-				<option>--> Select Old Limit</option>
-				<option ng-repeat="limit in raiting" value="{[{limit.value}]}">{[{limit.key}]}</option>
-			</select>
-			<!--<input type="text" class="select-list" placeholder="Введите возрастное ограничение" name="old_limit">-->
 		</div>
 		<div>
 			{% csrf_token %}
-			<button type="submit">Next Step</button>
+			<button type="submit">Next</button>
+			<!--<button type="submit">Next Step</button>-->
 		</div>
 	</form>
 	{% wysiwyg_editor "description" %}
@@ -59,74 +43,9 @@
 {% endblock %}
 {% block script %}
 <script type="text/javascript">
-	/*$("#genres").select2({
+	$("#genres").select2({
 		width: 400,
 		placeholder: "Выберите жанры"
 	});
-	/*$("select[name='old_limit']").select2({
-		width: 100
-	});*/
-	/* --------------------------------------
-	// отправка данных формы
-	*///-------------------------------------
-	/*$("#add_form").submit({genres: genres}, function (eventObject) {
-		// указываем, куда отсылать запрос
-		var link = window.location.pathname.split("/")[1];
-		$("#add_form").attr("action", "/" + link + "/add");
-	});*/
-	// добавляем id жанра в коллекцию, если установлен соответсвующий флажок
-	/*$(".genre_check").click(function (eventObject) {
-		var box = eventObject.currentTarget;
-		if (box.checked)
-			genres.push(box.id.split("-")[0]);
-		else
-			genres = genres.filter(function(elem) {
-				return elem != box.id.split("-")[0];
-			});
-	});
-
-	$("input[name='title']").keypress(function (eventObject) {
-		if (!eventObject.ctrlKey && eventObject.key.length < 2 && !eventObject.shiftKey) {
-			$.get(
-				"/search",
-				{ key:  eventObject.target.value + eventObject.key},
-				function (data) {
-					$(".dropdown-title").html("");
-					for (var key in data) {
-						$(".dropdown-title").append("<li><a href='" + data[key] + "'>" + key + "</a></li><br>");
-					}
-				}
-			);
-		}
-	});*/
-	defaultApp.controller('AddCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
-		$scope.raiting = [{'key': 'G', 'value': '0'}, {'key': 'PG', 'value': '1'}, {'key': 'PG-13', 'value': '2'},
-			{'key': 'R', 'value': '3'}, {'key': 'NC-17', 'value': '4'}];
-		$http.get('/api/genres').success(function (data) {
-			$scope.genres = data;
-			$scope.genre_model = {};
-		});
-		$scope.selected_genres = [];
-		$scope.add = function (item, elem) {
-			if ($scope.selected_genres.indexOf(item) == -1) {
-				$scope.selected_genres.push(item);
-			} else {
-				$scope.selected_genres = $scope.selected_genres.filter(function (elem) {
-					return elem != item;
-				});
-			}
-		}
-		$scope.hide_lightbox = function () {
-			document.getElementById('select_genre_fon').style.visibility = "hidden";
-			document.getElementById('select_genre').style.visibility = 'hidden';
-		}
-		$scope.add_product = function () {
-			;
-		}
-		$scope.show_lightbox = function () {
-			document.getElementById('select_genre_fon').style.visibility = "visible";
-			document.getElementById('select_genre').style.visibility = 'visible';
-		}
-	}]);
 </script>
 {% endblock %}

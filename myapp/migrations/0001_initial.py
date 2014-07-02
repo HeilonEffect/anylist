@@ -11,16 +11,16 @@ class Migration(SchemaMigration):
         # Adding model 'CategoryGroup'
         db.create_table('myapp_categorygroup', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=20, unique=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=40, unique=True)),
         ))
         db.send_create_signal('myapp', ['CategoryGroup'])
 
         # Adding model 'Category'
         db.create_table('myapp_category', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('avatar', self.gf('django.db.models.fields.files.ImageField')(max_length=100, null=True, blank=True)),
-            ('icon', self.gf('django.db.models.fields.files.ImageField')(max_length=100, null=True, blank=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=20, unique=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=40, unique=True)),
+            ('avatar', self.gf('django.db.models.fields.files.ImageField')(null=True, max_length=100, blank=True)),
+            ('icon', self.gf('django.db.models.fields.files.ImageField')(null=True, max_length=100, blank=True)),
             ('group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['myapp.CategoryGroup'])),
         ))
         db.send_create_signal('myapp', ['Category'])
@@ -28,7 +28,7 @@ class Migration(SchemaMigration):
         # Adding model 'GenreGroup'
         db.create_table('myapp_genregroup', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=30, unique=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=40, unique=True)),
             ('category', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['myapp.CategoryGroup'])),
         ))
         db.send_create_signal('myapp', ['GenreGroup'])
@@ -36,7 +36,7 @@ class Migration(SchemaMigration):
         # Adding model 'Genre'
         db.create_table('myapp_genre', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=20)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=40, unique=True)),
             ('group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['myapp.GenreGroup'])),
         ))
         db.send_create_signal('myapp', ['Genre'])
@@ -51,7 +51,7 @@ class Migration(SchemaMigration):
         # Adding model 'Employ'
         db.create_table('myapp_employ', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255, unique=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=40, unique=True)),
         ))
         db.send_create_signal('myapp', ['Employ'])
 
@@ -60,7 +60,7 @@ class Migration(SchemaMigration):
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('employ', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['myapp.Employ'])),
-            ('avatar', self.gf('django.db.models.fields.files.ImageField')(max_length=100, null=True, blank=True)),
+            ('avatar', self.gf('django.db.models.fields.files.ImageField')(null=True, max_length=100, blank=True)),
         ))
         db.send_create_signal('myapp', ['Creator'])
 
@@ -68,18 +68,18 @@ class Migration(SchemaMigration):
         db.create_table('myapp_hero', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('description', self.gf('django.db.models.fields.TextField')(blank=True, null=True)),
+            ('description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
             ('actor', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['myapp.Creator'])),
             ('avatar', self.gf('django.db.models.fields.files.ImageField')(max_length=100)),
-            ('is_main_hero', self.gf('django.db.models.fields.NullBooleanField')(blank=True, null=True)),
+            ('is_main_hero', self.gf('django.db.models.fields.NullBooleanField')(null=True, blank=True)),
         ))
         db.send_create_signal('myapp', ['Hero'])
 
         # Adding model 'Product'
         db.create_table('myapp_product', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('tiltle', self.gf('django.db.models.fields.CharField')(max_length=255, unique=True)),
-            ('description', self.gf('django.db.models.fields.TextField')(blank=True, null=True)),
+            ('title', self.gf('django.db.models.fields.CharField')(max_length=255, unique=True)),
+            ('description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
             ('avatar', self.gf('django.db.models.fields.files.ImageField')(max_length=100)),
             ('category', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['myapp.Category'])),
         ))
@@ -121,21 +121,21 @@ class Migration(SchemaMigration):
         ))
         db.create_unique(m2m_table_name, ['product_id', 'hero_id'])
 
-        # Adding model 'Series'
-        db.create_table('myapp_series', (
+        # Adding model 'Serie'
+        db.create_table('myapp_serie', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('number', self.gf('django.db.models.fields.PositiveSmallIntegerField')()),
             ('num_season', self.gf('django.db.models.fields.PositiveSmallIntegerField')()),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-            ('start_date', self.gf('django.db.models.fields.DateTimeField')(blank=True, null=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(null=True, max_length=255, blank=True)),
+            ('start_date', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
             ('product', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['myapp.Product'])),
         ))
-        db.send_create_signal('myapp', ['Series'])
+        db.send_create_signal('myapp', ['Serie'])
 
         # Adding model 'Status'
         db.create_table('myapp_status', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=15, unique=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=40, unique=True)),
         ))
         db.send_create_signal('myapp', ['Status'])
 
@@ -149,14 +149,14 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('myapp', ['UserList'])
 
-        # Adding M2M table for field series on 'UserList'
-        m2m_table_name = db.shorten_name('myapp_userlist_series')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('userlist', models.ForeignKey(orm['myapp.userlist'], null=False)),
-            ('series', models.ForeignKey(orm['myapp.series'], null=False))
+        # Adding model 'SerieList'
+        db.create_table('myapp_serielist', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('serie', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['myapp.Serie'])),
+            ('user_list', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['myapp.UserList'])),
+            ('like', self.gf('django.db.models.fields.NullBooleanField')(null=True, blank=True)),
         ))
-        db.create_unique(m2m_table_name, ['userlist_id', 'series_id'])
+        db.send_create_signal('myapp', ['SerieList'])
 
 
     def backwards(self, orm):
@@ -199,8 +199,8 @@ class Migration(SchemaMigration):
         # Removing M2M table for field heroes on 'Product'
         db.delete_table(db.shorten_name('myapp_product_heroes'))
 
-        # Deleting model 'Series'
-        db.delete_table('myapp_series')
+        # Deleting model 'Serie'
+        db.delete_table('myapp_serie')
 
         # Deleting model 'Status'
         db.delete_table('myapp_status')
@@ -208,8 +208,8 @@ class Migration(SchemaMigration):
         # Deleting model 'UserList'
         db.delete_table('myapp_userlist')
 
-        # Removing M2M table for field series on 'UserList'
-        db.delete_table(db.shorten_name('myapp_userlist_series'))
+        # Deleting model 'SerieList'
+        db.delete_table('myapp_serielist')
 
 
     models = {
@@ -217,10 +217,10 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Group'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '80', 'unique': 'True'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'to': "orm['auth.Permission']", 'symmetrical': 'False'})
+            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'blank': 'True', 'symmetrical': 'False'})
         },
         'auth.permission': {
-            'Meta': {'object_name': 'Permission', 'unique_together': "(('content_type', 'codename'),)", 'ordering': "('content_type__app_label', 'content_type__model', 'codename')"},
+            'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
             'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -231,7 +231,7 @@ class Migration(SchemaMigration):
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'symmetrical': 'False', 'to': "orm['auth.Group']", 'related_name': "'user_set'"}),
+            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'related_name': "'user_set'", 'blank': 'True', 'symmetrical': 'False'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -239,11 +239,11 @@ class Migration(SchemaMigration):
             'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'symmetrical': 'False', 'to': "orm['auth.Permission']", 'related_name': "'user_set'"}),
+            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'related_name': "'user_set'", 'blank': 'True', 'symmetrical': 'False'}),
             'username': ('django.db.models.fields.CharField', [], {'max_length': '30', 'unique': 'True'})
         },
         'contenttypes.contenttype': {
-            'Meta': {'object_name': 'ContentType', 'unique_together': "(('app_label', 'model'),)", 'ordering': "('name',)", 'db_table': "'django_content_type'"},
+            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
             'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
@@ -256,20 +256,20 @@ class Migration(SchemaMigration):
         },
         'myapp.category': {
             'Meta': {'object_name': 'Category'},
-            'avatar': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
+            'avatar': ('django.db.models.fields.files.ImageField', [], {'null': 'True', 'max_length': '100', 'blank': 'True'}),
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['myapp.CategoryGroup']"}),
-            'icon': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
+            'icon': ('django.db.models.fields.files.ImageField', [], {'null': 'True', 'max_length': '100', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '20', 'unique': 'True'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '40', 'unique': 'True'})
         },
         'myapp.categorygroup': {
             'Meta': {'object_name': 'CategoryGroup'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '20', 'unique': 'True'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '40', 'unique': 'True'})
         },
         'myapp.creator': {
             'Meta': {'object_name': 'Creator'},
-            'avatar': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
+            'avatar': ('django.db.models.fields.files.ImageField', [], {'null': 'True', 'max_length': '100', 'blank': 'True'}),
             'employ': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['myapp.Employ']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'})
@@ -277,27 +277,27 @@ class Migration(SchemaMigration):
         'myapp.employ': {
             'Meta': {'object_name': 'Employ'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'unique': 'True'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '40', 'unique': 'True'})
         },
         'myapp.genre': {
             'Meta': {'object_name': 'Genre'},
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['myapp.GenreGroup']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '20'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '40', 'unique': 'True'})
         },
         'myapp.genregroup': {
             'Meta': {'object_name': 'GenreGroup'},
             'category': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['myapp.CategoryGroup']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'unique': 'True'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '40', 'unique': 'True'})
         },
         'myapp.hero': {
             'Meta': {'object_name': 'Hero'},
             'actor': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['myapp.Creator']"}),
             'avatar': ('django.db.models.fields.files.ImageField', [], {'max_length': '100'}),
-            'description': ('django.db.models.fields.TextField', [], {'blank': 'True', 'null': 'True'}),
+            'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_main_hero': ('django.db.models.fields.NullBooleanField', [], {'blank': 'True', 'null': 'True'}),
+            'is_main_hero': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         'myapp.product': {
@@ -306,32 +306,38 @@ class Migration(SchemaMigration):
             'avatar': ('django.db.models.fields.files.ImageField', [], {'max_length': '100'}),
             'category': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['myapp.Category']"}),
             'creators': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['myapp.Creator']", 'symmetrical': 'False'}),
-            'description': ('django.db.models.fields.TextField', [], {'blank': 'True', 'null': 'True'}),
+            'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'genres': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['myapp.Genre']", 'symmetrical': 'False'}),
             'heroes': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['myapp.Hero']", 'symmetrical': 'False'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'tiltle': ('django.db.models.fields.CharField', [], {'max_length': '255', 'unique': 'True'})
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '255', 'unique': 'True'})
         },
-        'myapp.series': {
-            'Meta': {'object_name': 'Series'},
+        'myapp.serie': {
+            'Meta': {'object_name': 'Serie'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'null': 'True', 'max_length': '255', 'blank': 'True'}),
             'num_season': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
             'number': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
             'product': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['myapp.Product']"}),
-            'start_date': ('django.db.models.fields.DateTimeField', [], {'blank': 'True', 'null': 'True'})
+            'start_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'})
+        },
+        'myapp.serielist': {
+            'Meta': {'object_name': 'SerieList'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'like': ('django.db.models.fields.NullBooleanField', [], {'null': 'True', 'blank': 'True'}),
+            'serie': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['myapp.Serie']"}),
+            'user_list': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['myapp.UserList']"})
         },
         'myapp.status': {
             'Meta': {'object_name': 'Status'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '15', 'unique': 'True'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '40', 'unique': 'True'})
         },
         'myapp.userlist': {
             'Meta': {'object_name': 'UserList'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'product': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['myapp.Product']"}),
             'score': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
-            'series': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['myapp.Series']", 'symmetrical': 'False'}),
             'status': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['myapp.Status']"}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
         }

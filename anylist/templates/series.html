@@ -5,6 +5,7 @@
 		{% if user.is_authenticated %}
 		<h2>Season {[{num_seasons}]}</h2>
 		<form>
+			<input name="number" ng-model="serie1.number" type="number" placeholder="Number">
 			<input name="name" ng-model="serie1.name" type="text" placeholder="Name">
 			<input name="start_date" ng-model="serie1.start_date" type="text" placeholder="Date" id="demo2" onclick="javascript:NewCssCal('demo2')">
 			<input name="length" ng-model="serie1.length" type="number" placeholder="Length">
@@ -16,6 +17,7 @@
 			<h2>Season {[{season.number}]}</h2>
 			{% if user.is_authenticated %}
 			<form>
+				<input name="number" ng-model="serie.number" type="number" placeholder="Number">
 				<input name="name" ng-model="serie.name" type="text" placeholder="Name">
 				<input name="start_date" ng-model="serie.start_date" type="text" id="demo1" onclick="javascript:NewCssCal('demo1')" placeholder="Date">
 				<input name="length" ng-model="serie.length" type="number" placeholder="Length">
@@ -56,8 +58,13 @@
 		function ($scope, $http, $location, $compile, $element) {
 			$scope.tablehead = ['Number', 'Name', 'Datetime', 'Length'];
 			// Получаем список серий
+
+			{% autoescape off %}
+				$scope.seasons = {{ series }};
+			{% endautoescape %}
+			$scope.num_seasons = $scope.seasons.length + 1;
 			
-			$http.get($location.absUrl() + 'list').success(function (data) {
+			/*$http.get($location.absUrl() + 'list').success(function (data) {
 				$scope.num_seasons = data.length + 1;
 				$scope.seasons = data;
 			
@@ -67,33 +74,33 @@
 					if ('listed' in data[0].series[0]) {
 						$scope.tablehead = ['Number', 'Name', 'Datetime', 'Length', 'Edit', 'Add'];
 					}
-			});
+			});*/
 
-	// отрисовываем боковое меню
-	var head_url = $location.absUrl().split("/").slice(0, 5).join("/");
-	$scope.categories = [
-		{'title': 'Main', 'url': head_url},
-		{'title': 'Series', 'url': ''},
-		{'title': 'Heroes', 'url': [head_url, 'heroes'].join('/')},
-		{'title': 'Creators', 'url': [head_url, 'creators'].join('/')}
-	];
+		// отрисовываем боковое меню
+		var head_url = $location.absUrl().split("/").slice(0, 5).join("/");
+		$scope.categories = [
+			{'title': 'Main', 'url': head_url},
+			{'title': 'Series', 'url': ''},
+			{'title': 'Heroes', 'url': [head_url, 'heroes'].join('/')},
+			{'title': 'Creators', 'url': [head_url, 'creators'].join('/')}
+		];
 		$scope.add_serie_new_vol = function (data, elem) {
-		// Посылаем серию из нового сезона
-		data = "name=" + data['name'] + "&start_date=" + data['start_date'] +
-			"&length=" + data['length'] + "&number=1";
-		data += "&product=" + $location.absUrl().split("/")[4].split("-")[0];
- 		data += "&num_season=" + elem.num_seasons;
-	 	data = data.replace("undefined", "", "g");
+			// Посылаем серию из нового сезона
+			data = "name=" + data['name'] + "&start_date=" + data['start_date'] +
+				"&length=" + data['length'] + "&number=1";
+			data += "&product=" + $location.absUrl().split("/")[4].split("-")[0];
+	 		data += "&num_season=" + elem.num_seasons;
+		 	data = data.replace("undefined", "", "g");
 
-		$http({
-			method: "POST",
-			url: $location.absUrl() + "add",
-			data: data,
-			headers: {
-				'Content-Type': "application/x-www-form-urlencoded"
-			}
-		});
-	}
+			$http({
+				method: "POST",
+				url: $location.absUrl() + "add",
+				data: data,
+				headers: {
+					'Content-Type': "application/x-www-form-urlencoded"
+				}
+			});
+		}
 
 	$scope.add_serie = function (data, elem) {
 		// посылаем новую серию из существующего сезона

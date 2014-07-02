@@ -6,7 +6,6 @@
 	<title>{% block title %}Base title{% endblock %}</title>
 	<script src="/static/lib/angular-file-upload-shim.js"></script>
 	<script src="/static/lib/angular.min.js"></script>
-	<script src="/static/lib/angular-file-upload.js"></script>
 	<script src="/static/lib/angular-cookies.min.js"></script>
 	<script src="/static/datetimepicker_css.js"></script>
 	<link rel="stylesheet" href="/static/series/style.css">
@@ -43,11 +42,11 @@
 		{% for group in nav_groups %}
 			<span>{{ group.name }}</span>
 			<ul>
-				{% for value in group.dashs %}
+				{% for value in group.categories %}
 				<li>
-					<a href="/{{ value.get_absolute_url }}">
+					<a href="{{ value.get_absolute_url }}">
 						<figure>
-							<img src="{{ value.avatar_path }}">
+							<img src="{{ value.icon_path }}">
 							<figcaption>{{ value }}</figcaption>
 						</figure>
 					</a>
@@ -70,6 +69,7 @@
 			$interpolateProvider.startSymbol('{[{');
 			$interpolateProvider.endSymbol('}]}');
 		});
+
 		defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location',
 			function ($scope, $http, $location) {
 

@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 import json
+import itertools
 import logging
 import re
 
@@ -18,25 +19,40 @@ from django.views.generic.detail import DetailView
 
 from braces.views import LoginRequiredMixin
 
-from apps.models import *
-from apps.forms import *
-from apps.serializers import ProductSerializer
+#from apps.models import *
+#from apps.forms import *
+#from apps.serializers import ProductSerializer
 
-from .mixins import *
-
+from myapp.models import *
+from myapp.forms import *
 
 logger = logging.getLogger(__name__)
-Types = {'anime': Anime, 'manga': Manga, 'criminalystic': Criminalystic}
 
-#------------ Base Views -----------------
-class MainPage(ListView):
-    model = ThematicGroup
-    template_name = 'index.html'
 
+get_category = lambda self: ''.join(
+    [self.kwargs['category'][0].upper(), self.kwargs['category'][1:]])
+
+
+class BasePageMixin(object):
     def get_context_data(self, **kwargs):
-        context = super(MainPage, self).get_context_data(**kwargs)
-        context['nav_groups'] = context['object_list']
+        context = super(BasePageMixin, self).get_context_data(**kwargs)
+        context['nav_groups'] = CategoryGroup.objects.all()
+        
+        if self.kwargs.get('category'):
+            context['category'] = get_category(self)
+            context['pk'] = self.kwargs['pk']
+            context['category_id'] = Category.objects.get(
+                name=context['category']).id
+            context['genres'] = [genre
+                for item in GenreGroup.objects.filter(category_id=context['category_id'])
+                for genre in item.genres.all()]
         return context
+
+
+class MainPage(BasePageMixin, ListView):
+    ''' Main Page view. Content of main categories '''
+    model = CategoryGroup
+    template_name = 'index.html'
 
 
 @require_http_methods(['GET'])
@@ -80,9 +96,6 @@ def profile(request):
     return render(request, 'profile.html', result)
 
 
-
-
-
 @require_http_methods(['POST'])
 def add_list_serie(request):
     ''' добаваляем серию в список просмотренных '''
@@ -119,7 +132,7 @@ def del_list_serie(request):
         return HttpResponseServerError()
 
 
-class UserList(LoginRequiredMixin, ListView):
+class UserList1(LoginRequiredMixin, ListView):
     ''' список произведений, составленный пользователем '''
     template_name = 'user_list.html'
 
@@ -160,16 +173,22 @@ def add_list(request):
     return HttpResponse(str(form))
 
 
-class ProductionList(ListPageMixin, ListView):
-    ''' Список произведений указанной категории '''
-    genre_groups =\
-        ['Anime Male', 'Anime Female', 'Standart', 'Anime Porn', 'Anime School']
+class ProductionList(BasePageMixin, ListView):
+    '''
+    List of multimedia product of selected category
+    (anime, sci-fi, detective romans, etc.)
+    '''
+    template_name = 'list.html'
 
-    def dispatch(self, *args, **kwargs):
-        if 'category' not in kwargs or kwargs['category'] not in Types:
-            return HttpResponseNotFound('<h1>Page not Found</h1>')
-        else:
-            return super(ProductionList, self).dispatch(*args, **kwargs)
+    def get_queryset(self):
+        category = self.kwargs['category']
+        category = ''.join([category[0].upper(), category[1:]])
+        return Product.objects.filter(category__name=category)
+
+    def get_context_data(self, **kwargs):
+        context = super(ProductionList, self).get_context_data(**kwargs)
+        context['header'] = 'List of %s' % self.kwargs['category']
+        return context
 
 
 @require_http_methods(['POST'])
@@ -190,44 +209,34 @@ def remove_from_list(request, pk):
     return HttpResponse('Ok')
 
 
-class ProductDetail(DetailView):
-    model = Production
+class ProductDetail(BasePageMixin, DetailView):
+    model = Product
     template_name = 'detail.html'
-
-    def dispatch(self, *args, **kwargs):
-        if 'pk' not in kwargs:
-            return HttpResponseNotFound('<h1>PageNotFound</h1>')
-        else:
-            return super(ProductDetail, self).dispatch(*args, **kwargs)
-
 
     def get_context_data(self, **kwargs):
         context = super(ProductDetail, self).get_context_data(**kwargs)
         context['header'] = context['object'].title
         context['category'] = self.kwargs['category']
         context['statuses'] = Status.objects.all()
-        context['nav_groups'] = ThematicGroup.objects.all()
-        context['is_listed'] = ListedProduct.objects.get(
-            user=self.request.user.id, product__title=context['object'].title)
+#        context['is_listed'] = UserList.objects.filter(
+#            user=self.request.user.id, product__title=context['object'].title)
         return context
 
 
-class ProductionEdit(UpdateView):
+class ProductionEdit(BasePageMixin, UpdateView):
     template_name = 'forms/edit_form.html'
-    model = Production
+    model = Product
+    form_class = AddProductForm
 
     success_url = '/manga/'
+
+    def form_invalid(self, form):
+        print(form.errors)
 
     def get_context_data(self, **kwargs):
         context = super(ProductionEdit, self).get_context_data(**kwargs)
 
-        context['genres'] = Genre.objects.all()
         context['header'] = 'Edit %s' % self.kwargs['category']
-        context['use_genres'] = json.dumps(
-            [str(item.name) for item in context['object'].genres.all()],
-            ensure_ascii=False
-        )
-        context['raiting'] = Raiting.objects.all()
         return context
 
 
@@ -292,15 +301,20 @@ def register(request, url):
 
 @require_http_methods(['POST', 'GET'])
 def auth(request, url):
-    if request.POST:
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            user = User.objects.get(username=cd['username'])
-            return auth1(request, url)
-        return HttpResponse(str(form))
-    else:
-        return HttpResponseRedirect('/%s' % url)
+    try:
+        print(request.POST)
+        if request.POST:
+            form = LoginForm(request.POST)
+            if form.is_valid():
+                cd = form.cleaned_data
+                user = User.objects.get(username=cd['username'])
+                return auth1(request, url)
+            logger.debug(form.errors)
+            return HttpResponse(json.dumps(form.errors))
+        else:
+            return HttpResponseRedirect('/%s' % url)
+    except Exception as e:
+        logger.error(e)
 
 
 @require_http_methods(['POST', 'GET'])
@@ -313,94 +327,41 @@ def log_out(request, url):
 
 class AddProduct(LoginRequiredMixin, CreateView, BasePageMixin):
     template_name = 'forms/add_form.html'
-    model = Production
-    form_class = AddForm    
+    model = Product
+    form_class = AddProductForm
 
-    def get_success_url(self):
-        try:
-            p = Production.objects.last()
-            Types[self.kwargs['category']].objects.create(link=p)
-            return '/%s/' % self.kwargs['category']
-        except Exception as e:
-            logger.error(e)
-            raise
-    
     def get_context_data(self, **kwargs):
         context = super(AddProduct, self).get_context_data(**kwargs)
-
-        context['genres'] = Genre.objects.all()
-        context['header'] = 'Create new %s' % self.kwargs.get('category')
-        context['raiting'] = Raiting.objects.all()
-        context['nav_groups'] = ThematicGroup.objects.all()
+        category = get_category(self)
+        p = Category.objects.get(name=category).group
+        
+        context['raiting'] =\
+            [{'key': item, 'value': item} for item in range(0, 21, 2)]
         context['category'] = self.kwargs['category']
-
+        context['category_id'] = Category.objects.get(name=category).id
+        context['header'] = 'Add new %s' % category
         return context
 
 
-@require_http_methods(['GET'])
-def production_series_view(request, category, pk):
-    try:
-        result = {}
-        result['nav_groups'] = ThematicGroup.objects.all()
-        return render(request, 'series.html', result)
-    except Exception as e:
-        logger.error(e)
-        return HttpResponseServerError()
-
-
-@require_http_methods(['GET'])
-def seasons_view(request, category, pk):
-    '''
-    Сериализует в json список серий, сгруппированных по сезонам, с учетом
-    прав пользователя (модераторы пока не)
-    Формат: {'number': <int>, 'name': <str>, 'series': [{
-        'number': <int>, 'name': <str>, 'start_date': <date_time>,
-        'length': <int>
-    }]}'''
-    try:
-        js = []
-        listed = []
-        queryset = Serie.objects.filter(product=pk)
-        seasons = queryset.aggregate(Max('num_season'))
-
-        # Получаем список серий, просмотренных текущим юзером
-        if seasons['num_season__max'] and request.user.is_authenticated():
-            listed = [i.id for item in
-                ListedProduct.objects.filter(user=request.user, product=pk)
-                for i in item.series.all()]
-        
-        # "Обходим" по сезонам список серий
-        for season in range(1, (seasons['num_season__max'] or 0) + 1):
-            series = queryset.filter(num_season=season)
-            item = []
-            for i, serie in enumerate(series):
-                tmp = {'name': serie.name, 'number': serie.number,
-                    'start_date': str(serie.start_date),
-                    'length': serie.length
-                    }
-                if request.user.is_authenticated():
-                    if serie.id in listed:
-                        tmp['listed'] = 'Remove from list'
-                    else:
-                        tmp['listed'] = 'Add to list'
-                    tmp['imgUrl'] = '/static/img/edit.png'
-                item.append(tmp)
-            js.append({'number': season, 'series': item})
-
-        return HttpResponse(
-            json.dumps(js[::-1], ensure_ascii=False),
-            content_type='application/json')
+class SerieView(BasePageMixin, ListView):
+    template_name = 'series.html'
     
-    except Exception as e:
-        logger.error(e)
-        return HttpResponseServerError()
+    def get_queryset(self):
+        return UserList.objects.filter(
+            product__id=self.kwargs['pk'], user=self.request.user.id)
+
+    def get_context_data(self, **kwargs):
+        context = super(SerieView, self).get_context_data(**kwargs)
+        context['series'] = Serie.objects.filter(product__id=self.kwargs['pk']).values()
+        context['header'] = 'Series'
+        return context
 
 
-class ProductionChoiceView(ListView, BaseChoiceMixin):
-    model = Production
+class ProductionChoiceView(ListView):#, BaseChoiceMixin):
+#    model = Production
     template_name = 'list.html'
     header = 'Выборка манги по жанрам'
     category = 'Manga'
     genre_groups =\
         ['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
-    model1 = Manga
+#    model1 = Manga

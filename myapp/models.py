@@ -22,7 +22,8 @@ class TemplateModel(models.Model):
 
 class CategoryGroup(TemplateModel):
 	def _categories(self):
-		return Category.object.filter(group=self.id)
+		return Category.objects.filter(group=self.id)
+	categories = property(_categories)
 
 
 class Category(TemplateModel):
@@ -30,13 +31,26 @@ class Category(TemplateModel):
 	icon = models.ImageField(upload_to=MEDIA_ROOT, blank=True, null=True)
 	group = models.ForeignKey(CategoryGroup)
 
+	def avatar_path(self):
+		return 'media/%s' % self.avatar.url.split('/')[-1]
 
-class GenreGroup(TemplateModel):
-	category = models.ForeignKey(CategoryGroup)
+	def icon_path(self):
+		options = {'size': (75, 75), 'crop': True}
+		thumb_url = get_thumbnailer(self.icon).get_thumbnail(options).url
+		return '/media/' + thumb_url.split('/')[-1]
+
+	def get_absolute_url(self):
+		return '/%s/' % ''.join(self.name.lower().split(' '))
 
 
 class Genre(TemplateModel):
-	group = models.ForeignKey(GenreGroup)
+	pass
+#	group = models.ForeignKey(GenreGroup)
+
+
+class GenreGroup(TemplateModel):
+	category = models.ForeignKey(CategoryGroup)
+	genres = models.ManyToManyField(Genre)
 
 
 class AltName(models.Model):
@@ -68,7 +82,7 @@ class Hero(models.Model):
 
 class Product(models.Model):
 # поставить old_limit
-	tiltle = models.CharField(max_length=255, unique=True)
+	title = models.CharField(max_length=255, unique=True)
 	alt_names = models.ManyToManyField(AltName)
 	description = models.TextField(blank=True, null=True)
 	avatar = models.ImageField(upload_to=MEDIA_ROOT)
@@ -82,8 +96,18 @@ class Product(models.Model):
 	def _series(self):
 		return Series.objects.filter(product=self.id).order_by('-num_season', '-number')
 
+	def get_absolute_url(self):
+		title = ''.join(re.split('[ :()-]', self.title))
+		return '/%s/%d-%s' % (self.category.name.lower(), self.id, title)
 
-class Series(models.Model):
+	def avatar_path(self):
+		return '/media/%s' % str(self.avatar).split('/')[-1]
+
+	def __str__(self):
+		return self.title
+
+
+class Serie(models.Model):
 	number = models.PositiveSmallIntegerField()
 	num_season = models.PositiveSmallIntegerField()
 	name = models.CharField(max_length=255, blank=True, null=True)
@@ -100,4 +124,10 @@ class UserList(models.Model):
 	score = models.PositiveSmallIntegerField()
 	status = models.ForeignKey(Status)
 	product = models.ForeignKey(Product)
-	series = models.ManyToManyField(Series)
+#	series = models.ManyToManyField(Series)
+
+
+class SerieList(models.Model):
+	serie = models.ForeignKey(Serie)
+	user_list = models.ForeignKey(UserList)
+	like = models.NullBooleanField()

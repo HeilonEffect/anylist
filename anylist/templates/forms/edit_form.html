@@ -7,7 +7,7 @@
 {% block header %}{{ header }}{% endblock %}
 {% block title %}{{ header }}{% endblock %}
 {% block body %}
-<main ng-controller="EditCtrl">
+<main>
 	{% load wysiwyg %}
 	{% wysiwyg_setup %}
 	<form enctype="multipart/form-data" method="post" id="add_form">
@@ -22,15 +22,8 @@
 				<option value="{{ genre.id }}">{{ genre.name }}</option>
 			{% endfor %}
 			</select>
+			<input name="category" type="hidden" value="{{ category_id }}">
 			<p></p>
-			<!--<select name="old_limit" style="width:10em">
-			{% for item in raiting %}
-				<option value="{{ item.id }}">{{ item }}</option>
-			{% endfor %}
-			</select>-->
-			<select>
-				<option ng-repeat="limit in raiting" ng-selected="{[{limit.key==current_limit}]}">{[{limit.key}]}</option>
-			</select>
 		</div>
 		<div>
 			{% csrf_token %}
@@ -49,47 +42,11 @@
 	for (var i in data) {
 		preload_data.push({id: '' + i, text: data[i]});	
 	};
-	$("#datetimepick1").datetimepicker({
-		timepicker: false,
-		format: 'd/m/Y'
-	});
 	$("#genres").select2({
 		width: 400,
 		placeholder: "Выберите жанры",
 	});
-	$("#genres").select2('data', preload_data);
-	$("select[name='old_limit']").select2({
-		width: 100
-	});
 
-	/* --------------------------------------
-	// отправка данных формы
-	*///-------------------------------------
-	$("#add_form").submit({genres: genres}, function (eventObject) {
-		// указываем, куда отсылать запрос
-		var link = window.location.pathname.split("/");
-		var url = [link[1], link[2]].join("/");
-		console.log(url + "/edit");
-		$("#add_form").attr("action", "/" + url + "/edit");
-		//console.log(eventObject);
-		//return false;
-	});
-	// добавляем id жанра в коллекцию, если установлен соответсвующий флажок
-	$(".genre_check").click(function (eventObject) {
-		var box = eventObject.currentTarget;
-		if (box.checked)
-			genres.push(box.id.split("-")[0]);
-		else
-			genres = genres.filter(function(elem) {
-				return elem != box.id.split("-")[0];
-			});
-	});
-</script>
-<script>
-	defaultApp.controller('EditCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
-		$scope.current_limit = '{{ object.old_limit }}';
-		$scope.raiting = [{'key': 'G', 'value': '0'}, {'key': 'PG', 'value': '1'}, {'key': 'PG-13', 'value': '2'},
-			{'key': 'R', 'value': '3'}, {'key': 'NC-17', 'value': '4'}];
-	}]);
+	$("#add_form").attr("action", window.location.pathname);
 </script>
 {% endblock %}

@@ -18,7 +18,7 @@
 		{% endif %}
 		{% for value in object_list %}
 		<li>
-			<a href="/{{ category }}/{{ value.get_absolute_url }}">
+			<a href="{{ value.get_absolute_url }}">
 				<figure>
 					<!--{% if user.is_authenticated %}
 					<div class="edit_me" id="{{ value.id }}-{{ value.title }}">
