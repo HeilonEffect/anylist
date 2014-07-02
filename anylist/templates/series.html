@@ -61,8 +61,8 @@
 
 			{% autoescape off %}
 				$scope.seasons = {{ series }};
+				$scope.num_seasons = {{ num_season }} + 1;
 			{% endautoescape %}
-			$scope.num_seasons = $scope.seasons.length + 1;
 			
 			/*$http.get($location.absUrl() + 'list').success(function (data) {
 				$scope.num_seasons = data.length + 1;

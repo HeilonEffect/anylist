@@ -326,6 +326,7 @@ def log_out(request, url):
 
 
 class AddProduct(LoginRequiredMixin, CreateView, BasePageMixin):
+    ''' Creating and Pubishing new product by form data '''
     template_name = 'forms/add_form.html'
     model = Product
     form_class = AddProductForm
@@ -345,6 +346,18 @@ class AddProduct(LoginRequiredMixin, CreateView, BasePageMixin):
 
 class SerieView(BasePageMixin, ListView):
     template_name = 'series.html'
+
+    def series_serialize(self):
+        p = Serie.objects.filter(product__id=self.kwargs['pk'])
+        if p:
+            num_season = p.aggregate(Max('num_season'))['num_season__max']
+            result = [{'series': p.filter(num_season=item + 1).values(), 
+                'number': item + 1}
+                for item in range(num_season)]
+            result = result[::-1]
+            result = str(result).replace('None', '"-"')
+            return result
+        return []
     
     def get_queryset(self):
         return UserList.objects.filter(
@@ -352,8 +365,15 @@ class SerieView(BasePageMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super(SerieView, self).get_context_data(**kwargs)
-        context['series'] = Serie.objects.filter(product__id=self.kwargs['pk']).values()
-        context['header'] = 'Series'
+        p = Serie.objects.filter(product__id=self.kwargs['pk'])
+        
+        context['num_season'] = Serie.objects.filter(
+            product__id=self.kwargs['pk']).aggregate(Max('num_season')
+            )['num_season__max'] or 0
+        context['series'] = self.series_serialize()
+        #context['series'] = Serie.objects.filter(
+        #    product__id=self.kwargs['pk']).values()
+        
         return context
 
 

@@ -112,7 +112,11 @@ class Serie(models.Model):
 	num_season = models.PositiveSmallIntegerField()
 	name = models.CharField(max_length=255, blank=True, null=True)
 	start_date = models.DateTimeField(blank=True, null=True)
+	length = models.PositiveSmallIntegerField()
 	product = models.ForeignKey(Product)
+
+	class Meta:
+		ordering = ('-number', )
 
 
 class Status(TemplateModel):

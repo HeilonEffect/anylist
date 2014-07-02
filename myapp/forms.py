@@ -18,4 +18,4 @@ class LoginForm(forms.Form):
 class AddSerieForm(ModelForm):
 	class Meta:
 		model = Serie
-		fields = ('number', 'num_season', 'name', 'start_date', )
+		fields = '__all__'
