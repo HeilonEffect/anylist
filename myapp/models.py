@@ -129,10 +129,9 @@ class Status(TemplateModel):
 
 class UserList(models.Model):
 	user = models.ForeignKey(User)
-	score = models.PositiveSmallIntegerField()
+	score = models.PositiveSmallIntegerField(blank=True, null=True)
 	status = models.ForeignKey(Status)
 	product = models.ForeignKey(Product)
-#	series = models.ManyToManyField(Series)
 
 
 class SerieList(models.Model):

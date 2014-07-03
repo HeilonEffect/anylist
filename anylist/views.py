@@ -208,11 +208,17 @@ class ProductionList(BasePageMixin, ListView):
 
 @require_http_methods(['POST'])
 def status_update(request, pk):
-    ''' Меняем статус просмотра произведения '''
+    ''' Process post-request with new status
+    (especialy processing situation, where product not in user list yet) '''
     try:
         status = Status.objects.get(name=request.POST['name'])
-        ListedProduct.objects.filter(
-            user=request.user, product__id=pk).update(status=status)
+        p = UserList.objects.filter(
+            user=request.user, product__id=pk)
+        if p:
+            p.update(status=status)
+        else:
+            p = Product.objects.get(id=pk)
+            UserList.objects.create(user=request.user, product=p, status=status)
         return HttpResponse(request.POST['name'])
     except Exception as e:
         logger.error(e)
@@ -233,8 +239,8 @@ class ProductDetail(BasePageMixin, DetailView):
         context['header'] = context['object'].title
         context['category'] = self.kwargs['category']
         context['statuses'] = Status.objects.all()
-#        context['is_listed'] = UserList.objects.filter(
-#            user=self.request.user.id, product__title=context['object'].title)
+        context['is_listed'] = UserList.objects.get(
+            user=self.request.user.id, product__title=context['object'].title)
         return context
 
 
