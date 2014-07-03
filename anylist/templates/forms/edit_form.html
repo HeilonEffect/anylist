@@ -22,6 +22,11 @@
 				<option value="{{ genre.id }}">{{ genre.name }}</option>
 			{% endfor %}
 			</select>
+			<select name="old_limit" id="raiting" style="width:7em">
+				{% for item in raiting %}
+				<option value="{{ item.id }}">{{ item.name }}</option>
+				{% endfor %}
+			</select>
 			<input name="category" type="hidden" value="{{ category_id }}">
 			<p></p>
 		</div>
@@ -36,17 +41,17 @@
 {% block script %}
 <script type="text/javascript">
 	{% autoescape off %}
-		var data = {{ use_genres }};
+		var preload_data = {{ use_genres }};
 	{% endautoescape %}
-	var preload_data = [];
-	for (var i in data) {
-		preload_data.push({id: '' + i, text: data[i]});	
-	};
 	$("#genres").select2({
 		width: 400,
 		placeholder: "Выберите жанры",
 	});
-
+	$("#raiting").select2({
+		width: 300,
+		placeholder: "Select Old Limitation"
+	});
+	//$("#genres").select2({'data': preload_data});
 	$("#add_form").attr("action", window.location.pathname);
 </script>
 {% endblock %}

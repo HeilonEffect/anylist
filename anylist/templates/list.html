@@ -20,20 +20,6 @@
 		<li>
 			<a href="{{ value.get_absolute_url }}">
 				<figure>
-					<!--{% if user.is_authenticated %}
-					<div class="edit_me" id="{{ value.id }}-{{ value.title }}">
-						<img src="/static/img/edit.png">
-					</div>
-						{% if value not in listed %}
-						<div class="add_me" id="{{value.id}}-{{ value.title }}">
-							<img src="/static/add-1.png">
-						</div>
-						{% else %}
-						<div class="del_me" id="{{ value.get_absolute_url }}">
-							<img src="/static/cancel.png">
-						</div>
-						{% endif %}
-					{% endif %}-->
 					<img src="{{ value.avatar_path }}">
 					<figcaption>{{ value }}</figcaption>
 				</figure>
@@ -54,16 +40,14 @@
 		{% endif %}
 	{% endfor %}
 	<p>Genres</p>
-	{% for group in genre_groups %}
-		{% for genre in group.genres %}
-			{% if genre.count %}
-				<input type="checkbox" id="genres:{{ genre.name }}" onchange="select_genre(this)">
-				<label for="genres:{{ genre.name }}">{{ genre.name }}</label><br>
-			{% else %}
-				<input type="checkbox" disabled>
-				<label style="color:gray">{{ genre.name }}</label><br>
-			{% endif %}
-		{% endfor %}
+	{% for genre in genres %}
+		{% if genre.count %}
+			<input type="checkbox" id="genres:{{ genre.name }}" onchange="select_genre(this)">
+			<label for="genres:{{ genre.name }}">{{ genre.name }}</label><br>
+		{% else %}
+			<input type="checkbox" disabled>
+			<label style="color:gray">{{ genre.name }}</label><br>
+		{% endif %}
 	{% endfor %}
 </nav>
 {% endblock %}

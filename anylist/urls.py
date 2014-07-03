@@ -26,7 +26,7 @@ urlpatterns = patterns('',
     url(r'^profile/$', profile),
     url(r'^mylist/series/add$', add_list_serie),
     url(r'^mylist/series/del$', del_list_serie),
-    url(r'^profile/list/(?P<category>\w+)/(?P<status>\w+)$', UserList1.as_view()),
+    url(r'^profile/list/(?P<category>\w+)/(?P<status>\w+)$', MyList.as_view()),
 
     url(r'^(?P<category>\w+)/add$', AddProduct.as_view()),
     url(r'^\w+/(?P<pk>\d+)-\w+/remove_from_list$', remove_from_list),

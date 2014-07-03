@@ -26,11 +26,11 @@
 			<p></p>
 			<input type="hidden" name="category" value="{{ category_id }}">
 			<!--<button id="sel_genres">Выберите жанры</button>-->
-			<!--<select name="old_limit" style="width:10em">
+			<select name="old_limit" style="width:10em" id="raiting">
 			{% for item in raiting %}
-				<option value="{{ item.value }}">{{ item.key }}</option>
+				<option value="{{ item.id }}">{{ item.name }}</option>
 			{% endfor %}
-			</select>-->
+			</select>
 		</div>
 		<div>
 			{% csrf_token %}
@@ -46,6 +46,10 @@
 	$("#genres").select2({
 		width: 400,
 		placeholder: "Выберите жанры"
+	});
+	$("#raiting").select2({
+		width: 300,
+		placeholder: "Select Old Limitation"
 	});
 </script>
 {% endblock %}

@@ -26,6 +26,10 @@ class CategoryGroup(TemplateModel):
 	categories = property(_categories)
 
 
+class Raiting(TemplateModel):
+	pass
+
+
 class Category(TemplateModel):
 	avatar = models.ImageField(upload_to=MEDIA_ROOT, blank=True, null=True)
 	icon = models.ImageField(upload_to=MEDIA_ROOT, blank=True, null=True)
@@ -81,7 +85,6 @@ class Hero(models.Model):
 
 
 class Product(models.Model):
-# поставить old_limit
 	title = models.CharField(max_length=255, unique=True)
 	alt_names = models.ManyToManyField(AltName)
 	description = models.TextField(blank=True, null=True)
@@ -89,6 +92,7 @@ class Product(models.Model):
 
 	category = models.ForeignKey(Category)
 	genres = models.ManyToManyField(Genre)
+	old_limit = models.ForeignKey(Raiting, null=True, blank=True)
 
 	creators = models.ManyToManyField(Creator)
 	heroes = models.ManyToManyField(Hero)

@@ -1,20 +1,21 @@
 # -*- encoding: utf-8 -*-
 import json
 import itertools
+import functools
 import logging
+import operator
 import re
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.contrib.formtools.wizard.views import SessionWizardView
 from django.core.cache import cache
 from django.db.models import F, Max, Q
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseServerError, HttpResponseNotFound
 from django.shortcuts import render_to_response, render
 from django.views.decorators.http import require_http_methods
-from django.views.generic import TemplateView, ListView
-from django.views.generic.edit import CreateView, FormView, UpdateView
+from django.views.generic import ListView
+from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
 
 from braces.views import LoginRequiredMixin
@@ -40,12 +41,18 @@ class BasePageMixin(object):
         
         if self.kwargs.get('category'):
             context['category'] = get_category(self)
-            context['pk'] = self.kwargs['pk']
+            context['pk'] = self.kwargs.get('pk')
             context['category_id'] = Category.objects.get(
                 name=context['category']).id
+            context['raiting'] = Raiting.objects.all()
+            for limit in context['raiting']:
+                limit.count = 0
+
             context['genres'] = [genre
                 for item in GenreGroup.objects.filter(category_id=context['category_id'])
                 for genre in item.genres.all()]
+            for genre in context['genres']:
+                genre.count = 0
         return context
 
 
@@ -62,8 +69,8 @@ def search(request):
         if len(request.GET['key']) > 1:
             result = dict(map(
                 lambda item:
-                (item.title, '/' + item.get_category() + '/' + item.get_absolute_url()),
-                Production.objects.filter(Q(title__icontains=request.GET['key']))
+                (item.title, item.get_absolute_url()),
+                Product.objects.filter(Q(title__icontains=request.GET['key']))
             ))
 
             return HttpResponse(
@@ -80,19 +87,19 @@ def search(request):
 def profile(request):
     ''' страница профиля пользователя '''
     result = {}
-    result['nav_groups'] = ThematicGroup.objects.all()
+    result['nav_groups'] = CategoryGroup.objects.all()
     result['category'] = Category.objects.all()
     st = Status.objects.all()
-    for cat in result['category']:
-        status = [item for item in st]
-        values = []
-        cat.status = []
-        for item in status:
-            kwargs = {'status__name': item}
-            k = F('product__%s__link' % cat.name.lower())
-            kwargs['product'] = k
-            cat.status.append({'name': item, 'count': 
-                ListedProduct.objects.filter(**kwargs).count()})
+#    for cat in result['category']:
+#        status = [item for item in st]
+#        values = []
+#        cat.status = []
+#        for item in status:
+#            kwargs = {'status__name': item}
+#            k = F('product__%s__link' % cat.name.lower())
+#            kwargs['product'] = k
+#            cat.status.append({'name': item, 'count': 
+#                ListedProduct.objects.filter(**kwargs).count()})
     return render(request, 'profile.html', result)
 
 
@@ -132,7 +139,7 @@ def del_list_serie(request):
         return HttpResponseServerError()
 
 
-class UserList1(LoginRequiredMixin, ListView):
+class MyList(LoginRequiredMixin, ListView):
     ''' список произведений, составленный пользователем '''
     template_name = 'user_list.html'
 
@@ -188,6 +195,14 @@ class ProductionList(BasePageMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(ProductionList, self).get_context_data(**kwargs)
         context['header'] = 'List of %s' % self.kwargs['category']
+        for product in context['object_list']:
+            genres = product.genres.all()
+            for genre in context['genres']:
+                if genre in genres:
+                    genre.count += 1
+            for limit in context['raiting']:
+                if limit == product.old_limit:
+                    limit.count += 1
         return context
 
 
@@ -228,7 +243,8 @@ class ProductionEdit(BasePageMixin, UpdateView):
     model = Product
     form_class = AddProductForm
 
-    success_url = '/manga/'
+    def get_success_url(self):
+        return '/%s/' % self.kwargs['category']
 
     def form_invalid(self, form):
         print(form.errors)
@@ -236,7 +252,9 @@ class ProductionEdit(BasePageMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(ProductionEdit, self).get_context_data(**kwargs)
 
-        context['header'] = 'Edit %s' % self.kwargs['category']
+        context['header'] = 'Edit %s' % get_category(self)
+        context['use_genres'] = self.model.objects.get(
+            id=self.kwargs['pk']).genres.values()
         return context
 
 
@@ -302,7 +320,6 @@ def register(request, url):
 @require_http_methods(['POST', 'GET'])
 def auth(request, url):
     try:
-        print(request.POST)
         if request.POST:
             form = LoginForm(request.POST)
             if form.is_valid():
@@ -325,7 +342,7 @@ def log_out(request, url):
     return HttpResponseRedirect('/' + url)
 
 
-class AddProduct(LoginRequiredMixin, CreateView, BasePageMixin):
+class AddProduct(LoginRequiredMixin, BasePageMixin, CreateView):
     ''' Creating and Pubishing new product by form data '''
     template_name = 'forms/add_form.html'
     model = Product
@@ -336,8 +353,6 @@ class AddProduct(LoginRequiredMixin, CreateView, BasePageMixin):
         category = get_category(self)
         p = Category.objects.get(name=category).group
         
-        context['raiting'] =\
-            [{'key': item, 'value': item} for item in range(0, 21, 2)]
         context['category'] = self.kwargs['category']
         context['category_id'] = Category.objects.get(name=category).id
         context['header'] = 'Add new %s' % category
@@ -345,6 +360,7 @@ class AddProduct(LoginRequiredMixin, CreateView, BasePageMixin):
 
 
 class SerieView(BasePageMixin, ListView):
+    ''' List of series by concrette product '''
     template_name = 'series.html'
 
     def series_serialize(self):
@@ -371,17 +387,41 @@ class SerieView(BasePageMixin, ListView):
             product__id=self.kwargs['pk']).aggregate(Max('num_season')
             )['num_season__max'] or 0
         context['series'] = self.series_serialize()
-        #context['series'] = Serie.objects.filter(
-        #    product__id=self.kwargs['pk']).values()
         
         return context
 
 
-class ProductionChoiceView(ListView):#, BaseChoiceMixin):
-#    model = Production
+class ProductionChoiceView(ProductionList):
     template_name = 'list.html'
-    header = 'Выборка манги по жанрам'
-    category = 'Manga'
-    genre_groups =\
-        ['Anime Male', 'Anime Female', 'Anime School', 'Standart', 'Anime Porn']
-#    model1 = Manga
+    model = Product
+
+    def get_queryset(self):
+        qs = {}
+        tmp = self.kwargs['args'].split('/')
+
+        tmp = list(filter(lambda item: item, tmp))
+
+        qs = dict(zip(tmp[::2], [item.split(',') for item in tmp[1::2]]))
+
+        tmp = qs.get('old_limit')
+        q = []
+        f = lambda item: Q(old_limit__name=item)
+        if tmp:
+            q = functools.reduce(operator.or_, map(f, tmp))
+
+        category = get_category(self)
+        if isinstance(q, list):
+            q = self.model.objects.filter(category__name=category)
+        else:
+            q = self.model.objects.filter(category__name=category).filter(q)
+
+        tmp = qs.get('genres')
+        if tmp:
+            for item in tmp:
+                q = q.filter(genres__name=item)
+        return q
+
+    def get_context_data(self, **kwargs):
+        context = super(ProductionChoiceView, self).get_context_data(**kwargs)
+        context['header'] = 'Selection of %s' % get_category(self)
+        return context

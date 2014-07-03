@@ -3,6 +3,7 @@
 {% block header %}{{ header }}{% endblock %}
 {% block body %}
 	<main>
+		<a href="edit">Edit</a>
 		<article>
 				<img src="{{ object.avatar_path }}">
 				Жанры: {% for genre in object.genres.all %}
