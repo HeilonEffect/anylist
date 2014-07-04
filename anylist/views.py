@@ -20,10 +20,6 @@ from django.views.generic.detail import DetailView
 
 from braces.views import LoginRequiredMixin
 
-#from apps.models import *
-#from apps.forms import *
-#from apps.serializers import ProductSerializer
-
 from myapp.models import *
 from myapp.forms import *
 
@@ -48,9 +44,10 @@ class BasePageMixin(object):
             for limit in context['raiting']:
                 limit.count = 0
 
+            category_group = Category.objects.get(name=context['category']).group
             context['genres'] = [genre
-                for item in GenreGroup.objects.filter(category_id=context['category_id'])
-                for genre in item.genres.all()]
+                for item in GenreGroup.objects.filter(
+                    category=category_group) for genre in item.genres.all()]
             for genre in context['genres']:
                 genre.count = 0
         return context
@@ -85,77 +82,98 @@ def search(request):
 @login_required(login_url='/')
 @require_http_methods(['GET'])
 def profile(request):
-    ''' страница профиля пользователя '''
+    ''' User Profile '''
     result = {}
     result['nav_groups'] = CategoryGroup.objects.all()
-    result['category'] = Category.objects.all()
-    st = Status.objects.all()
-#    for cat in result['category']:
-#        status = [item for item in st]
-#        values = []
-#        cat.status = []
-#        for item in status:
-#            kwargs = {'status__name': item}
-#            k = F('product__%s__link' % cat.name.lower())
-#            kwargs['product'] = k
-#            cat.status.append({'name': item, 'count': 
-#                ListedProduct.objects.filter(**kwargs).count()})
+    mylist = UserList.objects.filter(user=request.user)
+    
+    result['object_list'] = []
+    statuses = Status.objects.all()
+    for category in Category.objects.all():
+        tmp = []
+        for status in statuses:
+            p = mylist.filter(
+                product__category=category, status=status).count()
+            if p > 0:
+                tmp.append({
+                    'status': status.name,
+                    'count': p
+                })
+        if tmp:
+            result['object_list'].append({'key': category, 'values': tmp})
     return render(request, 'profile.html', result)
 
 
 @require_http_methods(['POST'])
+@login_required
 def add_list_serie(request):
-    ''' добаваляем серию в список просмотренных '''
+    ''' Add selected serie to SerieList table (watched) '''
     try:
-        form = AddSerieForm(request.POST)
+        form = AddToListSerieForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            ListedProduct.objects.get(product=cd['product'], user=request.user
-                ).series.add(Serie.objects.get(product=cd['product'],
-                    num_season=cd['num_season'], number=cd['number']))
-            return HttpResponse('ok')
+            serie = Serie.objects.get(**cd)
+
+            try:
+                user_list = UserList.objects.get(
+                    product=cd['product'], user=request.user)
+            except Exception as e:
+                logger.error(e) # del it
+                user_list = UserList.objects.create(
+                    product=cd['product'], user=request.user,
+                    status=Status.objects.get(name='Watch'))
+            
+            if not SerieList.objects.filter(serie=serie, user_list=user_list):
+                SerieList.objects.create(serie=serie, user_list=user_list)
+            return HttpResponse()
         else:
-            return HttpResponseServerError()
+            logger.error('Invalid data from series addition')
+            logger.error('data %s' % request.POST)
+            return HttpResponse('Ooooops')
     except Exception as e:
         logger.error(e)
         return HttpResponseServerError()
 
 
 @require_http_methods(['POST'])
+@login_required
 def del_list_serie(request):
-    ''' Удаляем серию из списка просмотренных '''
+    ''' Deleting Serie from UserList '''
     try:
-        form = AddSerieForm(request.POST)
+        form = AddToListSerieForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            ListedProduct.objects.get(product=cd['product'], user=request.user
-                ).series.remove(Serie.objects.get(product=cd['product'],
-                    num_season=cd['num_season'], number=cd['number']))
-            return HttpResponse('Ok')
+            serie = Serie.objects.get(**cd)
+
+            user_list = UserList.objects.get(product=cd['product'],
+                user=request.user)
+
+            print(SerieList.objects.filter(serie=serie, user_list=user_list))
+            SerieList.objects.filter(serie=serie, user_list=user_list).delete()
+            return HttpResponse()
         else:
-            return HttpResponseServerError()
+            logger.error('Invalid data form series deletion')
+            logger.error('data: %s' % request.POST)
+            return HttpResponse('Ooooops')
     except Exception as e:
         logger.error(e)
         return HttpResponseServerError()
 
 
-class MyList(LoginRequiredMixin, ListView):
+class MyList(BasePageMixin, LoginRequiredMixin, ListView):
     ''' список произведений, составленный пользователем '''
     template_name = 'user_list.html'
 
     def get_queryset(self):
-        # Так мы делаем первую букву заглавной
+        # ReWrite This!!!
         status = self.kwargs['status'][:1].upper() +\
             self.kwargs['status'][1:]
-        self.queryset = ListedProduct.objects.filter(
-            product=F('product__%s__link' % self.kwargs['category']),
-            status__name=status
-        )
-        return self.queryset
+        if status == 'Rewatching':
+            status = 'ReWatching'
+        return UserList.objects.filter(user=self.request.user, status__name=status)
 
-    def get_context_data(self, **kwargs):
+    def get_context_data1(self, **kwargs):
         context = super(UserList, self).get_context_data(**kwargs)
-        print(context['object_list'])
         context['nav_groups'] = ThematicGroup.objects.all()
 
         category = self.kwargs['category'][:1].upper() +\
@@ -165,19 +183,6 @@ class MyList(LoginRequiredMixin, ListView):
             name=category).get_absolute_url()
         context['status'] = Status.objects.all()
         return context
-
-
-@require_http_methods(['POST'])
-def add_list(request):
-    ''' Добавляем произведение в список '''
-    cd = request.POST.copy()
-    cd['status'] = 1    # запланировано
-    cd['user'] = request.user.id
-    form = AddToListForm(cd)
-    if form.is_valid():
-        form.save()
-        return HttpResponse('success')
-    return HttpResponse(str(form))
 
 
 class ProductionList(BasePageMixin, ListView):
@@ -239,8 +244,11 @@ class ProductDetail(BasePageMixin, DetailView):
         context['header'] = context['object'].title
         context['category'] = self.kwargs['category']
         context['statuses'] = Status.objects.all()
-        context['is_listed'] = UserList.objects.get(
-            user=self.request.user.id, product__title=context['object'].title)
+        try:
+            context['is_listed'] = UserList.objects.get(
+                user=self.request.user.id,
+                product__title=context['object'].title)
+        except Exception as e: pass
         return context
 
 
@@ -279,6 +287,7 @@ def add_serie(request, category, pk):
         return HttpResponseServerError()
 
 
+# TODO: review
 def edit_serie(request):
     cd = request.POST.copy()
     g = SeriesGroup.objects.get(product=cd['product'], number=int(cd['season']))
@@ -366,10 +375,11 @@ class AddProduct(LoginRequiredMixin, BasePageMixin, CreateView):
 
 
 class SerieView(BasePageMixin, ListView):
-    ''' List of series by concrette product '''
+    ''' List of series by concrete product '''
     template_name = 'series.html'
 
     def series_serialize(self):
+        ''' json-like format, describe series list '''
         p = Serie.objects.filter(product__id=self.kwargs['pk'])
         if p:
             num_season = p.aggregate(Max('num_season'))['num_season__max']
@@ -377,23 +387,33 @@ class SerieView(BasePageMixin, ListView):
                 'number': item + 1}
                 for item in range(num_season)]
             result = result[::-1]
+            
+            vals = [item.serie.id for item in self.queryset]
+            
+            if self.request.user.is_authenticated():
+                for season in result:
+                    for serie in season['series']:
+                        if serie['id'] in vals:
+                            serie['listed'] = 'Remove from List'
+                        else:
+                            serie['listed'] = 'Add To List'
+            num_season = len(result)
             result = str(result).replace('None', '"-"')
-            return result
+            return result, num_season
         return []
     
     def get_queryset(self):
-        return UserList.objects.filter(
-            product__id=self.kwargs['pk'], user=self.request.user.id)
+        ''' List of readed series '''
+        self.queryset = SerieList.objects.filter(
+            user_list__product__id=self.kwargs['pk'],
+            user_list__user=self.request.user.id)
+        return self.queryset
 
     def get_context_data(self, **kwargs):
         context = super(SerieView, self).get_context_data(**kwargs)
         p = Serie.objects.filter(product__id=self.kwargs['pk'])
         
-        context['num_season'] = Serie.objects.filter(
-            product__id=self.kwargs['pk']).aggregate(Max('num_season')
-            )['num_season__max'] or 0
-        context['series'] = self.series_serialize()
-        
+        context['series'], context['num_season'] = self.series_serialize()
         return context
 
 

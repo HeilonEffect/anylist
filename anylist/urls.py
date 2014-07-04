@@ -8,8 +8,6 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 import anylist.settings as settings
 from anylist.views import *
-from apps.models import *
-from apps.views import *
 from myapp.views import *
 
 
@@ -39,22 +37,8 @@ urlpatterns = patterns('',
     url(r'^(?P<category>\w+)/$', ProductionList.as_view()),
     url(r'^(?P<category>\w+)/filter/(?P<args>(.+))/?$', ProductionChoiceView.as_view()),
     url(r'^\w+/series/edit$', edit_serie),
-    url(r'^add_to_list$', add_list),
-
-    # url'ы для myapp
-    url(r'^(?P<group>\w+)/(?P<category>\w+)/$', ProductionList.as_view()),
-    url(r'^(?P<group>)\w+/(?P<category>).+/(?P<slug>)\w+/$', ProductDetail.as_view()),
 
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-)
-
-urlpatterns += patterns('apps.views',
-    url(r'^api/products$', ProductList.as_view(), name='product-list'),
-    url(r'^api/status$', StatusList.as_view()),
-    url(r'^api/genres$', GenreView.as_view()),
-    url(r'^api/product:(?P<pk>\d+)/season:(?P<number>\d+)$', SeriesView.as_view(), name='series-list'),
-    #url(r'^api/product:(?P<pk>\d+)/seasons$', SeriesView.as_view(), name='seasons-list'),
-    url(r'^api/product:(?P<pk>\d+)/series$', APISeriesView.as_view()),
 )
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'api'])

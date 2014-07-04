@@ -70,6 +70,19 @@
 			$interpolateProvider.endSymbol('}]}');
 		});
 
+		defaultApp.directive('a', function () {
+			return {
+				restrict: 'E',
+				link: function (scope, elem, attrs) {
+					if (attrs.ngClick || attrs.href === '' || attrs.href === '#') {
+						elem.on('click', function (e) {
+							e.preventDefault();
+						});
+					}
+				}
+			}
+		});
+
 		defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location',
 			function ($scope, $http, $location) {
 

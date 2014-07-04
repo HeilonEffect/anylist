@@ -12,7 +12,7 @@ class MainPageTest(TestCase):
 	def setUp(self):
 		self.client = Client()
 		self.userdata = {'username': 'first', 'password': 'ShockiNg'}
-		User.objects.create_user(userdata)
+		User.objects.create_user(**self.userdata)
 	
 
 	def test_main_page_available(self):
@@ -25,7 +25,10 @@ class MainPageTest(TestCase):
 	def test_main_page_content(self):
 		''' На главной странице отображён необходимый нам контент '''
 		response = self.client.get('/')
-		self.assertEqual(response.context['object_list'], Status.object.all())
+		statuses = Status.objects.all()
+		self.assertEqual(len(response.context['object_list']), len(statuses))
+		for i in range(len(statuses)):
+			self.assertEqual(response.context['object_list'][i], statuses[i])
 
 
 	def test_main_page_search_available(self):
@@ -57,8 +60,12 @@ class MainPageTest(TestCase):
 		self.assertIn(self.userdata['username'],
 			str(response.content, 'utf-8'))
 
-		response = self.client.post('/logout/', userdata, follow=True)
+		response = self.client.post('/logout/', self.userdata, follow=True)
 		self.assertEqual(response.status_code, 200)
 		self.assertEqual(response.template_name[0], 'index.html')
 		self.assertNotIn(self.userdata['username'],
 			str(response.content, 'utf-8'))
+
+
+class ListPageTest(TestCase):
+	pass

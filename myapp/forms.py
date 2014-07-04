@@ -19,3 +19,9 @@ class AddSerieForm(ModelForm):
 	class Meta:
 		model = Serie
 		fields = '__all__'
+
+
+class AddToListSerieForm(ModelForm):
+	class Meta:
+		model = Serie
+		fields = ('number', 'num_season', 'product', )

@@ -49,7 +49,6 @@ class Category(TemplateModel):
 
 class Genre(TemplateModel):
 	pass
-#	group = models.ForeignKey(GenreGroup)
 
 
 class GenreGroup(TemplateModel):
@@ -122,6 +121,10 @@ class Serie(models.Model):
 	class Meta:
 		ordering = ('-number', )
 
+	def __str__(self):
+		return '<%s>: Season: %d Serie: %d' % (self.product, self.num_season,
+			self.number)
+
 
 class Status(TemplateModel):
 	pass
@@ -133,8 +136,14 @@ class UserList(models.Model):
 	status = models.ForeignKey(Status)
 	product = models.ForeignKey(Product)
 
+	def __str__(self):
+		return '%s: %s' % (self.status.name, self.product.title)
+
 
 class SerieList(models.Model):
 	serie = models.ForeignKey(Serie)
 	user_list = models.ForeignKey(UserList)
 	like = models.NullBooleanField()
+
+	def __str__(self):
+		return str(self.serie)
