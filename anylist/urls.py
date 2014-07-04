@@ -3,10 +3,8 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-from rest_framework import viewsets, routers
-from rest_framework.urlpatterns import format_suffix_patterns
-
 import anylist.settings as settings
+
 from anylist.views import *
 from myapp.views import *
 
@@ -14,6 +12,7 @@ from myapp.views import *
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    url(r'^api/', include('api.urls')),
     url(r'^$', MainPage.as_view()),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^(?P<url>.*)register$', register),
@@ -37,15 +36,8 @@ urlpatterns = patterns('',
     url(r'^(?P<category>\w+)/$', ProductionList.as_view()),
     url(r'^(?P<category>\w+)/filter/(?P<args>(.+))/?$', ProductionChoiceView.as_view()),
     url(r'^\w+/series/edit$', edit_serie),
-
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 )
 
-urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'api'])
-
-urlpatterns += patterns('',
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-)
 
 if settings.DEBUG:
 

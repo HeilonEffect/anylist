@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block body %}
-	<main>
+<main ng-controller="UserCtrl">
 	<table class="user-series-list">
 		<tr>
 			<td>Name</td>
@@ -10,16 +10,28 @@
 		</tr>
 	{% for item in object_list %}
 		<tr>
-			<td><a href="/{{ category }}/{{ item.product.get_absolute_url }}">{{ item.product.title }}</a></td>
-			<td class="get_status" id="{{ item.product.get_absolute_url }}">{{ item.status }}</td>
+			<td><a href="{{ item.product.get_absolute_url }}">{{ item.product.title }}</a></td>
+			<td class="get_status" id="{{ item.product.get_absolute_url }}" ng-click="status_move(this)">{{ item.status }}</td>
 			{% if item.score %}
 				<td>{{ item.score }}</td>
 			{% else %}
 				<td>-</td>
 			{% endif %}
-			<td>{{ item.series.count }} / </td>
+			<td>{{ item.series.count }} / {{ item.product.series.count }}</td>
 		</tr>
 	{% endfor %}
 	</table>
-	</main>
+</main>
+{% endblock %}
+{% block script %}
+<script>
+	defaultApp.controller('UserCtrl', ['$scope', '$http', '$location',
+		function ($scope, $http, $location) {
+			$scope.active_status = '{{ item.status }}';
+			$scope.statuses = ['Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
+			$scope.status_move = function (elem) {
+				;
+			}
+		}]);
+</script>
 {% endblock %}

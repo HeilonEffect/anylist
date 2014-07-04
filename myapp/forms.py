@@ -25,3 +25,9 @@ class AddToListSerieForm(ModelForm):
 	class Meta:
 		model = Serie
 		fields = ('number', 'num_season', 'product', )
+
+
+class RegisterForm(forms.Form):
+	username = forms.CharField()
+	password = forms.CharField()
+	email = forms.EmailField(required=False)

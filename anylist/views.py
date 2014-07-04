@@ -170,7 +170,9 @@ class MyList(BasePageMixin, LoginRequiredMixin, ListView):
             self.kwargs['status'][1:]
         if status == 'Rewatching':
             status = 'ReWatching'
-        return UserList.objects.filter(user=self.request.user, status__name=status)
+        queryset = UserList.objects.filter(
+            user=self.request.user, status__name=status)
+        return queryset
 
     def get_context_data1(self, **kwargs):
         context = super(UserList, self).get_context_data(**kwargs)
@@ -212,6 +214,7 @@ class ProductionList(BasePageMixin, ListView):
 
 
 @require_http_methods(['POST'])
+@login_required
 def status_update(request, pk):
     ''' Process post-request with new status
     (especialy processing situation, where product not in user list yet) '''
@@ -230,9 +233,11 @@ def status_update(request, pk):
         return HttpResponseServerError()
 
 
+@require_http_methods(['POST'])
+@login_required
 def remove_from_list(request, pk):
-    ListedProduct.objects.filter(user=request.user, product__id=pk).delete()
-    return HttpResponse('Ok')
+    UserList.objects.filter(user=request.user, product__id=pk).delete()
+    return HttpResponse()
 
 
 class ProductDetail(BasePageMixin, DetailView):
@@ -252,7 +257,7 @@ class ProductDetail(BasePageMixin, DetailView):
         return context
 
 
-class ProductionEdit(BasePageMixin, UpdateView):
+class ProductionEdit(LoginRequiredMixin, BasePageMixin, UpdateView):
     template_name = 'forms/edit_form.html'
     model = Product
     form_class = AddProductForm
@@ -273,6 +278,7 @@ class ProductionEdit(BasePageMixin, UpdateView):
 
 
 @require_http_methods(['POST'])
+@login_required
 def add_serie(request, category, pk):
     ''' Добавляем новую серию в указанный сезон '''
     try:
@@ -350,6 +356,7 @@ def auth(request, url):
 
 
 @require_http_methods(['POST', 'GET'])
+@login_required
 def log_out(request, url):
     logout(request)
     if 'profile' in url:

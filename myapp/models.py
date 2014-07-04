@@ -97,7 +97,8 @@ class Product(models.Model):
 	heroes = models.ManyToManyField(Hero)
 
 	def _series(self):
-		return Series.objects.filter(product=self.id).order_by('-num_season', '-number')
+		return Serie.objects.filter(product=self.id).order_by('-num_season', '-number')
+	series = property(_series)
 
 	def get_absolute_url(self):
 		title = ''.join(re.split('[ :()-]', self.title))
@@ -135,6 +136,10 @@ class UserList(models.Model):
 	score = models.PositiveSmallIntegerField(blank=True, null=True)
 	status = models.ForeignKey(Status)
 	product = models.ForeignKey(Product)
+
+	def _series(self):
+		return SerieList.objects.filter(user_list=self)
+	series = property(_series)
 
 	def __str__(self):
 		return '%s: %s' % (self.status.name, self.product.title)
