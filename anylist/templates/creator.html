@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block header %}{{ object.name }}{% endblock %}
+{% block title %}{{ object.name }}{% endblock %}
+{% block body %}
+<main>
+	<img src="{{ object.avatar_path }}">
+	<span style="float:center; vertical-align:top;font-size:30px;font-weight:bold">Roles:</span>
+	<ul>
+		{% for item in object.product_set.all %}
+		<li>{{ item.title }}</li>
+		{% endfor %}
+	</ul>
+</main>
+{% endblock %}

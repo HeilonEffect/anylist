@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block header %}List of heroes{% endblock %}
+{% block title %}List of heroes{% endblock %}
+{% block body %}
+<main class="list">
+	<ul>
+		{% if user.is_authenticated %}
+		<li>
+			<a href="/hero/add">
+				<figure>
+					<img src="/static/img/add.svg">
+					<figcaption>Add Hero</figcaption>
+				</figure>
+			</a>
+		</li>
+		{% endif %}
+		{% for value in object_list %}
+		<li>
+			<a href="{{ value.get_absolute_url }}">
+				<figure>
+					<img src="{{ value.avatar_path }}">
+					<figcaption>{{ value }}</figcaption>
+				</figure>
+			</a>
+		</li>
+	{% endfor %}
+	</ul>
+</main>
+{% endblock %}

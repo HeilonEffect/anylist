@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block header %}Creating new Hero{% endblock %}
+{% block title %}Creating new Hero{% endblock %}
+{% block body %}
+<main>
+	<form enctype="multipart/form-data" method="post" id="add_form" action="/creator/add">
+		<input name="name" placeholder="Name" type="text">
+		<input type="file" name="avatar">
+		<select name="employ">
+		{% for employ in employers %}
+			<option value="{{ employ.id }}">{{ employ.name }}</option>
+		{% endfor %}
+		</select>
+		{% csrf_token %}
+		<input type="submit" value="Add">
+	</form>
+</main>
+{% endblock %}

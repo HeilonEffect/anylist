@@ -27,10 +27,9 @@
 <script>
 	defaultApp.controller('UserCtrl', ['$scope', '$http', '$location',
 		function ($scope, $http, $location) {
-			$scope.active_status = '{{ item.status }}';
 			$scope.statuses = ['Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
 			$scope.status_move = function (elem) {
-				;
+				console.log(elem);
 			}
 		}]);
 </script>

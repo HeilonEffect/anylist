@@ -1,0 +1,16 @@
+[
+	{
+		"fields": {
+			"name": "Japanese"
+		},
+		"pk": 1,
+		"model": "myapp.categorygroup"
+	},
+	{
+		"fields": {
+			"name": "Detectives"
+		},
+		"pk": 2,
+		"model": "myapp.categorygroup"
+	}
+]

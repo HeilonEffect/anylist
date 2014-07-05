@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" href="/static/select2/select2.css">
+<script src="/static/jquery.min.js"></script>
+<script src="/static/select2/select2.js"></script>
+{% endblock %}
+{% block header %}Creating new Hero{% endblock %}
+{% block title %}Creating new Hero{% endblock %}
+{% block body %}
+<main>
+	{% load wysiwyg %}
+	{% wysiwyg_setup %}
+	<form  enctype="multipart/form-data" method="post" id="add_form" action="/hero/add">
+		<input name="name" placeholder="Name" type="text">
+		<textarea name="description" id="description"></textarea>
+		<input type="file" name="avatar">
+		<input type="text" name="actor" placeholder="Actor" id="actors">
+		<input type="hidden" name="is_main_hero" value="true">
+		{% csrf_token %}
+		<input type="submit" value="Add">
+	</form>
+	{% wysiwyg_editor "description" %}
+</main>
+{% endblock %}

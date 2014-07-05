@@ -174,18 +174,6 @@ class MyList(BasePageMixin, LoginRequiredMixin, ListView):
             user=self.request.user, status__name=status)
         return queryset
 
-    def get_context_data1(self, **kwargs):
-        context = super(UserList, self).get_context_data(**kwargs)
-        context['nav_groups'] = ThematicGroup.objects.all()
-
-        category = self.kwargs['category'][:1].upper() +\
-            self.kwargs['category'][1:]
-
-        context['category'] = Category.objects.get(
-            name=category).get_absolute_url()
-        context['status'] = Status.objects.all()
-        return context
-
 
 class ProductionList(BasePageMixin, ListView):
     '''
@@ -457,4 +445,49 @@ class ProductionChoiceView(ProductionList):
     def get_context_data(self, **kwargs):
         context = super(ProductionChoiceView, self).get_context_data(**kwargs)
         context['header'] = 'Selection of %s' % get_category(self)
+        return context
+
+
+class HeroView(BasePageMixin, DetailView):
+    model = Hero
+    template_name = 'hero.html'
+
+
+class HeroesListView(BasePageMixin, ListView):
+    template_name = 'heroes_list.html'
+    def get_queryset(self):
+        return Product.objects.get(id=self.kwargs['pk']).heroes.all()
+
+
+class AddHero(LoginRequiredMixin, BasePageMixin, CreateView):
+    model = Hero
+    template_name = 'forms/add_hero.html'
+
+    def get_success_url(self):
+        return Hero.objects.last().get_absolute_url()
+
+
+class CreatorView(BasePageMixin, DetailView):
+    model = Creator
+    template_name = 'creator.html'
+
+
+class CreatorsListView(BasePageMixin, ListView):
+    template_name = 'creators_list.html'
+    def get_queryset(self):
+        return Product.objects.get(id=self.kwargs['pk']).creators.all()
+
+    def get_context_data(self):
+        context = super(CreatorsListView, self).get_context_data(**kwargs)
+
+
+class AddCreator(LoginRequiredMixin, BasePageMixin, CreateView):
+    model = Creator
+    template_name = 'forms/add_creator.html'
+    def get_success_url(self):
+        return Creator.objects.last().get_absolute_url()
+
+    def get_context_data(self, **kwargs):
+        context = super(AddCreator, self).get_context_data(**kwargs)
+        context['employers'] = Employ.objects.all()
         return context

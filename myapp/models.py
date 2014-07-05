@@ -70,6 +70,15 @@ class Creator(models.Model):
 	employ = models.ForeignKey(Employ)
 	avatar = models.ImageField(upload_to=MEDIA_ROOT, blank=True, null=True)
 
+	def get_absolute_url(self):
+		return '/creator/%d-%s' % (self.id, ''.join(re.split('[ :()-]', self.name)))
+
+	def __str__(self):
+		return self.name
+
+	def avatar_path(self):
+		return '/media/%s' % str(self.avatar).split('/')[-1]
+
 
 class Hero(models.Model):
 	''' is_main_hero:
@@ -81,6 +90,15 @@ class Hero(models.Model):
 	actor = models.ForeignKey(Creator)
 	avatar = models.ImageField(upload_to=MEDIA_ROOT)
 	is_main_hero = models.NullBooleanField()
+
+	def __str__(self):
+		return self.name
+
+	def avatar_path(self):
+		return '/media/%s' % str(self.avatar).split('/')[-1]
+
+	def get_absolute_url(self):
+		return '%d-%s' % (self.id, ''.join(re.split('[ :()-]', self.name)))
 
 
 class Product(models.Model):
