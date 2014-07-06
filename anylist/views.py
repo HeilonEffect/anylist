@@ -38,13 +38,18 @@ class BasePageMixin(object):
         if self.kwargs.get('category'):
             context['category'] = get_category(self)
             context['pk'] = self.kwargs.get('pk')
-            context['category_id'] = Category.objects.get(
-                name=context['category']).id
+
+            category_group = None
+            for item in Category.objects.all():
+                if item.get_absolute_url() == context['category']:
+                    context['category_id'] = item.id
+                    category_group = item
+
             context['raiting'] = Raiting.objects.all()
             for limit in context['raiting']:
                 limit.count = 0
 
-            category_group = Category.objects.get(name=context['category']).group
+            #category_group = Category.objects.get(name=context['category']).group
             context['genres'] = [genre
                 for item in GenreGroup.objects.filter(
                     category=category_group) for genre in item.genres.all()]
@@ -229,6 +234,7 @@ def remove_from_list(request, pk):
 
 
 class ProductDetail(BasePageMixin, DetailView):
+    ''' Web page for a single product '''
     model = Product
     template_name = 'detail.html'
 
