@@ -98,7 +98,7 @@ class Hero(models.Model):
 		return '/media/%s' % str(self.avatar).split('/')[-1]
 
 	def get_absolute_url(self):
-		return '%d-%s' % (self.id, ''.join(re.split('[ :()-]', self.name)))
+		return '/hero/%d-%s/' % (self.id, ''.join(re.split('[ :()-]', self.name)))
 
 
 class Product(models.Model):
@@ -120,7 +120,7 @@ class Product(models.Model):
 
 	def get_absolute_url(self):
 		title = ''.join(re.split('[ :()-]', self.title))
-		return '/%s/%d-%s' % (self.category.name.lower(), self.id, title)
+		return '/%s/%d-%s/' % (self.category.name.lower(), self.id, title)
 
 	def avatar_path(self):
 		return '/media/%s' % str(self.avatar).split('/')[-1]

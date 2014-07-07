@@ -1,0 +1,1 @@
+coverage html --include='anylist/*','myapp/admin.py','myapp/forms.py','myapp/models.py'

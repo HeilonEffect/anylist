@@ -7,7 +7,7 @@ from .models import *
 class AddProductForm(ModelForm):
 	class Meta:
 		model = Product
-		fields = ('title', 'description', 'avatar', 'category', 'genres', )
+		fields = ('title', 'description', 'avatar', 'category', 'genres', 'old_limit',)
 
 
 class LoginForm(forms.Form):
@@ -31,3 +31,9 @@ class RegisterForm(forms.Form):
 	username = forms.CharField()
 	password = forms.CharField()
 	email = forms.EmailField(required=False)
+
+
+class AddHeroForm(ModelForm):
+	class Meta:
+		model = Hero
+		fields = '__all__'

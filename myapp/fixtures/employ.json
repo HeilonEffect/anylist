@@ -1,0 +1,1 @@
+[{"fields": {"name": "Seyu"}, "pk": 1, "model": "myapp.employ"}, {"fields": {"name": "Produccer"}, "pk": 2, "model": "myapp.employ"}, {"fields": {"name": "Scenario"}, "pk": 3, "model": "myapp.employ"}, {"fields": {"name": "Original Autor"}, "pk": 4, "model": "myapp.employ"}]

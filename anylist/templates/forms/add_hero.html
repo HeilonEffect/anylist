@@ -10,7 +10,7 @@
 <main>
 	{% load wysiwyg %}
 	{% wysiwyg_setup %}
-	<form  enctype="multipart/form-data" method="post" id="add_form" action="/hero/add">
+	<form  enctype="multipart/form-data" method="post" id="add_form" action="{{ url }}">
 		<input name="name" placeholder="Name" type="text">
 		<textarea name="description" id="description"></textarea>
 		<input type="file" name="avatar">

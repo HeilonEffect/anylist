@@ -41,7 +41,7 @@ class BasePageMixin(object):
 
             category_group = None
             for item in Category.objects.all():
-                if item.get_absolute_url() == context['category']:
+                if item.get_absolute_url()[1:-1] == context['category'].lower():
                     context['category_id'] = item.id
                     category_group = item
 
@@ -130,7 +130,7 @@ def add_list_serie(request):
             
             if not SerieList.objects.filter(serie=serie, user_list=user_list):
                 SerieList.objects.create(serie=serie, user_list=user_list)
-            return HttpResponse()
+            return HttpResponse('Ok')
         else:
             logger.error('Invalid data from series addition')
             logger.error('data %s' % request.POST)
@@ -153,7 +153,6 @@ def del_list_serie(request):
             user_list = UserList.objects.get(product=cd['product'],
                 user=request.user)
 
-            print(SerieList.objects.filter(serie=serie, user_list=user_list))
             SerieList.objects.filter(serie=serie, user_list=user_list).delete()
             return HttpResponse()
         else:
@@ -226,11 +225,11 @@ def status_update(request, pk):
         return HttpResponseServerError()
 
 
-@require_http_methods(['POST'])
-@login_required
-def remove_from_list(request, pk):
-    UserList.objects.filter(user=request.user, product__id=pk).delete()
-    return HttpResponse()
+# @require_http_methods(['POST'])
+# @login_required
+# def remove_from_list(request, pk):
+#     UserList.objects.filter(user=request.user, product__id=pk).delete()
+#     return HttpResponse()
 
 
 class ProductDetail(BasePageMixin, DetailView):
@@ -261,6 +260,7 @@ class ProductionEdit(LoginRequiredMixin, BasePageMixin, UpdateView):
 
     def form_invalid(self, form):
         print(form.errors)
+        return HttpResponse(form.errors)
 
     def get_context_data(self, **kwargs):
         context = super(ProductionEdit, self).get_context_data(**kwargs)
@@ -363,15 +363,16 @@ class AddProduct(LoginRequiredMixin, BasePageMixin, CreateView):
     template_name = 'forms/add_form.html'
     model = Product
     form_class = AddProductForm
+    raise_exception = True
 
     def get_context_data(self, **kwargs):
         context = super(AddProduct, self).get_context_data(**kwargs)
-        category = get_category(self)
-        p = Category.objects.get(name=category).group
-        
+
         context['category'] = self.kwargs['category']
-        context['category_id'] = Category.objects.get(name=category).id
-        context['header'] = 'Add new %s' % category
+        for item in Category.objects.all():
+            if item.get_absolute_url() == context['category']:
+                context['category_id'] = item.id
+                context['header'] = 'Add new %s' % category
         return context
 
 
@@ -401,7 +402,7 @@ class SerieView(BasePageMixin, ListView):
             num_season = len(result)
             result = str(result).replace('None', '"-"')
             return result, num_season
-        return []
+        return [], 0
     
     def get_queryset(self):
         ''' List of readed series '''
@@ -413,7 +414,7 @@ class SerieView(BasePageMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(SerieView, self).get_context_data(**kwargs)
         p = Serie.objects.filter(product__id=self.kwargs['pk'])
-        
+
         context['series'], context['num_season'] = self.series_serialize()
         return context
 
@@ -468,9 +469,18 @@ class HeroesListView(BasePageMixin, ListView):
 class AddHero(LoginRequiredMixin, BasePageMixin, CreateView):
     model = Hero
     template_name = 'forms/add_hero.html'
+    form_class = AddHeroForm
 
     def get_success_url(self):
-        return Hero.objects.last().get_absolute_url()
+        p = Hero.objects.last()
+        Product.objects.get(id=self.kwargs['pk']).heroes.add(p)
+        return p.get_absolute_url()
+
+    def get_context_data(self, **kwargs):
+        context = super(AddHero, self).get_context_data(**kwargs)
+        context['url'] = '/%s/%s-%s/heroes/add' % (self.kwargs['category'],
+            self.kwargs['pk'], self.kwargs['name'])
+        return context
 
 
 class CreatorView(BasePageMixin, DetailView):
@@ -483,8 +493,9 @@ class CreatorsListView(BasePageMixin, ListView):
     def get_queryset(self):
         return Product.objects.get(id=self.kwargs['pk']).creators.all()
 
-    def get_context_data(self):
+    def get_context_data(self, **kwargs):
         context = super(CreatorsListView, self).get_context_data(**kwargs)
+        return context
 
 
 class AddCreator(LoginRequiredMixin, BasePageMixin, CreateView):
