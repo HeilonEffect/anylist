@@ -551,3 +551,35 @@ class SerieTest(TestCase):
             user_list__product__id=1, user_list__user=User.objects.first())):
             
             self.assertEqual(response.context['object_list'][i], item)
+
+
+class AddCreatorTest(TestCase):
+    fixtures = ['category.json', 'category_group.json', 'product.json',
+        'old_limit.json', 'genres.json', 'status.json', 'creator.json',
+        'employ.json', 'hero.json']
+
+    def setUp(self):
+        self.userdata = {'username': 'first', 'password': 'ShockiNg'}
+        User.objects.create_user(**self.userdata)
+        self.client = Client()
+ 
+    def test_avaibiity(self):
+        self.client.post('/login/', self.userdata)
+
+        response = self.client.get('/creator/add')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.template_name[0], 'forms/add_creator.html')
+
+        for i, item in enumerate(Employ.objects.all()):
+            self.assertEqual(response.context['employers'][i], item)
+
+    def test_add_hero(self):
+        self.client.post('/login/', self.userdata)
+
+        url = '%sheroes/add' % Product.objects.first().get_absolute_url()
+        print(url)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.template_name[0], 'forms/add_hero.html')

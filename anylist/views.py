@@ -49,10 +49,9 @@ class BasePageMixin(object):
             for limit in context['raiting']:
                 limit.count = 0
 
-            #category_group = Category.objects.get(name=context['category']).group
             context['genres'] = [genre
                 for item in GenreGroup.objects.filter(
-                    category=category_group) for genre in item.genres.all()]
+                    category__category=category_group) for genre in item.genres.all()]
             for genre in context['genres']:
                 genre.count = 0
         return context
@@ -174,8 +173,13 @@ class MyList(BasePageMixin, LoginRequiredMixin, ListView):
             self.kwargs['status'][1:]
         if status == 'Rewatching':
             status = 'ReWatching'
-        queryset = UserList.objects.filter(
-            user=self.request.user, status__name=status)
+
+        category = self.kwargs['category']
+        for item in Category.objects.all():
+            if item.get_absolute_url()[1:-1] == category:
+                category = item
+        queryset = UserList.objects.filter(user=self.request.user,
+            status__name=status, product__category=category)
         return queryset
 
 
@@ -188,8 +192,10 @@ class ProductionList(BasePageMixin, ListView):
 
     def get_queryset(self):
         category = self.kwargs['category']
-        category = ''.join([category[0].upper(), category[1:]])
-        return Product.objects.filter(category__name=category)
+        for item in Category.objects.all():
+            if item.get_absolute_url()[1:-1] == category:
+                category = item
+        return Product.objects.filter(category=category)
 
     def get_context_data(self, **kwargs):
         context = super(ProductionList, self).get_context_data(**kwargs)
@@ -364,6 +370,10 @@ class AddProduct(LoginRequiredMixin, BasePageMixin, CreateView):
     model = Product
     form_class = AddProductForm
     raise_exception = True
+
+    def form_invalid(self, form):
+        print(form.errors)
+        return HttpResponse(form.errors)
 
     def get_context_data(self, **kwargs):
         context = super(AddProduct, self).get_context_data(**kwargs)

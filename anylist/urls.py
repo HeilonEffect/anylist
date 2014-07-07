@@ -12,7 +12,6 @@ from myapp.views import *
 admin.autodiscover()
 
 urlpatterns = patterns('',
-#    url(r'^api/', include('api.urls')),
     url(r'^$', MainPage.as_view()),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^(?P<url>.*)register$', register),
