@@ -1,0 +1,1 @@
+[{"model": "myapp.raiting", "fields": {"name": "G"}, "pk": 1}, {"model": "myapp.raiting", "fields": {"name": "PG"}, "pk": 2}, {"model": "myapp.raiting", "fields": {"name": "PG-13"}, "pk": 3}, {"model": "myapp.raiting", "fields": {"name": "R"}, "pk": 4}, {"model": "myapp.raiting", "fields": {"name": "NC-17"}, "pk": 5}]

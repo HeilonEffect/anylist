@@ -14,7 +14,7 @@ from django.db.models import F, Max, Q
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseServerError, HttpResponseNotFound
 from django.shortcuts import render_to_response, render
 from django.views.decorators.http import require_http_methods
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
 
@@ -518,3 +518,9 @@ class AddCreator(LoginRequiredMixin, BasePageMixin, CreateView):
         context = super(AddCreator, self).get_context_data(**kwargs)
         context['employers'] = Employ.objects.all()
         return context
+
+
+def error404(request):
+    context = {}
+    context['nav_groups'] = CategoryGroup.objects.all()
+    return render(request, 'error.html', context)

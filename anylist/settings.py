@@ -22,12 +22,10 @@ BASE_DIR = os.path.dirname(__file__)
 SECRET_KEY = 'j!p49a*j4e+!7&s&cx(&orq=s@u-pd&)i3u#p=$h$@)9-p!qo!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = False
 DEBUG = True
 
-TEMPLATE_DEBUG = True
-
-ALLOWED_HOSTS = []
-
+#TEMPLATE_DEBUG = True
 
 # Application definition
 
@@ -90,6 +88,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATIC_URL = '/static/'
 
+ALLOWED_HOSTS = []
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
@@ -114,20 +114,6 @@ DJANGO_WYSIWYG_FLAVOR = "ckeditor"
 
 #SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 #SESSION_CACHE_ALIAS = 'default'
-
-REST_FRAMEWORK = {
-    # Use hyperlinked styles by default.
-    # Only used if the `serializer_class` attribute is not set on a view.
-    'DEFAULT_MODEL_SERIALIZER_CLASS':
-        'rest_framework.serializers.HyperlinkedModelSerializer',
-
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
-}
-
 
 THUMBNAIL_ALIASES = {
     '': {

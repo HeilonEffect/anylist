@@ -57,3 +57,6 @@ if settings.DEBUG:
 # Эта строка опциональна и будет добавлять url'ы только при DEBUG = True
 
 urlpatterns += staticfiles_urlpatterns()
+
+handler404 = 'anylist.views.error404'
+handler500 = 'anylist.views.error404'
