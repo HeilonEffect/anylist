@@ -123,16 +123,17 @@
 
 				$scope.start_auth = function (data) {
 					// Не работает автозаполнение
-					data = "username=" + data['username'] + "&password=" + data['password'] + "&email=" + data['email'];
-					data = data.replace("undefined", "", "g");
 					var url = $location.absUrl();
 					if (data['is_reg'])
 						url += 'register/';
 					else
 						url += "login/";
+
+					data = "username=" + data['username'] + "&password=" + data['password'] + "&email=" + data['email'];
+					data = data.replace("undefined", "", "g");
 					$http({
 						method: "POST",
-						url: $location.absUrl() + "login/",
+						url: url,
 						data: data,
 						headers: {
 							"Content-Type": "application/x-www-form-urlencoded"

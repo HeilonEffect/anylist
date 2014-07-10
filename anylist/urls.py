@@ -14,7 +14,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^$', MainPage.as_view()),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^(?P<url>.*)register$', register),
+    url(r'^(?P<url>.*)register/$', register),
     url(r'^(?P<url>.*)login/$', auth),
     url(r'^(?P<url>.*)logout/$', log_out),
     url(r'^search$', search),
