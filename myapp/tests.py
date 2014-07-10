@@ -1,13 +1,58 @@
 import json
 import random
 
-from django.test import TestCase
+from django.test import TestCase, LiveServerTestCase
 from django.test.client import Client
+
+from selenium import webdriver
 
 from myapp.models import *
 
+selenium_url = 'http://188.120.228.166/'
 
-# Create your tests here.
+class MainPageFunctionalTest(LiveServerTestCase):
+    fixtures = ['category.json', 'category_group.json']
+    
+    def setUp(self):
+        self.browser = webdriver.Firefox()
+        #self.browser.implicitly_wait(3)
+
+    def test_pages(self):
+        self.browser.get('localhost:8082')
+
+        # поле поиска видно
+        body = self.browser.find_elements_by_xpath('//input[@type="search"]')
+        self.assertIsNotNone(body)
+        self.assertTrue(body[0].is_displayed())
+
+        # naigation panel
+        elems = self.browser.find_elements_by_tag_name('details')
+        self.assertTrue(body[0].is_displayed())
+
+        elems = self.browser.find_elements_by_xpath(
+            '//img[@src="/static/img/show_main_menu.png"]')
+        self.assertTrue(elems[0].is_displayed())
+
+        # панель навигации по нужному нажатию показывается и убирается
+        elems[0].click()
+        self.assertTrue(
+            self.browser.find_elements_by_tag_name('details')[0].is_displayed())
+        elems[0].click()
+        self.assertFalse(
+            self.browser.find_elements_by_tag_name('details')[0].is_displayed())
+
+        # Все категории отображаются на главной странице
+        elems = self.browser.find_elements_by_xpath('//main/ul/li/a/figure')
+        self.assertEqual(Category.objects.count(), len(elems))
+        
+        for i, item in enumerate(Product.objects.all()):
+            self.assertEqual(item, elems[i])
+
+        random.choice(elems).click()
+        elems = self.browser.find_elements_by_tag_name('header')
+        self.assertIn('List of', elems[0].text)
+
+
 class MainPageTest(TestCase):
     fixtures = ['category.json', 'category_group.json']
     

@@ -1,1 +1,2 @@
 coverage html --include='anylist/*','myapp/admin.py','myapp/forms.py','myapp/models.py'
+python manage.py test myapp.tests.MainPageFunctionalTest --liveserver=localhost:8082
