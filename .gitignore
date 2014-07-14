@@ -4,3 +4,4 @@ virt/*
 *.jpg
 *.png
 anylist/media/*
+anylist/staticfiles/*
