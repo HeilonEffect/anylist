@@ -48,6 +48,16 @@ class MainPageFunctionalTest(LiveServerTestCase):
         for i, item in enumerate(Product.objects.all()):
             self.assertEqual(item, elems[i])
 
+        # auth form
+        elem = self.browser.find_elements_by_tag_name('button')[0]
+
+        self.assertFalse(self.browser.find_element_by_id(
+            'auth_form').is_displayed())
+        elem.click()
+        self.assertTrue(self.browser.find_element_by_id(
+            'auth_form').is_displayed())
+
+        # по клику доступна страничка с контентом
         random.choice(elems).click()
         elems = self.browser.find_elements_by_tag_name('header')
         self.assertIn('List of', elems[0].text)
