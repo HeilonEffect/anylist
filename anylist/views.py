@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db.models import F, Max, Q
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseServerError, HttpResponseNotFound
+from django.http import *
 from django.shortcuts import render_to_response, render
 from django.views.decorators.http import require_http_methods
 from django.views.generic import ListView, TemplateView
@@ -31,17 +31,19 @@ get_category = lambda self: ''.join(
 
 
 class BasePageMixin(object):
+
     def get_context_data(self, **kwargs):
         context = super(BasePageMixin, self).get_context_data(**kwargs)
         context['nav_groups'] = CategoryGroup.objects.all()
-        
+
         if self.kwargs.get('category'):
             context['category'] = get_category(self)
             context['pk'] = self.kwargs.get('pk')
 
             category_group = None
             for item in Category.objects.all():
-                if item.get_absolute_url()[1:-1] == context['category'].lower():
+                url = item.get_absolute_url()[1:-1]
+                if url == context['category'].lower():
                     context['category_id'] = item.id
                     category_group = item
 
@@ -50,14 +52,16 @@ class BasePageMixin(object):
                 limit.count = 0
 
             context['genres'] = [genre
-                for item in GenreGroup.objects.filter(
-                    category__category=category_group) for genre in item.genres.all()]
+                                 for item in GenreGroup.objects.filter(
+                                     category__category=category_group
+                                 ) for genre in item.genres.all()]
             for genre in context['genres']:
                 genre.count = 0
         return context
 
 
 class MainPage(BasePageMixin, ListView):
+
     ''' Main Page view. Content of main categories '''
     model = CategoryGroup
     template_name = 'index.html'
@@ -90,7 +94,7 @@ def profile(request):
     result = {}
     result['nav_groups'] = CategoryGroup.objects.all()
     mylist = UserList.objects.filter(user=request.user)
-    
+
     result['object_list'] = []
     statuses = Status.objects.all()
     for category in Category.objects.all():
@@ -122,11 +126,11 @@ def add_list_serie(request):
                 user_list = UserList.objects.get(
                     product=cd['product'], user=request.user)
             except Exception as e:
-                logger.error(e) # del it
+                logger.error(e)  # del it
                 user_list = UserList.objects.create(
                     product=cd['product'], user=request.user,
                     status=Status.objects.get(name='Watch'))
-            
+
             if not SerieList.objects.filter(serie=serie, user_list=user_list):
                 SerieList.objects.create(serie=serie, user_list=user_list)
             return HttpResponse('Ok')
@@ -150,7 +154,7 @@ def del_list_serie(request):
             serie = Serie.objects.get(**cd)
 
             user_list = UserList.objects.get(product=cd['product'],
-                user=request.user)
+                                             user=request.user)
 
             SerieList.objects.filter(serie=serie, user_list=user_list).delete()
             return HttpResponse()
@@ -164,6 +168,7 @@ def del_list_serie(request):
 
 
 class MyList(BasePageMixin, LoginRequiredMixin, ListView):
+
     ''' список произведений, составленный пользователем '''
     template_name = 'user_list.html'
 
@@ -179,11 +184,13 @@ class MyList(BasePageMixin, LoginRequiredMixin, ListView):
             if item.get_absolute_url()[1:-1] == category:
                 category = item
         queryset = UserList.objects.filter(user=self.request.user,
-            status__name=status, product__category=category)
+                                           status__name=status,
+                                           product__category=category)
         return queryset
 
 
 class ProductionList(BasePageMixin, ListView):
+
     '''
     List of multimedia product of selected category
     (anime, sci-fi, detective romans, etc.)
@@ -224,7 +231,8 @@ def status_update(request, pk):
             p.update(status=status)
         else:
             p = Product.objects.get(id=pk)
-            UserList.objects.create(user=request.user, product=p, status=status)
+            UserList.objects.create(
+                user=request.user, product=p, status=status)
         return HttpResponse(request.POST['name'])
     except Exception as e:
         logger.error(e)
@@ -239,6 +247,7 @@ def status_update(request, pk):
 
 
 class ProductDetail(BasePageMixin, DetailView):
+
     ''' Web page for a single product '''
     model = Product
     template_name = 'detail.html'
@@ -252,7 +261,8 @@ class ProductDetail(BasePageMixin, DetailView):
             context['is_listed'] = UserList.objects.get(
                 user=self.request.user.id,
                 product__title=context['object'].title)
-        except Exception as e: pass
+        except Exception as e:
+            pass
         return context
 
 
@@ -296,7 +306,8 @@ def add_serie(request, category, pk):
 # TODO: review
 def edit_serie(request):
     cd = request.POST.copy()
-    g = SeriesGroup.objects.get(product=cd['product'], number=int(cd['season']))
+    g = SeriesGroup.objects.get(
+        product=cd['product'], number=int(cd['season']))
     old = cd['ident']   # номер той серии, что мы правим
     cd['season'] = g.id     # id сезона
     form = AddSerieForm(cd)
@@ -365,6 +376,7 @@ def log_out(request, url):
 
 
 class AddProduct(LoginRequiredMixin, BasePageMixin, CreateView):
+
     ''' Creating and Pubishing new product by form data '''
     template_name = 'forms/add_form.html'
     model = Product
@@ -387,6 +399,7 @@ class AddProduct(LoginRequiredMixin, BasePageMixin, CreateView):
 
 
 class SerieView(BasePageMixin, ListView):
+
     ''' List of series by concrete product '''
     template_name = 'series.html'
 
@@ -395,13 +408,13 @@ class SerieView(BasePageMixin, ListView):
         p = Serie.objects.filter(product__id=self.kwargs['pk'])
         if p:
             num_season = p.aggregate(Max('num_season'))['num_season__max']
-            result = [{'series': p.filter(num_season=item + 1).values(), 
-                'number': item + 1}
-                for item in range(num_season)]
+            result = [{'series': p.filter(num_season=item + 1).values(),
+                       'number': item + 1}
+                      for item in range(num_season)]
             result = result[::-1]
-            
+
             vals = [item.serie.id for item in self.queryset]
-            
+
             if self.request.user.is_authenticated():
                 for season in result:
                     for serie in season['series']:
@@ -413,7 +426,7 @@ class SerieView(BasePageMixin, ListView):
             result = str(result).replace('None', '"-"')
             return result, num_season
         return [], 0
-    
+
     def get_queryset(self):
         ''' List of readed series '''
         self.queryset = SerieList.objects.filter(
@@ -472,6 +485,7 @@ class HeroView(BasePageMixin, DetailView):
 
 class HeroesListView(BasePageMixin, ListView):
     template_name = 'heroes_list.html'
+
     def get_queryset(self):
         return Product.objects.get(id=self.kwargs['pk']).heroes.all()
 
@@ -489,7 +503,8 @@ class AddHero(LoginRequiredMixin, BasePageMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super(AddHero, self).get_context_data(**kwargs)
         context['url'] = '/%s/%s-%s/heroes/add' % (self.kwargs['category'],
-            self.kwargs['pk'], self.kwargs['name'])
+                                                   self.kwargs['pk'],
+                                                   self.kwargs['name'])
         return context
 
 
@@ -500,6 +515,7 @@ class CreatorView(BasePageMixin, DetailView):
 
 class CreatorsListView(BasePageMixin, ListView):
     template_name = 'creators_list.html'
+
     def get_queryset(self):
         return Product.objects.get(id=self.kwargs['pk']).creators.all()
 
@@ -511,6 +527,7 @@ class CreatorsListView(BasePageMixin, ListView):
 class AddCreator(LoginRequiredMixin, BasePageMixin, CreateView):
     model = Creator
     template_name = 'forms/add_creator.html'
+
     def get_success_url(self):
         return Creator.objects.last().get_absolute_url()
 
