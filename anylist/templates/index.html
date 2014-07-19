@@ -4,7 +4,8 @@
 {% block body %}
 <main>
 {% for group in object_list %}
-	<p>{{ group.name }}</p>
+	<div>
+	<h2>{{ group.name }}</h2>
 	<ul>
 	{% for value in group.categories %}
 		<li>
@@ -17,6 +18,7 @@
 		</li>
 	{% endfor %}
 	</ul>
+	</div>
 {% endfor %}
 </main>
 {% endblock %}

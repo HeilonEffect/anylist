@@ -8,12 +8,27 @@
 	<script src="/static/lib/angular-cookies.min.js"></script>
 	<script src="/static/datetimepicker_css.js"></script>
 	<link rel="stylesheet" href="/static/series/style.css">
+	<link rel="stylesheet" href="/static/css/header.css">
+	<link rel="stylesheet" href="/static/css/main_page.css">
 	{% block head %}{% endblock %}
 </head>
 <body ng-controller="DefaultCtrl">
 	<header>
+		<menu>
+			<div class="search_block">
+				<img src="/static/img/search.png">
+				<input type="search" placeholder="Search">
+			</div>
+			{% if user.is_authenticated %}
+				<a href="/profile">{{ user.username }}</a>
+				<button ng-click="logout()">Log Out</button>
+			{% else %}
+				<button ng-click="login()">Log In</button>
+			{% endif %}
+		</menu>
+		<img src="/static/img/show_main_menu.png" ng-click="show_menu()">
 		<h1>{% block header %}Header{% endblock %}</h1>
-		<section>
+<!-- 		<section>
 			<input type="search" ng-model="search" placeholder="Start enter name" ng-change="searcher(search)">
 			<ul id="search_result" style="visibility:hidden">
 				<li ng-repeat="item in search_result"><a href="{[{item.value}]}">{[{item.key}]}</a></li>
@@ -28,7 +43,7 @@
 				<button ng-click="login()">Log In</button>
 			{% endif %}
 		</section>
-		<form style="visibility:hidden" id="auth_form">
+ -->		<form style="visibility:hidden" id="auth_form">
 			<input ng-model="auth.username" name="username" type="text" placeholder="Username">
 			<input ng-model="auth.password" name="password" type="password" placeholder="Password">
 			<input ng-model="auth.email" name="email" type="email" placeholder="Email">
@@ -38,9 +53,8 @@
 	</header>
 	{% comment %}Навигация по разделам{% endcomment %}
 	<details style="visibility:hidden">
+		<ul>
 		{% for group in nav_groups %}
-			<span>{{ group.name }}</span>
-			<ul>
 				{% for value in group.categories %}
 				<li>
 					<a href="{{ value.get_absolute_url }}">
@@ -51,8 +65,8 @@
 					</a>
 				</li>
 				{% endfor %}
-			</ul>
 		{% endfor %}
+		</ul>
 	</details>
 	<div style="visibility:hidden" id="space" ng-click="hide_menu()"></div>
 	{% block body %}

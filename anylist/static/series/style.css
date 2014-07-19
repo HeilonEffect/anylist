@@ -1,5 +1,7 @@
 body {
 	font: 24px normal Times,Georgia,Cambria,"Times New Roman",serif;
+	color: #444;
+	background-color: #cfd8dc;
 }
 h1 {
 	color: #444;
@@ -14,7 +16,7 @@ main {
 	margin-left: 2em;
 	padding: .5em;
 }
-header {
+/*header {
 	background-color: white;
 	z-index: 10;
 	position: fixed;
@@ -44,7 +46,7 @@ header h1 {
 	right: 11em;
 	left: 1em;
 	top: -0.2em;
-}
+}*/
 button {
 	height: 3.2em;
 	border: 2px solid #2C3E50;
@@ -52,7 +54,7 @@ button {
 	background-color: rgba(0,0,0,0);
 	margin: .8em;
 }
-header img {
+/*header img {
 	margin-right: .8em;
 }
 header a {
@@ -63,7 +65,7 @@ input[type="search"] {
 	height: 2em;
 	margin: .8em;
 	border: 1.2px solid #F1c40F;
-}
+*/}
 nav {
 	background-color: white;
 	position: absolute;

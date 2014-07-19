@@ -25,6 +25,9 @@ class CategoryGroup(TemplateModel):
 		return Category.objects.filter(group=self.id)
 	categories = property(_categories)
 
+	class Meta:
+		ordering = ('name',)
+
 
 class Raiting(TemplateModel):
 	pass
@@ -45,6 +48,9 @@ class Category(TemplateModel):
 
 	def get_absolute_url(self):
 		return '/%s/' % ''.join(self.name.lower().split(' '))
+
+	class Meta:
+		ordering = ('name',)
 
 
 class Genre(TemplateModel):

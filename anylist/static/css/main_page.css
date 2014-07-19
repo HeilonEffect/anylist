@@ -1,0 +1,29 @@
+main {
+	margin-top: 4.5em;
+	margin-left: 0.5em;
+	margin-bottom: 0;
+}
+main > div {
+	float: left;
+	background-color: white;
+	margin: .5em;
+}
+h2 {
+	text-align: center;
+	margin: 0.3em;
+}
+main ul {
+	padding: 0;
+	margin: .1em;
+	list-style: none outside none;
+}
+main ul li {
+	display: inline-block;
+}
+main ul li figure {
+	margin: .3em;
+}
+main img {
+	width: 11em;
+	height: 15em;
+}
