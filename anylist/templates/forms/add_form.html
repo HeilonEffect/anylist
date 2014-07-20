@@ -1,55 +1,37 @@
 {% extends "base.html" %}
-{% block head %}
-<link rel="stylesheet" href="/static/select2/select2.css">
-<script src="http://code.jquery.com/jquery-git2.js"></script>
-<script src="/static/select2/select2.js"></script>
-{% endblock %}
 {% block header %}{{ header }}{% endblock %}
 {% block title %}{{ header }}{% endblock %}
 {% block body %}
-<main>
-	{% load wysiwyg %}
-	{% wysiwyg_setup %}
-	<form enctype="multipart/form-data" method="post" id="add_form" action="/{{ category }}/add">
-			<input name="title" type="text" placeholder="Enter title here" class="form-title">
-			<ul class="dropdown-title"></ul>
-			<textarea class="form-textarea" rows="15" name="description" id="description"></textarea>
-			<div id="upload_form">
-				<input name="avatar" type="file" />
-			</div>
-		<div class="form-other"></div>
-			<select name="genres" id="genres" style="width:10em;" multiple>
-				{% for genre in genres %}
-				<option value="{{ genre.id }}">{{ genre.name }}</option>
-				{% endfor %}
-			</select>
-			<p></p>
-			<input type="hidden" name="category" value="{{ category_id }}">
-			<!--<button id="sel_genres">Выберите жанры</button>-->
-			<select name="old_limit" style="width:10em" id="raiting">
-			{% for item in raiting %}
-				<option value="{{ item.id }}">{{ item.name }}</option>
-			{% endfor %}
-			</select>
+<main ng-controller="AddFormCtrl">
+	<form>
+		<input type="text" ng-model="product.title">
+		<textarea ng-model="product.description"></textarea>
+		<input type="file" ng-model="product.avatar">
+		<button ng-click="show_genres()">Add Genres</button>
+		<div ng-show="visibility_genres">
+			<ul ng-repeat-start="group in genre_groups">
+				<li ng-repeat="genre in group.genres">{[{genre.name}]}</li>
+			</ul>
+			<div ng-repeat-end></div>
 		</div>
-		<div>
-			{% csrf_token %}
-			<button type="submit">Next</button>
-			<!--<button type="submit">Next Step</button>-->
-		</div>
+		<input type="submit" value="Create">
 	</form>
-	{% wysiwyg_editor "description" %}
 </main>
 {% endblock %}
 {% block script %}
-<script type="text/javascript">
-	$("#genres").select2({
-		width: 400,
-		placeholder: "Выберите жанры"
-	});
-	$("#raiting").select2({
-		width: 300,
-		placeholder: "Select Old Limitation"
-	});
+<script>
+	defaultApp.controller('AddFormCtrl', function ($scope, $http, $location) {
+			$scope.visibility_genres = false;
+			var category = window.location.pathname.split('/')[1];
+
+			$scope.show_genres = function () {
+				$scope.visibility_genres = !$scope.visibility_genres;
+			}
+
+			$http.get('/api/genres/category:' + category).success(function (data) {
+				$scope.genre_groups = data;
+			});
+		}
+	);
 </script>
 {% endblock %}

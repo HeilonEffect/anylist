@@ -1,9 +1,14 @@
+body {
+	font: 20px normal Times,Georgia,Cambria,"Times New Roman",serif;
+	color: #444;
+	background-color: #cfd8dc;
+}
 header {
 	position: fixed;
 	left: 0;
 	top: 0;
 	right: 0;
-	height: 4.5em;
+	height: 4em;
 	background-color: #fafafa;
 }
 header h1 {
@@ -41,7 +46,6 @@ input[type="search"] {
 	margin: .3em;
 	margin-top: 1em;
 	border-bottom: 1px solid #444;
-	/*box-shadow: .5px .5px .5px .5px #ccc;*/
 }
 .search_block img {
 	width: 1.5em;
@@ -50,5 +54,63 @@ input[type="search"] {
 header > menu > img {
 	margin-top: .6em;
 	padding: .8em;
-	border: .7px solid rgba(0, 0, 0, 0);
+	border: .7px solid rgba(0, 0, 0, 1);
+}
+details {
+	position: fixed;
+	top: 4em;
+	bottom: 0;
+	left: 0;
+}
+details nav {
+	background-color: white;
+}
+details ul {
+	margin: 0;
+	display: inline-block;
+}
+details li {
+	display: inline-block;
+}
+details figcaption {
+	text-align: center;
+}
+details div {
+	background-color: rgba(50, 50, 50, .3);
+	height: 100%;
+}
+details img {
+	width: 75px;
+	height: 75px;
+}
+header form {
+	background-color: rgba(50, 50, 50, .3);
+	position: fixed;
+	top: 4em;
+	width: 100%;
+	bottom: 0;
+}
+header form > div {
+	padding: 3%;
+	background-color: white;
+	vertical-align: middle;
+	margin-left: 30%;
+	margin-right: 30%;
+	margin-top: 5%;
+}
+header form input {
+	height: 2em;
+	width: 20em;
+}
+header form input[type="checkbox"] {
+	width: 2em;
+}
+header form input[type="submit"] {
+	width: 10em;
+}
+menu > a {
+	float: left;
+}
+header menu nav {
+	background-color: white;
 }

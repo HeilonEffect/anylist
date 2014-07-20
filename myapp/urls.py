@@ -1,0 +1,13 @@
+from django.conf.urls import patterns, url
+
+from .views import CategoriesList, ProductList, RaitingList, GenreGroupList
+
+
+urlpatterns = patterns('myapp.views',
+	url(r'categories/$', CategoriesList.as_view()),
+	url(r'products$', ProductList.as_view()),
+	url(r'products/category:(?P<name>\w+)/$', ProductList.as_view()),
+	url(r'products/category:(?P<name>\w+)/filter/(?P<args>.+)/$', ProductList.as_view()),
+	url(r'raitings/$', RaitingList.as_view()),
+	url(r'genres/category:(?P<name>\w+)$', GenreGroupList.as_view()),
+)

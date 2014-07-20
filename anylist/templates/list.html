@@ -1,75 +1,129 @@
 {% extends "base.html" %}
-{% block head %}<script src="/static/medialist.js"></script>{% endblock %}
 {% block title %}{{ header }}{% endblock %}
 {% block header %}{{ header }}{% endblock %}
 {% block body %}
-<main class="list" ng-controller="ListCtrl">
-	<img src="/static/img/right_menu.png" class="panel_display" ng-click="show_panel()">
+<main ng-controller="ListCtrl">
+	<img src="/static/img/add.svg" class="add_form" ng-click="add_form()">
+	<img src="/static/img/expand.png" class="expand" ng-click="show_panel()">
 	<ul>
-		{% if user.is_authenticated %}
-		<li>
-			<a href="/{{ category }}/add">
+		<li ng-repeat="product in products">
+			<a href="{[{product.url}]}">
 				<figure>
-					<img src="/static/img/add.svg">
-					<figcaption>Add {{ category }}</figcaption>
+					<img src="{[{product.avatar}]}">
+					<figcaption>{[{product.title}]}</figcaption>
 				</figure>
 			</a>
 		</li>
-		{% endif %}
-		{% for value in object_list %}
-		<li>
-			<a href="{{ value.get_absolute_url }}">
-				<figure>
-					<img src="{{ value.avatar_path }}">
-					<figcaption>{{ value }}</figcaption>
-				</figure>
-			</a>
-		</li>
-	{% endfor %}
 	</ul>
+	<nav ng-show="panel_visibility">
+		<p>Raiting</p>
+		<div ng-repeat="old_limit in raiting">
+			<input type="checkbox" id="{[{old_limit.name}]}" ng-model="old_limit.checked" ng-change="start_filter(this)">
+			<label for="{[{old_limit.name}]}">{[{old_limit.name}]}</label>
+		</div>
+		<p>Genres</p>
+		<p ng-repeat-start="group in genre_groups">
+			<div ng-repeat="genre in group.genres">
+				<input type="checkbox" id="{[{genre}]}" ng-model="genre.checked" ng-change="start_filter(this)">
+				<label for="{[{genre}]}">{[{genre.name}]}</label>
+			</div>
+		</p>
+		<div ng-repeat-end></div>
+	</nav>
 </main>
-<nav style="visibility:hidden">
-	<p>Raiting</p>
-	{% for item in raiting %}
-		{% if item.count %}
-			<input type="checkbox" id="old_limit:{{ item }}" onchange="select_genre(this)">
-			<label for="old_limit:{{ item }}">{{ item.name }}</label><br>
-		{% else %}
-			<input type="checkbox" id="{{ item.name }}" disabled>
-			<label style="color:gray">{{ item.name }}</label><br>
-		{% endif %}
-	{% endfor %}
-	<p>Genres</p>
-	{% for genre in genres %}
-		{% if genre.count %}
-			<input type="checkbox" id="genres:{{ genre.name }}" onchange="select_genre(this)">
-			<label for="genres:{{ genre.name }}">{{ genre.name }}</label><br>
-		{% else %}
-			<input type="checkbox" disabled>
-			<label style="color:gray">{{ genre.name }}</label><br>
-		{% endif %}
-	{% endfor %}
-</nav>
 {% endblock %}
 {% block script %}
 <script>
-	update_checkboxes(url_resolve());
-	
 	defaultApp.controller('ListCtrl', ['$scope', '$http', '$location',
 			function ($scope, $http, $location) {
-				// Отображает боковое меню
-				$scope.show_panel = function () {
-					var panel = document.getElementsByTagName("nav")[0];
-					var main = document.getElementsByTagName("main")[0];
-					if (panel.style.visibility == "hidden") {
-						panel.style.visibility = "visible";
-						panel.className = "active";
-						main.style.width = "80%";
-					} else {
-						panel.style.visibility = "hidden";
-						panel.className = "";
-						main.style.width = "99%";
+				$scope.panel_visibility = false;
+				$scope.active_genres = {};
+				$scope.active_limits = {};
+
+				var limits = $location.absUrl().split('/').slice(5);
+				var lims = [];
+				var genres = [];
+				
+				if (limits.indexOf('old_limit') != -1)
+					lims = limits[limits.indexOf('old_limit') + 1].split(',');
+				if (limits.indexOf('genres') != -1)
+					genres = limits[limits.indexOf('genres') + 1].split(',');
+				
+				for (var i in lims)
+					$scope.active_limits[lims[i]] = true;
+				for (var i in genres)
+					$scope.active_genres[genres[i]] = true;
+
+				var category = $location.absUrl().split('/');
+				category = category[3];
+
+				$http.get('/api/genres/category:' + category).success(function (data) {
+					$scope.genre_groups = data;
+					for (var i in data)
+						for (var j in data[i].genres) {
+							if (genres.indexOf(data[i].genres[j].name) != -1)
+								$scope.genre_groups[i].genres[j].checked = true;
+							else
+								$scope.genre_groups[i].genres[j].checked = false;
+						}
+				});
+
+				$http.get('/api/raitings').success(function (data) {
+					$scope.raiting = data;
+					for (var i in data) {
+						if (lims.indexOf(data[i].name) != -1)
+							$scope.raiting[i].checked = true;
+						else
+							$scope.raiting[i].checked = false;
 					}
+				});
+
+				$scope.start_filter = function (elem) {
+					// По нажатию на флажок - фиксируем активный элемент
+					if (elem.genre)
+						$scope.active_genres[elem.genre.name] = !$scope.active_genres[elem.genre.name];
+
+					if (elem.old_limit)
+						$scope.active_limits[elem.old_limit.name] = !$scope.active_limits[elem.old_limit.name];
+					var next_url = '/filter';
+
+					// Удаляем элемнты, равные false
+					var tmp = Object.keys($scope.active_limits).filter(function (elem) {
+						return $scope.active_limits[elem];
+					});
+					// Если елемнты ещё остались - заносим их в схему url'a
+					if (tmp.length > 0) {
+						next_url += '/old_limit/';
+						for (var i in tmp)
+							next_url += tmp[i] + ',';
+						next_url = next_url.slice(0, next_url.length - 1);
+					}
+					tmp = Object.keys($scope.active_genres).filter(function (elem) {
+						return $scope.active_genres[elem];
+					});
+					if (tmp.length > 0) {
+						next_url += '/genres/';
+						for (var i in tmp)
+							next_url += tmp[i] + ',';
+						next_url = next_url.slice(0, next_url.length - 1);
+					}
+					if (next_url == '/filter')
+						next_url = '';
+					window.location.href = $location.absUrl().split('/').slice(0, 4).join('/') + next_url + '/';
+				}
+
+				var url = $location.absUrl().split('/').slice(3).join('/');
+
+				$http.get('/api/products/category:' + url).success(function (data) {
+					$scope.products = data;
+				});
+
+				$scope.show_panel = function () {
+					$scope.panel_visibility = !$scope.panel_visibility;
+				}
+
+				$scope.add_form = function () {
+					window.location.href = $location.absUrl().split('/').slice(0, 4).join('/') + "/add";
 				}
 			}
 		]);

@@ -1,0 +1,24 @@
+.add_form {
+	position: fixed;
+	background-color: green;
+	top: 3em;
+	left: 2.5em;
+	width: 2em;
+	height: 2em;
+}
+.expand {
+	position: fixed;
+	background-color: green;
+	right: 3em;
+	width: 2em;
+	height: 2em;
+	top: 3em;
+	z-index: 2;
+}
+main > nav {
+	position: absolute;
+	top: 4em;
+	right: 0;
+	width: 10em;
+	background-color: white;
+}

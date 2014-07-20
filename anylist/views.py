@@ -60,9 +60,7 @@ class BasePageMixin(object):
         return context
 
 
-class MainPage(BasePageMixin, ListView):
-
-    ''' Main Page view. Content of main categories '''
+class MainPage(TemplateView):
     model = CategoryGroup
     template_name = 'index.html'
 
@@ -72,11 +70,12 @@ def search(request):
     ''' Простейший поиск по названиям произведений '''
     try:
         if len(request.GET['key']) > 1:
-            result = dict(map(
+            result = list(map(
                 lambda item:
-                (item.title, item.get_absolute_url()),
+                {'name': item.title, 'link': item.get_absolute_url()},
                 Product.objects.filter(Q(title__icontains=request.GET['key']))
             ))
+            print(result)
 
             return HttpResponse(
                 json.dumps(result), content_type='application/json')

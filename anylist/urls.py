@@ -6,7 +6,7 @@ from django.contrib import admin
 import anylist.settings as settings
 
 from anylist.views import *
-from myapp.views import *
+# from myapp.views import *
 
 
 admin.autodiscover()
@@ -31,6 +31,7 @@ urlpatterns = patterns('',
 # WTF ?!?
 #    url(r'^\w+/(?P<pk>\d+)-\w+/remove_from_list$', remove_from_list),
 #    url(r'^\w+/(?P<pk>\d+)-\w+/series/remove_from_list$', remove_from_list),
+    url(r'^(?P<category>\w+)/$', ProductionList.as_view()),
     url(r'^\w+/(?P<pk>\d+)-\w+/status$', status_update),
     url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+/$', ProductDetail.as_view()),
     url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+/edit$', ProductionEdit.as_view()),
@@ -40,9 +41,12 @@ urlpatterns = patterns('',
     url(r'^(?P<category>\w+)/(?P<pk>\d+)-(?P<name>\w+)/heroes/add$', AddHero.as_view()),
     url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+/creators/$', CreatorsListView.as_view()),
     url(r'^(?P<category>\w+)/(?P<pk>\d+)-\w+/creators/add$', AddCreator.as_view()),
-    url(r'^(?P<category>\w+)/$', ProductionList.as_view()),
     url(r'^(?P<category>\w+)/filter/(?P<args>(.+))/?$', ProductionChoiceView.as_view()),
     url(r'^\w+/series/edit$', edit_serie),
+
+    # API
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api/', include('myapp.urls')),
 )
 
 
