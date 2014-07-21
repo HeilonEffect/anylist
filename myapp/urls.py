@@ -1,6 +1,11 @@
 from django.conf.urls import patterns, url
 
-from .views import CategoriesList, ProductList, RaitingList, GenreGroupList
+from .views import (
+	CategoriesList,
+	ProductList,
+	RaitingList,
+	GenreGroupList,
+)
 
 
 urlpatterns = patterns('myapp.views',

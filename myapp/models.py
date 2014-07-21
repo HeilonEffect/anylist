@@ -146,6 +146,8 @@ class Product(models.Model):
         return [item['name'] for item in self.genres.values('name')]
     def _old_limit(self):
         return self.old_limit.name
+    def _category(self):
+        return self.category.name
 
     def get_absolute_url(self):
         title = ''.join(re.split('[ :()-.]', self.title))

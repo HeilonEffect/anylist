@@ -17,3 +17,22 @@ main > form > div {
 	bottom: 0;
 	background-color: rgba(50, 50, 50, .3);
 }
+main > form > div > div {
+	position: inherit;
+	background-color: white;
+	top: 5em;
+	left: 5em;
+	right: 5em;
+	bottom: 2em;
+	column-count: 4;
+	-moz-column-count: 4;
+}
+form div ul {
+	display: inline;
+}
+form div ul li {
+	display: block;
+}
+form pre {
+	font-size: 14px;
+}

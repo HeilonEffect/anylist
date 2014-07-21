@@ -3,16 +3,25 @@
 {% block title %}{{ header }}{% endblock %}
 {% block body %}
 <main ng-controller="AddFormCtrl">
-	<form>
+	<form ng-submit="add_product()">
 		<input type="text" ng-model="product.title">
 		<textarea ng-model="product.description"></textarea>
-		<input type="file" ng-model="product.avatar">
+		
+		<input type="file" ng-model="product.avatar" nv-file-select uploader="uploader">
+		
+		<pre><span ng-repeat="genre in active_genres">{[{genre.name}]} </span></pre>
 		<button ng-click="show_genres()">Add Genres</button>
-		<div ng-show="visibility_genres">
+		<div ng-show="visibility_genres" ng-click="show_genres()">
+			<div ng-click="show_genres()">
 			<ul ng-repeat-start="group in genre_groups">
-				<li ng-repeat="genre in group.genres">{[{genre.name}]}</li>
+				<li ng-repeat="genre in group.genres">
+					<input type="checkbox" id="{[{genre}]}" ng-model="genre.checked" ng-change="select_genre(genre)">
+					<label for="{[{genre}]}">{[{genre.name}]}</label>
+				</li>
 			</ul>
 			<div ng-repeat-end></div>
+			<button ng-click="show_genres()">Close</button>
+			</div>
 		</div>
 		<input type="submit" value="Create">
 	</form>
@@ -20,17 +29,41 @@
 {% endblock %}
 {% block script %}
 <script>
-	defaultApp.controller('AddFormCtrl', function ($scope, $http, $location) {
+	defaultApp.controller('AddFormCtrl', function ($scope, $http, $location, FileUploader) {
+			$scope.uploader = new FileUploader();
+
 			$scope.visibility_genres = false;
+			$scope.active_genres = [];
+
 			var category = window.location.pathname.split('/')[1];
 
 			$scope.show_genres = function () {
 				$scope.visibility_genres = !$scope.visibility_genres;
 			}
 
+			$scope.select_genre = function (genre) {
+				if (genre.checked)
+					$scope.active_genres.push(genre);
+				else
+					$scope.active_genres = $scope.active_genres.filter(function (elem) {
+						return elem.name != genre.name;
+					});
+			}
+
+			$http.get('/api/raitings/').success(function (data) {
+				$scope.raiting = data;
+			});
+
 			$http.get('/api/genres/category:' + category).success(function (data) {
 				$scope.genre_groups = data;
 			});
+
+			$scope.add_product = function () {
+				$scope.uploader.queue[0].alias = "avatar";
+				$scope.uploader.queue[0].formData.push({'title': $scope.product.title})
+				$scope.uploader.queue[0].url = "/api/product/add";
+				$scope.uploader.uploadAll();
+			}
 		}
 	);
 </script>

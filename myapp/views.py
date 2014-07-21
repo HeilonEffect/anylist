@@ -4,7 +4,8 @@ import operator
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseNotAllowed
 
-from rest_framework import generics
+from rest_framework import generics, permissions, status, api_view
+from rest_framework.response import Response
 
 from .models import (
     CategoryGroup,
@@ -21,6 +22,14 @@ from .serializers import (
     GenreGroupSerializer
 )
 
+# Получить список продуктов
+# GET api/products
+# Добавить навый продукт
+# 
+# Получить конкретный продукт:
+# GET api/products/product:<id> or api/products/product:<name>
+# 
+#
 
 class CategoriesList(generics.ListAPIView):
     model = CategoryGroup
@@ -30,6 +39,9 @@ class CategoriesList(generics.ListAPIView):
 class ProductList(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [
+        permissions.AllowAny
+    ]
 
     def get_queryset(self):
         '''
@@ -90,3 +102,36 @@ class GenreGroupList(generics.ListAPIView):
                     return GenreGroup.objects.filter(category=item.group)
         else:
             return GenreGroup.objects.all()
+
+
+@api_view(['GET', 'POST', 'PUT'])
+def products(request):
+    '''
+    GET /api/products - показать все продукты
+    GET /api/products/id:2 - показать продукт с id=2
+    POST /api/products - добавляем новый продукт
+    POST /api/products/id:2 - Http400
+    PUT /api/products - Http400
+    PUT /api/products/id:2 - обновить данные для продукта с id=2
+    '''
+    pass
+
+
+@api_view(['GET'])
+def categories():
+    '''
+    GET /api/categories - показать все категории, объединенные по группам
+    GET /api/categories/id:2 - показать категорию с id=2
+    '''
+    pass
+
+
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
+def user_lists():
+    '''
+    GET /api/user_lists - показать всё, что есть в списке пользователя
+    GET /api/user_lists?status=planned - показать, что пользватель планирует
+    посмотреть/почитать
+    POST /api/user_lists - добавить произведение
+    '''
+    pass

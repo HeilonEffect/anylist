@@ -17,7 +17,7 @@ class ProductSerializer(serializers.ModelSerializer):
 	old_limit = serializers.Field(source='_old_limit')
 	class Meta:
 		model = Product
-		fields = ('title', 'description', 'avatar', 'url', 'genres', 'old_limit',)
+		fields = ('title', 'description', 'avatar', 'url', 'genres', 'old_limit', 'category',)
 
 
 class GenreGroupSerializer(serializers.ModelSerializer):
