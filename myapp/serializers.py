@@ -1,3 +1,5 @@
+from django.contrib.auth.models import User
+
 from rest_framework import serializers
 
 from .models import CategoryGroup, Product, Raiting,  GenreGroup
@@ -11,16 +13,17 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-	avatar = serializers.Field(source='avatar_path')
+	avatar_path = serializers.Field(source='avatar_path', required=False)
 	url = serializers.Field(source='get_absolute_url')
 	genres = serializers.Field(source='_genres')
 	old_limit = serializers.Field(source='_old_limit')
 	class Meta:
 		model = Product
-		fields = ('title', 'description', 'avatar', 'url', 'genres', 'old_limit', 'category',)
+		fields = ('title', 'description', 'avatar', 'url', 'genres', 'old_limit', 'category', 'avatar_path')
 
 
 class GenreGroupSerializer(serializers.ModelSerializer):
+	# genres = serializers.HyperLinkedIdentityField('genres', view_name='genres_list', lookup_field='name')
 	genres = serializers.Field(source='_genres')
 	class Meta:
 		model = GenreGroup
@@ -30,4 +33,10 @@ class GenreGroupSerializer(serializers.ModelSerializer):
 class RaitingSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Raiting
-		fields = ('name',)
+		fields = ('id', 'name',)
+
+
+class UsersSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = User
+		fields = ('username',)

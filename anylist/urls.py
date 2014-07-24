@@ -12,6 +12,7 @@ from anylist.views import *
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    # url(r'^$', start_page),
     url(r'^$', MainPage.as_view()),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^(?P<url>.*)register/$', register),
@@ -27,7 +28,7 @@ urlpatterns = patterns('',
     url(r'^creator/add$', AddCreator.as_view()),
     url(r'^creator/(?P<pk>\d+)-\w+$', CreatorView.as_view()),
     url(r'^hero/(?P<pk>\d+)-\w+/$', HeroView.as_view()),
-    url(r'^(?P<category>\w+)/add$', AddProduct.as_view()),
+    url(r'^(?P<category>\w+)/add/$', AddProduct.as_view()),
 # WTF ?!?
 #    url(r'^\w+/(?P<pk>\d+)-\w+/remove_from_list$', remove_from_list),
 #    url(r'^\w+/(?P<pk>\d+)-\w+/series/remove_from_list$', remove_from_list),

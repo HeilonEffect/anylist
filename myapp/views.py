@@ -1,11 +1,17 @@
 import functools
 import operator
 
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseNotAllowed
 
-from rest_framework import generics, permissions, status, api_view
+from rest_framework import generics, permissions, status
+from rest_framework.authtoken.models import Token
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import (
     CategoryGroup,
@@ -19,17 +25,9 @@ from .serializers import (
     CategorySerializer,
     ProductSerializer,
     RaitingSerializer,
-    GenreGroupSerializer
+    GenreGroupSerializer,
+    UsersSerializer
 )
-
-# Получить список продуктов
-# GET api/products
-# Добавить навый продукт
-# 
-# Получить конкретный продукт:
-# GET api/products/product:<id> or api/products/product:<name>
-# 
-#
 
 class CategoriesList(generics.ListAPIView):
     model = CategoryGroup
@@ -39,9 +37,14 @@ class CategoriesList(generics.ListAPIView):
 class ProductList(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [
-        permissions.AllowAny
-    ]
+    permission_classes = (IsAuthenticated, )
+
+    def post(self, request, *args, **kwargs):
+        serializer = ProductSerializer(data=request.DATA, files=request.FILES)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         '''
@@ -59,6 +62,7 @@ class ProductList(generics.ListCreateAPIView):
                     p = Product.objects.filter(category__name=item.name)
                     
                     if 'args' in self.kwargs:
+                        print('args in self.kwargs')
                         qs = {}
                         tmp = self.kwargs['args'].split('/')
                         tmp = list(filter(lambda item: item, tmp))
@@ -80,6 +84,7 @@ class ProductList(generics.ListCreateAPIView):
                         if tmp:
                             for item in tmp:
                                 p = p.filter(genres__name=item)
+                    print(p.values().last())
                     return p
             return Product.objects.all()
         else:
@@ -104,34 +109,29 @@ class GenreGroupList(generics.ListAPIView):
             return GenreGroup.objects.all()
 
 
-@api_view(['GET', 'POST', 'PUT'])
-def products(request):
-    '''
-    GET /api/products - показать все продукты
-    GET /api/products/id:2 - показать продукт с id=2
-    POST /api/products - добавляем новый продукт
-    POST /api/products/id:2 - Http400
-    PUT /api/products - Http400
-    PUT /api/products/id:2 - обновить данные для продукта с id=2
-    '''
-    pass
+# @api_view(['POST'])
+# def create_product(request):
+#     print(request)
+#     serializer = ProductSerializer(data=request.DATA)
+#     if serializer.is_valid():
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+#     return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+#############################################################
+class Users(APIView):
+    ''' GET /api/users '''
+    permission_classes = (AllowAny,)
+    model = User
+    serializer_class = UsersSerializer
 
 
-@api_view(['GET'])
-def categories():
-    '''
-    GET /api/categories - показать все категории, объединенные по группам
-    GET /api/categories/id:2 - показать категорию с id=2
-    '''
-    pass
-
-
-@api_view(['GET', 'POST', 'PUT', 'DELETE'])
-def user_lists():
-    '''
-    GET /api/user_lists - показать всё, что есть в списке пользователя
-    GET /api/user_lists?status=planned - показать, что пользватель планирует
-    посмотреть/почитать
-    POST /api/user_lists - добавить произведение
-    '''
-    pass
+class User(APIView):
+    authentication_classes = (BasicAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
+    def get(self, request, format=None):
+        content = {
+            'user': str(request.user),
+            'auth': str(request.auth)
+        }
+        return Response(content)

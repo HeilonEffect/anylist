@@ -28,7 +28,7 @@ class CategoryGroup(TemplateModel):
 
     def categories_json(self):
         p = Category.objects.filter(group=self.id).values(
-            'name', 'avatar', 'icon',)
+            'id', 'name', 'avatar', 'icon',)
         for item in p:
             item['avatar'] = '/media/%s' % item['avatar'].split('/')[-1]
             item['icon'] = '/media/%s' % item['icon'].split('/')[-1]
@@ -72,7 +72,7 @@ class GenreGroup(TemplateModel):
     genres = models.ManyToManyField(Genre)
 
     def _genres(self):
-        return self.genres.values('name')
+        return self.genres.values('id', 'name')
 
 
 class AltName(models.Model):

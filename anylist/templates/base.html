@@ -7,8 +7,6 @@
 	<!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>-->
 	<script src="/static/lib/angular-cookies.min.js"></script>
 	<script src="/static/lib/angular-file-upload.min.js"></script>
-	<!--<script src="/static/datetimepicker_css.js"></script>-->
-	<!-- <link rel="stylesheet" href="/static/series/style.css"> -->
 	<link rel="stylesheet" href="/static/css/header.css">
 	<link rel="stylesheet" href="/static/css/main_page.css">
 	<link rel="stylesheet" href="/static/css/list.css">
@@ -48,7 +46,7 @@
 		<nav>
 		<ul ng-repeat="group in category_group">
 			<li ng-repeat="category in group.categories">
-				<a href="{[{category.url}]}">
+				<a href="/{[{category.url}]}">
 					<figure>
 						<img src="{[{category.icon}]}">
 						<figcaption>{[{category.name}]}</figcaption>
