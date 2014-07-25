@@ -13,13 +13,12 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-	avatar_path = serializers.Field(source='avatar_path', required=False)
 	url = serializers.Field(source='get_absolute_url')
-	genres = serializers.Field(source='_genres')
-	old_limit = serializers.Field(source='_old_limit')
+	genres = serializers.Field(source='genres.all')
+	old_limit = serializers.Field(source='old_limit.name')
 	class Meta:
 		model = Product
-		fields = ('title', 'description', 'avatar', 'url', 'genres', 'old_limit', 'category', 'avatar_path')
+		fields = ('title', 'description', 'avatar', 'url', 'old_limit', 'category', 'genres', )
 
 
 class GenreGroupSerializer(serializers.ModelSerializer):

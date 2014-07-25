@@ -1,0 +1,11 @@
+main article img {
+	float: right;
+}
+main article {
+	margin-left: 3em;
+	margin-right: 15em;
+}
+main nav div img {
+	width: 2em;
+	height: 2em;
+}

@@ -2,24 +2,20 @@
 {% block title %}{{ header }}{% endblock %}
 {% block header %}{{ header }}{% endblock %}
 {% block body %}
-	<main>
-		<a href="edit">Edit</a>
-		<article>
-				<img src="{{ object.avatar_path }}">
-				Жанры: {% for genre in object.genres.all %}
-					<a href="/{{ category }}/filter/genres/{{ genre.name }}">{{ genre.name }}</a>
-				{% endfor %}
-			<p>Возраст: <a href="/{{ category }}/filter/old_limit/{{ object.old_limit }}">{{ object.old_limit }}</a></p>
-				<br>
-				{{ object.description|safe }}
-		</article>
-	</main>
-	<nav ng-controller="DetailCtrl">
-		<menu>
-			<h3>About</h3>
-			<a ng-repeat="category in categories" href="{[{category.url}]}">{[{category.title}]}</a>
-		</menu>
-		<div class="base_actions">
+<main ng-controller="DetailCtrl">
+	<a href="edit">Edit</a>
+	<article>
+		<img src="{{ object.avatar_path }}">
+		Genres: <a href="/{[{category}]}/filter/genres/{[{genre}]}" ng-repeat="genre in product.genres">{[{genre}]}, </a>
+		<p>Old raiting: <a href="/{[{category}]}/filter/old_limit/{[{product.old_limit}]}">{[{product.old_limit}]}</a></p>
+		<br>
+		<p>
+		{[{product.description}]}
+		</p>
+		<!-- {{ object.description|safe }} -->
+	</article>
+	<nav>
+		<div>
 			<input type="number">
 			<img src="/static/img/delete.png"><br>
 			<select>
@@ -28,6 +24,7 @@
 			</select>
 		</div>
 	</nav>
+	</main>
 {% endblock %}
 {% block script %}
 	<script>
@@ -35,6 +32,14 @@
 			function ($scope, $http, $location) {
 				$scope.active_status = "{{ is_listed.status.name }}";
 				$scope.statuses = ['Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
+
+				var id = window.location.pathname.split('/')[2].split('-')[0];
+
+				$http.get('/api/products/id:' + id).success(function (data) {
+					$scope.product = data;
+				});
+
+				$scope.category = window.location.pathname.split('/')[1];
 
 				$scope.status_move = function (elem) {
 					$http({

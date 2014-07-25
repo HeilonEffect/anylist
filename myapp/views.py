@@ -84,7 +84,6 @@ class ProductList(generics.ListCreateAPIView):
                         if tmp:
                             for item in tmp:
                                 p = p.filter(genres__name=item)
-                    print(p.values().last())
                     return p
             return Product.objects.all()
         else:
@@ -109,15 +108,11 @@ class GenreGroupList(generics.ListAPIView):
             return GenreGroup.objects.all()
 
 
-# @api_view(['POST'])
-# def create_product(request):
-#     print(request)
-#     serializer = ProductSerializer(data=request.DATA)
-#     if serializer.is_valid():
-#         serializer.save()
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-#     return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
-#############################################################
+class ProductDetail(generics.RetrieveUpdateAPIView):
+    model = Product
+    serializer_class = ProductSerializer
+
+
 class Users(APIView):
     ''' GET /api/users '''
     permission_classes = (AllowAny,)

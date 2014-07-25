@@ -64,7 +64,8 @@ class Category(TemplateModel):
 
 
 class Genre(TemplateModel):
-    pass
+    class Meta:
+        ordering = ('name',)
 
 
 class GenreGroup(TemplateModel):
@@ -144,13 +145,12 @@ class Product(models.Model):
 
     def _genres(self):
         return [item['name'] for item in self.genres.values('name')]
-    def _old_limit(self):
-        return self.old_limit.name
+
     def _category(self):
         return self.category.name
 
     def get_absolute_url(self):
-        title = ''.join(re.split('[ :()-.]', self.title))
+        title = ''.join(re.split('[ :()-.!?]', self.title))
         return '%s%d-%s/' % (self.category.get_absolute_url(), self.id,
                              title)
 

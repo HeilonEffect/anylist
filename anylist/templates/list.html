@@ -3,13 +3,15 @@
 {% block header %}{{ header }}{% endblock %}
 {% block body %}
 <main ng-controller="ListCtrl">
+	{% if user.is_authenticated %}
 	<img src="/static/img/add.svg" class="add_form" ng-click="add_form()">
+	{% endif %}
 	<img src="/static/img/expand.png" class="expand" ng-click="show_panel()">
 	<ul>
 		<li ng-repeat="product in products">
 			<a href="{[{product.url}]}">
 				<figure>
-					<img src="{[{product.avatar_path}]}">
+					<img src="{[{product.avatar}]}">
 					<figcaption>{[{product.title}]}</figcaption>
 				</figure>
 			</a>
@@ -116,6 +118,8 @@
 
 				$http.get('/api/products/category:' + url).success(function (data) {
 					$scope.products = data;
+					for (var i in data)
+						$scope.products[i].avatar = "/media/" + data[i].avatar.split('/').pop();
 				});
 
 				$scope.show_panel = function () {

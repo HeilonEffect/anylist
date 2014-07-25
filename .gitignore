@@ -5,3 +5,6 @@ virt/*
 *.png
 anylist/media/*
 anylist/staticfiles/*
+anylist/static/lib/angular.min.js
+anylist/static/lib/angular-cookies.min.js
+anylist/static/lib/angular-file-upload.min.js
