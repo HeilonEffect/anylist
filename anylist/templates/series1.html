@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% block body %}
+	<main ng-controller="SeriesCtrl">
+		{% if user.is_authenticated %}
+		<h2>Season {[{num_seasons}]}</h2>
+		<form>
+			<input name="number" ng-model="serie1.number" type="number" placeholder="Number">
+			<input name="name" ng-model="serie1.name" type="text" placeholder="Name">
+			<input name="start_date" ng-model="serie1.start_date" type="text" placeholder="Date">
+			<input name="length" ng-model="serie1.length" type="number" placeholder="Length">
+			<button ng-click="add_serie_new_vol(serie1, this)">Add</button>
+		</form>
+		{% endif %}
+		{% comment %}Список сезонов{% endcomment %}
+		<section ng-repeat="season in seasons">
+			<h2>Season {[{season.number}]}</h2>
+			{% if user.is_authenticated %}
+			<form>
+				<input name="number" ng-model="serie.number" type="number" placeholder="Number">
+				<input name="name" ng-model="serie.name" type="text" placeholder="Name">
+				<input name="start_date" ng-model="serie.start_date" type="text" id="demo1" onclick="javascript:NewCssCal('demo1')" placeholder="Date">
+				<input name="length" ng-model="serie.length" type="number" placeholder="Length">
+				<button ng-click="add_serie(serie, this)">Add</button>
+			</form>
+			{% endif %}
+			<table>
+				<thead>
+					<tr>
+						<td ng-repeat="head in tablehead">{[{head}]}</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="serie in season.series">
+						<td>{[{serie.number}]}</td>
+						<td>{[{serie.name}]}</td>
+						<td>{[{serie.start_date}]}</td>
+						<td>{[{serie.length}]}</td>
+						{% if user.is_authenticated %}
+							<td><img src="/static/img/edit.png" ng-click="edit(this)"></td>
+							<td><button class="serie_action" ng-click="add_to(this)">{[{serie.listed}]}</button></td>
+						{% endif %}
+					</tr>
+				</tbody>
+			</table>
+		</section>
+	</main>
+	<nav>
+		<menu>
+			<h3>About</h3>
+			<a ng-repeat="category in categories" href="{[{category.url}]}">{[{category.title}]}</a>
+		</menu>
+	</nav>
+{% endblock %}
+{% block script %}
+<script>
+	defaultApp.controller('SeriesCtrl', ['$scope', '$http', '$location', '$compile', '$element',
+		function ($scope, $http, $location, $compile, $element) {
+			$scope.tablehead = ['Number', 'Name', 'Datetime', 'Length'];
+			// Получаем список серий
+
+			{% autoescape off %}
+				$scope.seasons = {{ series }};
+				$scope.num_seasons = {{ num_season }} + 1;
+			{% endautoescape %}
+			{% if user.is_authenticated %}
+				$scope.tablehead = ['Number', 'Name', 'Datetime', 'Length', 'Edit', 'Add'];
+			{% endif %}
+			
+			// отрисовываем боковое меню
+			var head_url = $location.absUrl().split("/").slice(0, 5).join("/");
+			$scope.categories = [
+				{'title': 'Main', 'url': head_url},
+				{'title': 'Series', 'url': ''},
+				{'title': 'Heroes', 'url': [head_url, 'heroes'].join('/')},
+				{'title': 'Creators', 'url': [head_url, 'creators'].join('/')}
+			];
+			$scope.add_serie_new_vol = function (data, elem) {
+				// Посылаем серию из нового сезона
+				data = "name=" + data['name'] + "&start_date=" + data['start_date'] +
+					"&length=" + data['length'] + "&number=1";
+				data += "&product=" + $location.absUrl().split("/")[4].split("-")[0];
+		 		data += "&num_season=" + elem.num_seasons;
+			 	data = data.replace("undefined", "", "g");
+
+				$http({
+					method: "POST",
+					url: $location.absUrl() + "add",
+					data: data,
+					headers: {
+						'Content-Type': "application/x-www-form-urlencoded"
+					}
+				});
+			}
+
+		$scope.add_serie = function (data, elem) {
+			// посылаем новую серию из существующего сезона
+			var d = data;
+			data = "name=" + data['name'] + "&start_date=" + data['start_date'] +
+				 "&length=" + data['length'] + "&num_season=" + elem.season.number;
+			data = data.replace("undefined", "", "g");
+
+			var number = elem.season.series.length + 1;
+			data += "&number=" + number;
+			data += "&product=" + $location.absUrl().split("/")[4].split("-")[0];
+			
+			$http({
+				method: "POST",
+				url: $location.absUrl() + "add",
+				data: data,
+				headers: {
+					'Content-Type': "application/x-www-form-urlencoded"
+				}
+			}).success(function (data, status, headers, config) {
+				// в случае успешного добавления серии немедленно отображаем её на странице
+				$scope.seasons[elem.season.number - 1].series.unshift(
+					{'number': number, 'name': d['name'], 'start_date': d['start_date'],
+					'length': d['length'], 'listed': 'Add to List'});
+			}).error(function (data, status, headers, config) {
+				// в случае неуспешного недобавления подсвечиваем нужное поле
+				for (var key in data) {
+					var el = document.querySelectorAll('input[name="' + key + '"]')[1];
+					el.style.border = "2px solid red";
+					el.value = data[key];
+				}
+			});
+		}
+
+		$scope.edit = function (elem) {
+			var season = elem.$parent.season.number;
+			var serie = elem.serie.number;
+
+			var len_ser = elem.$parent.season.series.length;
+			var len_seasons = elem.$parent.$parent.seasons.length;
+
+			console.log('num_season: ' + elem.serie.num_season + ' number: ' + elem.serie.number);
+			
+			/*if ($scope.seasons[len_seasons - season].series[len_ser - serie].imgUrl.endsWith("edit.png")) {
+				$scope.seasons[len_seasons - season].series[len_ser - serie].imgUrl = "/static/img/check.png";
+			} else {
+				$scope.seasons[len_seasons - season].series[len_ser - serie].imgUrl = "/static/img/edit.png";
+			}*/
+		}
+
+		$scope.add_to = function (elem) {
+			// Добавляем, либо удаляем серию из списка пользователя
+			var season = elem.$parent.season;
+			var serie = elem.serie;
+			var product = $location.absUrl().split("/")[4].split("-")[0];
+
+			var len_ser = elem.$parent.season.series.length;
+			var len_seasons = elem.$parent.$parent.seasons.length;
+
+			var txt = elem.$$watchers[0].last;
+			var url;
+			if (txt == "Remove from List")
+				url = "/mylist/series/del";
+			else
+				url = "/mylist/series/add";
+			$http({
+				method: "POST",
+				url: url,
+				data: "number="+ serie.number+ "&num_season="+ season.number+ "&product="+ product,
+				headers: {
+					//'Content-Type': 'multipart/form-data'
+					'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+				}
+			}).success(function (data) {
+				if (url.endsWith("add"))
+					$scope.seasons[len_seasons - season.number].series[len_ser - serie.number].listed = "Remove from list";
+				else
+					$scope.seasons[len_seasons - season.number].series[len_ser - serie.number].listed = "Add to List";
+			});
+		}
+
+	}]);
+</script>
+{% endblock %}

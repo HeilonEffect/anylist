@@ -228,26 +228,6 @@ def product_edit(request, category, pk):
     context = {'header': 'Edit %s' % category}
     return render(request, 'forms/add_form.html', context)
 
-# class ProductionEdit(LoginRequiredMixin, BasePageMixin, UpdateView):
-#     template_name = 'forms/add_form.html'
-#     model = Product
-#     form_class = AddProductForm
-
-#     def get_success_url(self):
-#         return '/%s/' % self.kwargs['category']
-
-#     def form_invalid(self, form):
-#         print(form.errors)
-#         return HttpResponse(form.errors)
-
-#     def get_context_data(self, **kwargs):
-#         context = super(ProductionEdit, self).get_context_data(**kwargs)
-
-#         context['header'] = 'Edit %s' % get_category(self)
-#         context['use_genres'] = self.model.objects.get(
-#             id=self.kwargs['pk']).genres.values()
-#         return context
-
 
 @require_http_methods(['POST'])
 @login_required

@@ -161,12 +161,18 @@ class Product(models.Model):
         return self.title
 
 
+class SeriesGroup(models.Model):
+    number = models.PositiveSmallIntegerField(null=True, blank=True)
+    name = models.CharField(max_length=255, blank=True, null=True)
+    frozen = models.BooleanField(default=False)
+
+
 class Serie(models.Model):
-    number = models.PositiveSmallIntegerField()
-    num_season = models.PositiveSmallIntegerField()
+    number = models.PositiveSmallIntegerField(null=True, blank=True)
+    num_season = models.ForeignKey(SeriesGroup, null=True, blank=True)
     name = models.CharField(max_length=255, blank=True, null=True)
     start_date = models.DateTimeField(blank=True, null=True)
-    length = models.PositiveSmallIntegerField()
+    length = models.PositiveSmallIntegerField(blank=True, null=True)
     product = models.ForeignKey(Product)
 
     class Meta:

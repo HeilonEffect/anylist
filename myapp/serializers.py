@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from .models import (
-    CategoryGroup, Product, Raiting,  GenreGroup, UserList, Genre)
+    CategoryGroup, Product, Raiting,  GenreGroup, UserList, Genre, Serie)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -23,9 +23,8 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     url = serializers.Field(source='get_absolute_url')
-    genres = GenreSerializer(many=True)
-    # genres = serializers.RelatedField(many=True)
-    old_limit = serializers.RelatedField()
+    genres = serializers.PrimaryKeyRelatedField(many=True)
+    old_limit = serializers.PrimaryKeyRelatedField()
     series = serializers.IntegerField(source='serie_set.count', read_only=True)
 
     class Meta:
@@ -71,3 +70,9 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('title', 'description', 'avatar', 'category', )
+
+
+class SeriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Serie
+        fields = ('number', 'name', 'num_season', 'start_date', 'length',)

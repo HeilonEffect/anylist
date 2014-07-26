@@ -6,8 +6,8 @@
 	<a href="edit"><img src="/static/img/edit.png" class="edit_product"></a>
 	<article>
 		<img src="{{ object.avatar_path }}">
-		Genres: <a href="/{[{category}]}/filter/genres/{[{genre.name}]}" ng-repeat="genre in product.genres">{[{genre.name}]}, </a>
-		<p>Old raiting: <a href="/{[{category}]}/filter/old_limit/{[{product.old_limit}]}">{[{product.old_limit}]}</a></p>
+		Genres: <a href="/{[{category}]}/filter/genres/{[{genres[genre - 1].name}]}" ng-repeat="genre in product.genres">{[{genres[genre - 1].name}]}, </a>
+		<p>Old raiting: <a href="/{[{category}]}/filter/old_limit/{[{raiting[product.old_limit - 1]}]}">{[{raiting[product.old_limit - 1]}]}</a></p>
 		<br>
 		<p>
 		{[{product.description}]}
@@ -30,45 +30,4 @@
 		</div>
 	</nav>
 	</main>
-{% endblock %}
-{% block script %}
-	<script>
-		defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location',
-			function ($scope, $http, $location) {
-				$scope.statuses = ['Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
-
-				var id = window.location.pathname.split('/')[2].split('-')[0];
-
-				$http.get('/api/products/id:' + id + '/status').success(function (data) {
-					$scope.active_status = data['status'];
-				});
-
-				$http.get('/api/products/id:' + id).success(function (data) {
-					$scope.product = data;
-				});
-
-				$scope.contents = [
-					{'name': 'Description', 'url': ''},
-					{'name': 'Series', 'url': 'series'},
-					{'name': 'Heroes', 'url': 'heroes'},
-					{'name': 'Creators', 'url': 'creators'}
-				];
-
-				$scope.category = window.location.pathname.split('/')[1];
-
-				$scope.status_move = function (elem) {
-					$http({
-						method: "POST",
-						url: $location.absUrl() + "status",
-						data: 'name=' + elem.status,
-						headers: {
-							'Content-Type': 'application/x-www-form-urlencoded'
-						}
-					}).success(function (data) {
-						$scope.active_status = elem.status;
-					});
-				}
-			}
-		]);
-	</script>
 {% endblock %}

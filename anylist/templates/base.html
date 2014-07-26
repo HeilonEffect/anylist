@@ -7,11 +7,13 @@
 	<!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>-->
 	<script src="/static/lib/angular-cookies.min.js"></script>
 	<script src="/static/lib/angular-file-upload.min.js"></script>
+	<script src="/static/js/controllers.js"></script>
 	<link rel="stylesheet" href="/static/css/header.css">
 	<link rel="stylesheet" href="/static/css/main_page.css">
 	<link rel="stylesheet" href="/static/css/list.css">
-	<link rel="stylesheet" type="text/css" href="/static/css/detail.css">
-	<link rel="stylesheet" type="text/css" href="/static/css/forms.css">
+	<link rel="stylesheet" href="/static/css/detail.css">
+	<link rel="stylesheet" href="/static/css/forms.css">
+	<link rel="stylesheet" href="/static/css/series.css">
 	{% block head %}{% endblock %}
 </head>
 <body ng-controller="DefaultCtrl">
@@ -61,73 +63,6 @@
 	</details>
 	{% block body %}
 	{% endblock %}
-	<script>
-		var defaultApp = angular.module('defaultApp', [
-			'angularFileUpload', 'ngCookies'
-		]).run(function ($http, $cookies) {
-			$http.defaults.headers.post['X-CSRFToken'] = '{{ csrf_token }}';
-		});
-
-		defaultApp.config(function ($interpolateProvider) {
-			$interpolateProvider.startSymbol('{[{');
-			$interpolateProvider.endSymbol('}]}');
-		});
-
-		defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location',
-			function ($scope, $http, $location) {
-				$scope.hidden_menu = false;
-				$scope.visibility_form = false;
-				$scope.visibility_user = false;
-				
-				$scope.show_menu = function () {
-					$scope.hidden_menu = !$scope.hidden_menu;
-				}
-
-				$scope.show_user_menu = function () {
-					$scope.visibility_user = !$scope.visibility_user;
-				}
-
-				$http.get('/api/categories/?format=json').success(function (data) {
-					$scope.category_group = data;
-				});
-
-				$scope.auth_me = function () {
-					var url = $location.absUrl()
-					if ($scope.auth['is_reg'])
-						url += 'register/';
-					else
-						url += 'login/';
-					var data = '';
-					for (var key in $scope.auth)
-						data += ("&" + key + '=' + $scope.auth[key]);
-					data = data.replace('undefined', '').slice(1);
-					$http({
-						method: "POST",
-						url: url,
-						data: data,
-						headers: {
-							"Content-Type": "application/x-www-form-urlencoded"
-						}
-					}).success(function (data) {
-						window.location.href = window.location.href;
-					});
-				}
-
-				$scope.logout = function () {
-					window.location.pathname += "logout";
-				}
-
-				$scope.login = function () {
-					$scope.visibility_form = !$scope.visibility_form;
-				}
-				$scope.searcher = function () {
-					$http.get('/search?key=' + $scope.search_data).success(function (data) {
-						$scope.search_result = data;
-					});
-				}
-			}
-		]);
-	</script>
 	{% block script %}
 	{% endblock %}
 </body>

@@ -25,91 +25,10 @@
 			</div>
 		</div>
 		<select>
-			<option ng-repeat="limit in raiting" value="{[{limit.id}]}" ng-click="select_raiting(limit.id)" ng-selected="limit.name==product.old_limit.name">{[{limit.name}]}</option>
+			<option>--> Select limit</option>
+			<option ng-repeat="limit in raiting" value="{[{limit.id}]}" ng-click="select_raiting(limit.id)" ng-selected="limit.name==product.old_limit">{[{limit.name}]}</option>
 		</select>
 		<input type="submit" value="Create" ng-click="add_product()">
 	</form>
 </main>
-{% endblock %}
-{% block script %}
-<script>
-	defaultApp.controller('AddFormCtrl', function ($scope, $http, $location, FileUploader) {
-			$scope.uploader = new FileUploader();
-
-			$scope.visibility_genres = false;
-			$scope.active_genres = [];
-
-			var category = window.location.pathname.split('/')[1];
-
-			// Убрать впоследствии
-			$http.get('/api/categories').success(function (data) {
-				for (var i in data)
-					for (var key in data[i]['categories'])
-						if (data[i]['categories'][key].url == category)
-							$scope.category_id = data[i]['categories'][key].id;
-			});
-
-			$scope.show_genres = function () {
-				$scope.visibility_genres = !$scope.visibility_genres;
-			}
-
-			if (window.location.pathname.split('/').length > 3) {
-				var id = window.location.pathname.split('/')[2].split('-')[0]
-				$http.get('/api/products/id:' + id).success(function (data) {
-					$scope.product = data;
-					var tmp = data.avatar.split('/');
-					$scope.product.avatar = '/media/' + tmp[tmp.length - 1];
-					$scope.active_genres = $scope.product.genres;
-				});
-			}
-
-			$scope.select_genre = function (genre) {
-				if (genre.checked)
-					$scope.active_genres.push(genre);
-				else
-					$scope.active_genres = $scope.active_genres.filter(function (elem) {
-						return elem.name != genre.name;
-					});
-			}
-
-			$scope.select_raiting = function (limit) {
-				if (!$scope.product)
-					$scope.product = {};
-				$scope.product['old_limit'] = limit;
-			}
-
-			$http.get('/api/raitings/').success(function (data) {
-				$scope.raiting = data;
-			});
-
-			$http.get('/api/genres/category:' + category).success(function (data) {
-				$scope.genre_groups = data;
-
-				// $scope.genre_groups = data.map(function (elem) {
-				// 	return elem.genres.map(function (genre) {
-				// 		if ($scope.product.genres.indexOf(genre) != -1) {
-				// 			genre['checked'] = true;
-				// 		}
-				// 		return genre;
-				// 	});
-				// });
-				// console.log($scope.genre_groups);
-			});
-
-			$scope.add_product = function () {
-				if (!$scope.product)
-					$scope.product = {};
-				$scope.product['genres'] = $scope.active_genres.map(function (elem) {
-					return elem.id;
-				});
-				$scope.product['category'] = $scope.category_id;
-				$scope.uploader.queue[0].alias = "avatar";
-				$scope.uploader.queue[0].formData.push($scope.product);
-				$scope.uploader.queue[0].url = "/api/products";
-				console.log($scope.product);
-				$scope.uploader.uploadAll();
-			}
-		}
-	);
-</script>
 {% endblock %}

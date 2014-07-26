@@ -20,7 +20,8 @@ from .models import (
     Genre,
     Raiting,
     GenreGroup,
-    UserList
+    UserList,
+    Serie
 )
 
 from .serializers import (
@@ -29,7 +30,9 @@ from .serializers import (
     RaitingSerializer,
     GenreGroupSerializer,
     UsersSerializer,
-    UserListSerializer
+    UserListSerializer,
+    SeriesSerializer,
+    GenreSerializer
 )
 
 
@@ -144,3 +147,13 @@ class StatusView(generics.GenericAPIView):
             return Response(content)
         else:
             return HTTP_400_BAD_REQUEST()
+
+
+class SeriesView(generics.ListCreateAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = SeriesSerializer
+
+
+class GenreView(generics.ListAPIView):
+    serializer_class = GenreSerializer
+    queryset = Genre.objects.all().order_by('id')
