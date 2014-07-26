@@ -1,9 +1,6 @@
 # -*- encoding: utf-8 -*-
 import json
-import itertools
-import functools
 import logging
-import operator
 import re
 
 from django.contrib.auth import authenticate, login, logout
@@ -12,7 +9,8 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db.models import F, Max, Q
 from django.http import *
-from django.shortcuts import render_to_response, render
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.views.generic import ListView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
@@ -60,9 +58,8 @@ class BasePageMixin(object):
         return context
 
 
-class MainPage(TemplateView):
-    model = CategoryGroup
-    template_name = 'index.html'
+def main_page(request):
+    return render(request, 'index.html')
 
 
 @require_http_methods(['GET'])
@@ -188,33 +185,9 @@ class MyList(BasePageMixin, LoginRequiredMixin, ListView):
         return queryset
 
 
-class ProductionList(BasePageMixin, ListView):
-
-    '''
-    List of multimedia product of selected category
-    (anime, sci-fi, detective romans, etc.)
-    '''
-    template_name = 'list.html'
-
-    def get_queryset(self):
-        category = self.kwargs['category']
-        for item in Category.objects.all():
-            if item.get_absolute_url()[1:-1] == category:
-                category = item
-        return Product.objects.filter(category=category)
-
-    def get_context_data(self, **kwargs):
-        context = super(ProductionList, self).get_context_data(**kwargs)
-        context['header'] = 'List of %s' % self.kwargs['category']
-        for product in context['object_list']:
-            genres = product.genres.all()
-            for genre in context['genres']:
-                if genre in genres:
-                    genre.count += 1
-            for limit in context['raiting']:
-                if limit == product.old_limit:
-                    limit.count += 1
-        return context
+def product_list(request, category):
+    context = {'category': category, 'header': 'List of %s' % category}
+    return render(request, 'list.html', context)
 
 
 @require_http_methods(['POST'])
@@ -238,13 +211,6 @@ def status_update(request, pk):
         return HttpResponseServerError()
 
 
-# @require_http_methods(['POST'])
-# @login_required
-# def remove_from_list(request, pk):
-#     UserList.objects.filter(user=request.user, product__id=pk).delete()
-#     return HttpResponse()
-
-
 class ProductDetail(BasePageMixin, DetailView):
 
     ''' Web page for a single product '''
@@ -254,36 +220,33 @@ class ProductDetail(BasePageMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(ProductDetail, self).get_context_data(**kwargs)
         context['header'] = context['object'].title
-        context['category'] = self.kwargs['category']
-        context['statuses'] = Status.objects.all()
-        try:
-            context['is_listed'] = UserList.objects.get(
-                user=self.request.user.id,
-                product__title=context['object'].title)
-        except Exception as e:
-            pass
         return context
 
 
-class ProductionEdit(LoginRequiredMixin, BasePageMixin, UpdateView):
-    template_name = 'forms/edit_form.html'
-    model = Product
-    form_class = AddProductForm
+@login_required
+def product_edit(request, category, pk):
+    context = {'header': 'Edit %s' % category}
+    return render(request, 'forms/add_form.html', context)
 
-    def get_success_url(self):
-        return '/%s/' % self.kwargs['category']
+# class ProductionEdit(LoginRequiredMixin, BasePageMixin, UpdateView):
+#     template_name = 'forms/add_form.html'
+#     model = Product
+#     form_class = AddProductForm
 
-    def form_invalid(self, form):
-        print(form.errors)
-        return HttpResponse(form.errors)
+#     def get_success_url(self):
+#         return '/%s/' % self.kwargs['category']
 
-    def get_context_data(self, **kwargs):
-        context = super(ProductionEdit, self).get_context_data(**kwargs)
+#     def form_invalid(self, form):
+#         print(form.errors)
+#         return HttpResponse(form.errors)
 
-        context['header'] = 'Edit %s' % get_category(self)
-        context['use_genres'] = self.model.objects.get(
-            id=self.kwargs['pk']).genres.values()
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super(ProductionEdit, self).get_context_data(**kwargs)
+
+#         context['header'] = 'Edit %s' % get_category(self)
+#         context['use_genres'] = self.model.objects.get(
+#             id=self.kwargs['pk']).genres.values()
+#         return context
 
 
 @require_http_methods(['POST'])
@@ -317,9 +280,10 @@ def edit_serie(request):
     result = json.dumps([item for item in form.errors.keys()])
     return HttpResponse(result)
 
-
+@csrf_exempt
 @require_http_methods(['POST', 'GET'])
 def auth1(request, url):
+    print(request.POST)
     url = "/%s" % url
     username = request.POST['username']
     password = request.POST['password']
@@ -348,6 +312,7 @@ def register(request, url):
         return HttpResponseRedirect('/%s' % url)
 
 
+@csrf_exempt
 @require_http_methods(['POST', 'GET'])
 def auth(request, url):
     try:
@@ -374,27 +339,9 @@ def log_out(request, url):
     return HttpResponseRedirect('/' + url)
 
 
-class AddProduct(LoginRequiredMixin, BasePageMixin, CreateView):
-
-    ''' Creating and Pubishing new product by form data '''
-    template_name = 'forms/add_form.html'
-    model = Product
-    form_class = AddProductForm
-    raise_exception = True
-
-    def form_invalid(self, form):
-        print(form.errors)
-        return HttpResponse(form.errors)
-
-    def get_context_data(self, **kwargs):
-        context = super(AddProduct, self).get_context_data(**kwargs)
-
-        context['category'] = self.kwargs['category']
-        for item in Category.objects.all():
-            if item.get_absolute_url() == context['category']:
-                context['category_id'] = item.id
-                context['header'] = 'Add new %s' % category
-        return context
+def add_product(request, category):
+    context = {'category': category, 'header': 'Add new %s' % category}
+    return render(request, 'forms/add_form.html', context)
 
 
 class SerieView(BasePageMixin, ListView):
@@ -438,42 +385,6 @@ class SerieView(BasePageMixin, ListView):
         p = Serie.objects.filter(product__id=self.kwargs['pk'])
 
         context['series'], context['num_season'] = self.series_serialize()
-        return context
-
-
-class ProductionChoiceView(ProductionList):
-    template_name = 'list.html'
-    model = Product
-
-    def get_queryset(self):
-        qs = {}
-        tmp = self.kwargs['args'].split('/')
-
-        tmp = list(filter(lambda item: item, tmp))
-
-        qs = dict(zip(tmp[::2], [item.split(',') for item in tmp[1::2]]))
-
-        tmp = qs.get('old_limit')
-        q = []
-        f = lambda item: Q(old_limit__name=item)
-        if tmp:
-            q = functools.reduce(operator.or_, map(f, tmp))
-
-        category = get_category(self)
-        if isinstance(q, list):
-            q = self.model.objects.filter(category__name=category)
-        else:
-            q = self.model.objects.filter(category__name=category).filter(q)
-
-        tmp = qs.get('genres')
-        if tmp:
-            for item in tmp:
-                q = q.filter(genres__name=item)
-        return q
-
-    def get_context_data(self, **kwargs):
-        context = super(ProductionChoiceView, self).get_context_data(**kwargs)
-        context['header'] = 'Selection of %s' % get_category(self)
         return context
 
 

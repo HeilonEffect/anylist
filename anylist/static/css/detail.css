@@ -5,7 +5,35 @@ main article {
 	margin-left: 3em;
 	margin-right: 15em;
 }
-main nav div img {
+.detail div img {
+	width: 2em;
+	float: right;
+	height: 2em;
+}
+.detail div {
+	margin-bottom: 2em;
+}
+.detail div p {
+	border: .05px solid rgba(0, 0, 0, .3);
+	padding: .75em;
+	margin: 0;
+	text-indent: 1em;
+}
+.detail div > p {
+	font-size: 24px;
+	font-weight: bold;
+	background-color: #BDC3C7;
+}
+.detail {
+	margin-right: 2em;
+	margin-top: 1em;
+	padding: 0;
+}
+.edit_product {
 	width: 2em;
 	height: 2em;
+	position: fixed;
+	top: 3em;
+	right: 4em;
+	background-color: green;
 }

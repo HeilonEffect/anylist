@@ -24,14 +24,15 @@
 					<p ng-repeat="item in search_result"><a href="{[{item.link}]}">{[{item.name}]}</a></p>
 				</nav>
 			</div>
+			<img src="/static/img/show_main_menu.png" ng-click="show_menu()">
 			{% if user.is_authenticated %}
-				<a href="/profile">{{ user.username }}</a>
-				<button ng-click="logout()">Log Out</button>
+				<span ng-click="show_user_menu()">{{ user.username }}</span>
+				<!-- <a href="/profile">{{ user.username }}</a> -->
+				<!-- <button ng-click="logout()">Log Out</button> -->
 			{% else %}
 				<button ng-click="login()">Log In</button>
 			{% endif %}
 		</menu>
-		<img src="/static/img/show_main_menu.png" ng-click="show_menu()">
 		<h1>{% block header %}Header{% endblock %}</h1>
 			<form ng-submit="auth_me()" ng-show="visibility_form" ng-click="login()">
 				<div ng-click="login()">
@@ -76,9 +77,14 @@
 			function ($scope, $http, $location) {
 				$scope.hidden_menu = false;
 				$scope.visibility_form = false;
+				$scope.visibility_user = false;
 				
 				$scope.show_menu = function () {
 					$scope.hidden_menu = !$scope.hidden_menu;
+				}
+
+				$scope.show_user_menu = function () {
+					$scope.visibility_user = !$scope.visibility_user;
 				}
 
 				$http.get('/api/categories/?format=json').success(function (data) {

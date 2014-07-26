@@ -2,25 +2,30 @@
 {% block title %}{{ header }}{% endblock %}
 {% block header %}{{ header }}{% endblock %}
 {% block body %}
-<main ng-controller="DetailCtrl">
-	<a href="edit">Edit</a>
+<main ng-controller="DetailCtrl" class="description">
+	<a href="edit"><img src="/static/img/edit.png" class="edit_product"></a>
 	<article>
 		<img src="{{ object.avatar_path }}">
-		Genres: <a href="/{[{category}]}/filter/genres/{[{genre}]}" ng-repeat="genre in product.genres">{[{genre}]}, </a>
+		Genres: <a href="/{[{category}]}/filter/genres/{[{genre.name}]}" ng-repeat="genre in product.genres">{[{genre.name}]}, </a>
 		<p>Old raiting: <a href="/{[{category}]}/filter/old_limit/{[{product.old_limit}]}">{[{product.old_limit}]}</a></p>
 		<br>
 		<p>
 		{[{product.description}]}
 		</p>
-		<!-- {{ object.description|safe }} -->
 	</article>
-	<nav>
+	<nav class="detail">
 		<div>
-			<input type="number">
-			<img src="/static/img/delete.png"><br>
+			<p>About</p>
+			<a ng-repeat="content in contents" href="{[{content.url}]}">
+				<p>{[{content.name}]}</p>
+			</a>
+		</div>
+		<div>
+			<input type="number"><span>/{[{product.series}]}</span>
+			<!-- <img src="/static/img/delete.png"><br> -->
 			<select>
 				<option>--> Add To List</option>
-				<option ng-click="status_move(this)" ng-repeat="status in statuses" ng-selected="{[{status == active_status }]}">{[{status}]}</option>
+				<option ng-click="status_move(this)" ng-repeat="status in statuses" ng-selected="status==active_status">{[{status}]}</option>
 			</select>
 		</div>
 	</nav>
@@ -30,14 +35,24 @@
 	<script>
 		defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location',
 			function ($scope, $http, $location) {
-				$scope.active_status = "{{ is_listed.status.name }}";
 				$scope.statuses = ['Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
 
 				var id = window.location.pathname.split('/')[2].split('-')[0];
 
+				$http.get('/api/products/id:' + id + '/status').success(function (data) {
+					$scope.active_status = data['status'];
+				});
+
 				$http.get('/api/products/id:' + id).success(function (data) {
 					$scope.product = data;
 				});
+
+				$scope.contents = [
+					{'name': 'Description', 'url': ''},
+					{'name': 'Series', 'url': 'series'},
+					{'name': 'Heroes', 'url': 'heroes'},
+					{'name': 'Creators', 'url': 'creators'}
+				];
 
 				$scope.category = window.location.pathname.split('/')[1];
 

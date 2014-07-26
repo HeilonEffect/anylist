@@ -19,15 +19,19 @@ from .models import (
     Category,
     Genre,
     Raiting,
-    GenreGroup)
+    GenreGroup,
+    UserList
+)
 
 from .serializers import (
     CategorySerializer,
     ProductSerializer,
     RaitingSerializer,
     GenreGroupSerializer,
-    UsersSerializer
+    UsersSerializer,
+    UserListSerializer
 )
+
 
 class CategoriesList(generics.ListAPIView):
     model = CategoryGroup
@@ -41,9 +45,11 @@ class ProductList(generics.ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         serializer = ProductSerializer(data=request.DATA, files=request.FILES)
+        print(request.DATA)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
@@ -60,7 +66,7 @@ class ProductList(generics.ListCreateAPIView):
             for item in Category.objects.all():
                 if item.get_absolute_url()[1:-1] == self.kwargs['name']:
                     p = Product.objects.filter(category__name=item.name)
-                    
+
                     if 'args' in self.kwargs:
                         print('args in self.kwargs')
                         qs = {}
@@ -113,20 +119,28 @@ class ProductDetail(generics.RetrieveUpdateAPIView):
     serializer_class = ProductSerializer
 
 
-class Users(APIView):
-    ''' GET /api/users '''
-    permission_classes = (AllowAny,)
-    model = User
-    serializer_class = UsersSerializer
-
-
 class User(APIView):
     authentication_classes = (BasicAuthentication,)
     permission_classes = (IsAuthenticated,)
-    
+
     def get(self, request, format=None):
         content = {
             'user': str(request.user),
             'auth': str(request.auth)
         }
         return Response(content)
+
+
+class StatusView(generics.GenericAPIView):
+    authentication_classes = (BasicAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    serializer_class = (UsersSerializer,)
+
+    def get(self, request, pk):
+        p = UserList.objects.filter(user=request.user,
+                                    product__id=pk).first()
+        if p:
+            content = { 'status': p.status.name}
+            return Response(content)
+        else:
+            return HTTP_400_BAD_REQUEST()

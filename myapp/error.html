@@ -1,0 +1,2359 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="robots" content="NONE,NOARCHIVE">
+  <title>TypeError at /api/products/id:1/status</title>
+  <style type="text/css">
+    html * { padding:0; margin:0; }
+    body * { padding:10px 20px; }
+    body * * { padding:0; }
+    body { font:small sans-serif; }
+    body>div { border-bottom:1px solid #ddd; }
+    h1 { font-weight:normal; }
+    h2 { margin-bottom:.8em; }
+    h2 span { font-size:80%; color:#666; font-weight:normal; }
+    h3 { margin:1em 0 .5em 0; }
+    h4 { margin:0 0 .5em 0; font-weight: normal; }
+    code, pre { font-size: 100%; white-space: pre-wrap; }
+    table { border:1px solid #ccc; border-collapse: collapse; width:100%; background:white; }
+    tbody td, tbody th { vertical-align:top; padding:2px 3px; }
+    thead th { padding:1px 6px 1px 3px; background:#fefefe; text-align:left; font-weight:normal; font-size:11px; border:1px solid #ddd; }
+    tbody th { width:12em; text-align:right; color:#666; padding-right:.5em; }
+    table.vars { margin:5px 0 2px 40px; }
+    table.vars td, table.req td { font-family:monospace; }
+    table td.code { width:100%; }
+    table td.code pre { overflow:hidden; }
+    table.source th { color:#666; }
+    table.source td { font-family:monospace; white-space:pre; border-bottom:1px solid #eee; }
+    ul.traceback { list-style-type:none; color: #222; }
+    ul.traceback li.frame { padding-bottom:1em; color:#666; }
+    ul.traceback li.user { background-color:#e0e0e0; color:#000 }
+    div.context { padding:10px 0; overflow:hidden; }
+    div.context ol { padding-left:30px; margin:0 10px; list-style-position: inside; }
+    div.context ol li { font-family:monospace; white-space:pre; color:#777; cursor:pointer; }
+    div.context ol li pre { display:inline; }
+    div.context ol.context-line li { color:#505050; background-color:#dfdfdf; }
+    div.context ol.context-line li span { position:absolute; right:32px; }
+    .user div.context ol.context-line li { background-color:#bbb; color:#000; }
+    .user div.context ol li { color:#666; }
+    div.commands { margin-left: 40px; }
+    div.commands a { color:#555; text-decoration:none; }
+    .user div.commands a { color: black; }
+    #summary { background: #ffc; }
+    #summary h2 { font-weight: normal; color: #666; }
+    #explanation { background:#eee; }
+    #template, #template-not-exist { background:#f6f6f6; }
+    #template-not-exist ul { margin: 0 0 0 20px; }
+    #unicode-hint { background:#eee; }
+    #traceback { background:#eee; }
+    #requestinfo { background:#f6f6f6; padding-left:120px; }
+    #summary table { border:none; background:transparent; }
+    #requestinfo h2, #requestinfo h3 { position:relative; margin-left:-100px; }
+    #requestinfo h3 { margin-bottom:-1em; }
+    .error { background: #ffc; }
+    .specific { color:#cc3300; font-weight:bold; }
+    h2 span.commands { font-size:.7em;}
+    span.commands a:link {color:#5E5694;}
+    pre.exception_value { font-family: sans-serif; color: #666; font-size: 1.5em; margin: 10px 0 10px 0; }
+  </style>
+  
+  <script type="text/javascript">
+  //<!--
+    function getElementsByClassName(oElm, strTagName, strClassName){
+        // Written by Jonathan Snook, http://www.snook.ca/jon; Add-ons by Robert Nyman, http://www.robertnyman.com
+        var arrElements = (strTagName == "*" && document.all)? document.all :
+        oElm.getElementsByTagName(strTagName);
+        var arrReturnElements = new Array();
+        strClassName = strClassName.replace(/\-/g, "\-");
+        var oRegExp = new RegExp("(^|\s)" + strClassName + "(\s|$)");
+        var oElement;
+        for(var i=0; i<arrElements.length; i++){
+            oElement = arrElements[i];
+            if(oRegExp.test(oElement.className)){
+                arrReturnElements.push(oElement);
+            }
+        }
+        return (arrReturnElements)
+    }
+    function hideAll(elems) {
+      for (var e = 0; e < elems.length; e++) {
+        elems[e].style.display = 'none';
+      }
+    }
+    window.onload = function() {
+      hideAll(getElementsByClassName(document, 'table', 'vars'));
+      hideAll(getElementsByClassName(document, 'ol', 'pre-context'));
+      hideAll(getElementsByClassName(document, 'ol', 'post-context'));
+      hideAll(getElementsByClassName(document, 'div', 'pastebin'));
+    }
+    function toggle() {
+      for (var i = 0; i < arguments.length; i++) {
+        var e = document.getElementById(arguments[i]);
+        if (e) {
+          e.style.display = e.style.display == 'none' ? 'block' : 'none';
+        }
+      }
+      return false;
+    }
+    function varToggle(link, id) {
+      toggle('v' + id);
+      var s = link.getElementsByTagName('span')[0];
+      var uarr = String.fromCharCode(0x25b6);
+      var darr = String.fromCharCode(0x25bc);
+      s.innerHTML = s.innerHTML == uarr ? darr : uarr;
+      return false;
+    }
+    function switchPastebinFriendly(link) {
+      s1 = "Switch to copy-and-paste view";
+      s2 = "Switch back to interactive view";
+      link.innerHTML = link.innerHTML == s1 ? s2 : s1;
+      toggle('browserTraceback', 'pastebinTraceback');
+      return false;
+    }
+    //-->
+  </script>
+  
+</head>
+<body>
+<div id="summary">
+  <h1>TypeError at /api/products/id:1/status</h1>
+  <pre class="exception_value">&lt;Status: ReWatching&gt; is not JSON serializable</pre>
+  <table class="meta">
+
+    <tr>
+      <th>Request Method:</th>
+      <td>GET</td>
+    </tr>
+    <tr>
+      <th>Request URL:</th>
+      <td>http://localhost:8000/api/products/id:1/status</td>
+    </tr>
+
+    <tr>
+      <th>Django Version:</th>
+      <td>1.6.5</td>
+    </tr>
+
+    <tr>
+      <th>Exception Type:</th>
+      <td>TypeError</td>
+    </tr>
+
+
+    <tr>
+      <th>Exception Value:</th>
+      <td><pre>&lt;Status: ReWatching&gt; is not JSON serializable</pre></td>
+    </tr>
+
+
+    <tr>
+      <th>Exception Location:</th>
+      <td>/usr/lib/python3.4/json/encoder.py in default, line 173</td>
+    </tr>
+
+    <tr>
+      <th>Python Executable:</th>
+      <td>/home/ctulhu/anylist/virt/bin/python</td>
+    </tr>
+    <tr>
+      <th>Python Version:</th>
+      <td>3.4.0</td>
+    </tr>
+    <tr>
+      <th>Python Path:</th>
+      <td><pre>[&#39;/home/ctulhu/anylist&#39;,
+ &#39;/home/ctulhu/anylist/virt/lib/python3.4&#39;,
+ &#39;/home/ctulhu/anylist/virt/lib/python3.4/plat-x86_64-linux-gnu&#39;,
+ &#39;/home/ctulhu/anylist/virt/lib/python3.4/lib-dynload&#39;,
+ &#39;/usr/lib/python3.4&#39;,
+ &#39;/usr/lib/python3.4/plat-x86_64-linux-gnu&#39;,
+ &#39;/home/ctulhu/anylist/virt/lib/python3.4/site-packages&#39;]</pre></td>
+    </tr>
+    <tr>
+      <th>Server time:</th>
+      <td>Sat, 26 Jul 2014 00:28:11 +0000</td>
+    </tr>
+  </table>
+</div>
+
+
+
+
+<div id="traceback">
+  <h2>Traceback <span class="commands"><a href="#" onclick="return switchPastebinFriendly(this);">Switch to copy-and-paste view</a></span></h2>
+  
+  <div id="browserTraceback">
+    <ul class="traceback">
+      
+        <li class="frame django">
+          <code>/home/ctulhu/anylist/virt/lib/python3.4/site-packages/django/core/handlers/base.py</code> in <code>get_response</code>
+
+          
+            <div class="context" id="c140255475368456">
+              
+                <ol start="130" class="pre-context" id="pre140255475368456"><li onclick="toggle('pre140255475368456', 'post140255475368456')"><pre>                raise ValueError(&quot;The view %s.%s didn&#39;t return an HttpResponse object.&quot; % (callback.__module__, view_name))</pre></li><li onclick="toggle('pre140255475368456', 'post140255475368456')"><pre></pre></li><li onclick="toggle('pre140255475368456', 'post140255475368456')"><pre>            # If the response supports deferred rendering, apply template</pre></li><li onclick="toggle('pre140255475368456', 'post140255475368456')"><pre>            # response middleware and then render the response</pre></li><li onclick="toggle('pre140255475368456', 'post140255475368456')"><pre>            if hasattr(response, &#39;render&#39;) and callable(response.render):</pre></li><li onclick="toggle('pre140255475368456', 'post140255475368456')"><pre>                for middleware_method in self._template_response_middleware:</pre></li><li onclick="toggle('pre140255475368456', 'post140255475368456')"><pre>                    response = middleware_method(request, response)</pre></li></ol>
+              
+              <ol start="137" class="context-line"><li onclick="toggle('pre140255475368456', 'post140255475368456')"><pre>                response = response.render()</pre> <span>...</span></li></ol>
+              
+                <ol start='138' class="post-context" id="post140255475368456"><li onclick="toggle('pre140255475368456', 'post140255475368456')"><pre></pre></li><li onclick="toggle('pre140255475368456', 'post140255475368456')"><pre>        except http.Http404 as e:</pre></li><li onclick="toggle('pre140255475368456', 'post140255475368456')"><pre>            logger.warning(&#39;Not Found: %s&#39;, request.path,</pre></li><li onclick="toggle('pre140255475368456', 'post140255475368456')"><pre>                        extra={</pre></li><li onclick="toggle('pre140255475368456', 'post140255475368456')"><pre>                            &#39;status_code&#39;: 404,</pre></li><li onclick="toggle('pre140255475368456', 'post140255475368456')"><pre>                            &#39;request&#39;: request</pre></li></ol>
+              
+            </div>
+          
+
+          
+            <div class="commands">
+                
+                    <a href="#" onclick="return varToggle(this, '140255475368456')"><span>&#x25b6;</span> Local vars</a>
+                
+            </div>
+            <table class="vars" id="v140255475368456">
+              <thead>
+                <tr>
+                  <th>Variable</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td>middleware_method</td>
+                    <td class="code"><pre>&lt;bound method CsrfViewMiddleware.process_view of &lt;django.middleware.csrf.CsrfViewMiddleware object at 0x7f8fc39c1ac8&gt;&gt;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>resolver</td>
+                    <td class="code"><pre>&lt;RegexURLResolver &#39;anylist.urls&#39; (None:None) ^/&gt;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>callback_kwargs</td>
+                    <td class="code"><pre>{&#39;pk&#39;: &#39;1&#39;}</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>urlconf</td>
+                    <td class="code"><pre>&#39;anylist.urls&#39;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>callback_args</td>
+                    <td class="code"><pre>()</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>response</td>
+                    <td class="code"><pre>&lt;rest_framework.response.Response object at 0x7f8fc5700e48&gt;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>self</td>
+                    <td class="code"><pre>&lt;django.core.handlers.wsgi.WSGIHandler object at 0x7f8fc39589e8&gt;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>resolver_match</td>
+                    <td class="code"><pre>ResolverMatch(func=&lt;function StatusView at 0x7f8fbdafb048&gt;, args=(), kwargs={&#39;pk&#39;: &#39;1&#39;}, url_name=&#39;myapp.views.StatusView&#39;, app_name=&#39;None&#39;, namespace=&#39;&#39;)</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>wrapped_callback</td>
+                    <td class="code"><pre>&lt;function StatusView at 0x7f8fbdafb048&gt;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>callback</td>
+                    <td class="code"><pre>&lt;function StatusView at 0x7f8fbdafb048&gt;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>request</td>
+                    <td class="code"><pre>&#39;&lt;WSGIRequest\n&#39;
+&#39;path:/api/products/id:1/status,\n&#39;
+&#39;GET:&lt;QueryDict: {}&gt;,\n&#39;
+&#39;POST:&lt;QueryDict: {}&gt;,\n&#39;
+&quot;COOKIES:{&#39;csrftoken&#39;: &#39;AcjoDQlO5Z1TaLmK4l2cSP2GOJIe5ktq&#39;,\n&quot;
+&quot; &#39;sessionid&#39;: &#39;vccxup15k5bmlkix9clj9tfvkbqdl9re&#39;},\n&quot;
+&quot;META:{&#39;CLUTTER_IM_MODULE&#39;: &#39;xim&#39;,\n&quot;
+&quot; &#39;COLORTERM&#39;: &#39;gnome-terminal&#39;,\n&quot;
+&quot; &#39;COMPIZ_BIN_PATH&#39;: &#39;/usr/bin/&#39;,\n&quot;
+&quot; &#39;COMPIZ_CONFIG_PROFILE&#39;: &#39;ubuntu&#39;,\n&quot;
+&#39; \&#39;COMP_WORDBREAKS\&#39;: \&#39; \\t\\n&quot;\\\&#39;&gt;&lt;;|&amp;(:\&#39;,\n&#39;
+&quot; &#39;CONTENT_LENGTH&#39;: &#39;&#39;,\n&quot;
+&quot; &#39;CONTENT_TYPE&#39;: &#39;text/plain&#39;,\n&quot;
+&quot; &#39;CSRF_COOKIE&#39;: &#39;AcjoDQlO5Z1TaLmK4l2cSP2GOJIe5ktq&#39;,\n&quot;
+&quot; &#39;DBUS_SESSION_BUS_ADDRESS&#39;: &#39;unix:abstract=/tmp/dbus-LagldBjfv8&#39;,\n&quot;
+&quot; &#39;DEFAULTS_PATH&#39;: &#39;/usr/share/gconf/ubuntu.default.path&#39;,\n&quot;
+&quot; &#39;DESKTOP_SESSION&#39;: &#39;ubuntu&#39;,\n&quot;
+&quot; &#39;DISPLAY&#39;: &#39;:0&#39;,\n&quot;
+&quot; &#39;DJANGO_SETTINGS_MODULE&#39;: &#39;anylist.settings&#39;,\n&quot;
+&quot; &#39;GATEWAY_INTERFACE&#39;: &#39;CGI/1.1&#39;,\n&quot;
+&quot; &#39;GDMSESSION&#39;: &#39;ubuntu&#39;,\n&quot;
+&quot; &#39;GDM_LANG&#39;: &#39;ru&#39;,\n&quot;
+&quot; &#39;GNOME_DESKTOP_SESSION_ID&#39;: &#39;this-is-deprecated&#39;,\n&quot;
+&quot; &#39;GNOME_KEYRING_CONTROL&#39;: &#39;/run/user/1000/keyring-lf0Gdn&#39;,\n&quot;
+&quot; &#39;GNOME_KEYRING_PID&#39;: &#39;2023&#39;,\n&quot;
+&quot; &#39;GPG_AGENT_INFO&#39;: &#39;/run/user/1000/keyring-lf0Gdn/gpg:0:1&#39;,\n&quot;
+&quot; &#39;GTK_IM_MODULE&#39;: &#39;ibus&#39;,\n&quot;
+&quot; &#39;GTK_MODULES&#39;: &#39;overlay-scrollbar:unity-gtk-module&#39;,\n&quot;
+&quot; &#39;HOME&#39;: &#39;/home/ctulhu&#39;,\n&quot;
+&quot; &#39;HTTP_ACCEPT&#39;: &#39;application/json, text/plain, */*&#39;,\n&quot;
+&quot; &#39;HTTP_ACCEPT_ENCODING&#39;: &#39;gzip, deflate&#39;,\n&quot;
+&quot; &#39;HTTP_ACCEPT_LANGUAGE&#39;: &#39;ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3&#39;,\n&quot;
+&quot; &#39;HTTP_AUTHORIZATION&#39;: &#39;Basic Y3R1bGh1OlNob2NraU5n&#39;,\n&quot;
+&quot; &#39;HTTP_CACHE_CONTROL&#39;: &#39;max-age=0&#39;,\n&quot;
+&quot; &#39;HTTP_CONNECTION&#39;: &#39;keep-alive&#39;,\n&quot;
+&quot; &#39;HTTP_COOKIE&#39;: &#39;csrftoken=AcjoDQlO5Z1TaLmK4l2cSP2GOJIe5ktq; &#39;\n&quot;
+&quot;                &#39;sessionid=vccxup15k5bmlkix9clj9tfvkbqdl9re&#39;,\n&quot;
+&quot; &#39;HTTP_DNT&#39;: &#39;1&#39;,\n&quot;
+&quot; &#39;HTTP_HOST&#39;: &#39;localhost:8000&#39;,\n&quot;
+&quot; &#39;HTTP_REFERER&#39;: &#39;http://localhost:8000/anime/1-MahoukaKoukounoRettousei/&#39;,\n&quot;
+&quot; &#39;HTTP_USER_AGENT&#39;: &#39;Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:31.0) &#39;\n&quot;
+&quot;                    &#39;Gecko/20100101 Firefox/31.0&#39;,\n&quot;
+&quot; &#39;IM_CONFIG_PHASE&#39;: &#39;1&#39;,\n&quot;
+&quot; &#39;INSTANCE&#39;: &#39;&#39;,\n&quot;
+&quot; &#39;JOB&#39;: &#39;dbus&#39;,\n&quot;
+&quot; &#39;LANG&#39;: &#39;ru_RU.UTF-8&#39;,\n&quot;
+&quot; &#39;LANGUAGE&#39;: &#39;ru&#39;,\n&quot;
+&quot; &#39;LESSCLOSE&#39;: &#39;/usr/bin/lesspipe %s %s&#39;,\n&quot;
+&quot; &#39;LESSOPEN&#39;: &#39;| /usr/bin/lesspipe %s&#39;,\n&quot;
+&quot; &#39;LOGNAME&#39;: &#39;ctulhu&#39;,\n&quot;
+&quot; &#39;LS_COLORS&#39;: &quot;
+&quot;&#39;rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lz=01;31:*.xz=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.axv=01;35:*.anx=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.axa=00;36:*.oga=00;36:*.spx=00;36:*.xspf=00;36:&#39;,\n&quot;
+&quot; &#39;MANDATORY_PATH&#39;: &#39;/usr/share/gconf/ubuntu.mandatory.path&#39;,\n&quot;
+&quot; &#39;OLDPWD&#39;: &#39;/home/ctulhu&#39;,\n&quot;
+&quot; &#39;PATH&#39;: &quot;
+&quot;&#39;/home/ctulhu/anylist/virt/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games&#39;,\n&quot;
+&quot; &#39;PATH_INFO&#39;: &#39;/api/products/id:1/status&#39;,\n&quot;
+&quot; &#39;PS1&#39;: &#39;(virt)\\\\[\\\\e]0;\\\\u@\\\\h: &#39;\n&quot;
+&#39;        &#39;
+&quot;&#39;\\\\w\\\\a\\\\]${debian_chroot:+($debian_chroot)}\\\\u@\\\\h:\\\\w\\\\$ &#39;,\n&quot;
+&quot; &#39;PWD&#39;: &#39;/home/ctulhu/anylist&#39;,\n&quot;
+&quot; &#39;QT4_IM_MODULE&#39;: &#39;xim&#39;,\n&quot;
+&quot; &#39;QT_IM_MODULE&#39;: &#39;ibus&#39;,\n&quot;
+&quot; &#39;QT_QPA_PLATFORMTHEME&#39;: &#39;appmenu-qt5&#39;,\n&quot;
+&quot; &#39;QUERY_STRING&#39;: &#39;&#39;,\n&quot;
+&quot; &#39;REMOTE_ADDR&#39;: &#39;127.0.0.1&#39;,\n&quot;
+&quot; &#39;REMOTE_HOST&#39;: &#39;&#39;,\n&quot;
+&quot; &#39;REQUEST_METHOD&#39;: &#39;GET&#39;,\n&quot;
+&quot; &#39;RUN_MAIN&#39;: &#39;true&#39;,\n&quot;
+&quot; &#39;SCRIPT_NAME&#39;: &#39;&#39;,\n&quot;
+&quot; &#39;SELINUX_INIT&#39;: &#39;YES&#39;,\n&quot;
+&quot; &#39;SERVER_NAME&#39;: &#39;localhost&#39;,\n&quot;
+&quot; &#39;SERVER_PORT&#39;: &#39;8000&#39;,\n&quot;
+&quot; &#39;SERVER_PROTOCOL&#39;: &#39;HTTP/1.1&#39;,\n&quot;
+&quot; &#39;SERVER_SOFTWARE&#39;: &#39;WSGIServer/0.2&#39;,\n&quot;
+&quot; &#39;SESSION&#39;: &#39;ubuntu&#39;,\n&quot;
+&quot; &#39;SESSIONTYPE&#39;: &#39;gnome-session&#39;,\n&quot;
+&quot; &#39;SESSION_MANAGER&#39;: &quot;
+&quot;&#39;local/ctulhu-Aspire-V3-571G:@/tmp/.ICE-unix/2181,unix/ctulhu-Aspire-V3-571G:/tmp/.ICE-unix/2181&#39;,\n&quot;
+&quot; &#39;SHELL&#39;: &#39;/bin/bash&#39;,\n&quot;
+&quot; &#39;SHLVL&#39;: &#39;1&#39;,\n&quot;
+&quot; &#39;SSH_AGENT_LAUNCHER&#39;: &#39;upstart&#39;,\n&quot;
+&quot; &#39;SSH_AGENT_PID&#39;: &#39;2121&#39;,\n&quot;
+&quot; &#39;SSH_AUTH_SOCK&#39;: &#39;/run/user/1000/keyring-lf0Gdn/ssh&#39;,\n&quot;
+&quot; &#39;TERM&#39;: &#39;xterm&#39;,\n&quot;
+&quot; &#39;TEXTDOMAIN&#39;: &#39;im-config&#39;,\n&quot;
+&quot; &#39;TEXTDOMAINDIR&#39;: &#39;/usr/share/locale/&#39;,\n&quot;
+&quot; &#39;TZ&#39;: &#39;UTC&#39;,\n&quot;
+&quot; &#39;UBUNTU_MENUPROXY&#39;: &#39;1&#39;,\n&quot;
+&quot; &#39;UPSTART_SESSION&#39;: &#39;unix:abstract=/com/ubuntu/upstart-session/1000/2037&#39;,\n&quot;
+&quot; &#39;USER&#39;: &#39;ctulhu&#39;,\n&quot;
+&quot; &#39;VIRTUALENVWRAPPER_SCRIPT&#39;: &quot;
+&quot;&#39;/usr/share/virtualenvwrapper/virtualenvwrapper.sh&#39;,\n&quot;
+&quot; &#39;VIRTUAL_ENV&#39;: &#39;/home/ctulhu/anylist/virt&#39;,\n&quot;
+&quot; &#39;VTE_VERSION&#39;: &#39;3409&#39;,\n&quot;
+&quot; &#39;WINDOWID&#39;: &#39;56623115&#39;,\n&quot;
+&quot; &#39;XAUTHORITY&#39;: &#39;/home/ctulhu/.Xauthority&#39;,\n&quot;
+&quot; &#39;XDG_CONFIG_DIRS&#39;: &#39;/etc/xdg/xdg-ubuntu:/usr/share/upstart/xdg:/etc/xdg&#39;,\n&quot;
+&quot; &#39;XDG_CURRENT_DESKTOP&#39;: &#39;Unity&#39;,\n&quot;
+&quot; &#39;XDG_DATA_DIRS&#39;: &quot;
+&quot;&#39;/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/&#39;,\n&quot;
+&quot; &#39;XDG_GREETER_DATA_DIR&#39;: &#39;/var/lib/lightdm-data/ctulhu&#39;,\n&quot;
+&quot; &#39;XDG_MENU_PREFIX&#39;: &#39;gnome-&#39;,\n&quot;
+&quot; &#39;XDG_RUNTIME_DIR&#39;: &#39;/run/user/1000&#39;,\n&quot;
+&quot; &#39;XDG_SEAT&#39;: &#39;seat0&#39;,\n&quot;
+&quot; &#39;XDG_SEAT_PATH&#39;: &#39;/org/freedesktop/DisplayManager/Seat0&#39;,\n&quot;
+&quot; &#39;XDG_SESSION_ID&#39;: &#39;c2&#39;,\n&quot;
+&quot; &#39;XDG_SESSION_PATH&#39;: &#39;/org/freedesktop/DisplayManager/Session0&#39;,\n&quot;
+&quot; &#39;XDG_VTNR&#39;: &#39;7&#39;,\n&quot;
+&quot; &#39;XMODIFIERS&#39;: &#39;@im=ibus&#39;,\n&quot;
+&quot; &#39;_&#39;: &#39;/home/ctulhu/anylist/virt/bin/python&#39;,\n&quot;
+&quot; &#39;_VIRTUALENVWRAPPER_API&#39;: &#39; mkvirtualenv rmvirtualenv lsvirtualenv &#39;\n&quot;
+&quot;                           &#39;showvirtualenv workon add2virtualenv &#39;\n&quot;
+&quot;                           &#39;cdsitepackages cdvirtualenv lssitepackages &#39;\n&quot;
+&quot;                           &#39;toggleglobalsitepackages cpvirtualenv &#39;\n&quot;
+&quot;                           &#39;setvirtualenvproject mkproject cdproject &quot;
+&quot;mktmpenv&#39;,\n&quot;
+&quot; &#39;wsgi.errors&#39;: &lt;_io.TextIOWrapper name=&#39;&lt;stderr&gt;&#39; mode=&#39;w&#39; &quot;
+&quot;encoding=&#39;UTF-8&#39;&gt;,\n&quot;
+&quot; &#39;wsgi.file_wrapper&#39;: &lt;class &#39;wsgiref.util.FileWrapper&#39;&gt;,\n&quot;
+&quot; &#39;wsgi.input&#39;: &lt;_io.BufferedReader name=6&gt;,\n&quot;
+&quot; &#39;wsgi.multiprocess&#39;: False,\n&quot;
+&quot; &#39;wsgi.multithread&#39;: True,\n&quot;
+&quot; &#39;wsgi.run_once&#39;: False,\n&quot;
+&quot; &#39;wsgi.url_scheme&#39;: &#39;http&#39;,\n&quot;
+&quot; &#39;wsgi.version&#39;: (1, 0)}&gt;&quot;</pre></td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          
+        </li>
+      
+        <li class="frame django">
+          <code>/home/ctulhu/anylist/virt/lib/python3.4/site-packages/django/template/response.py</code> in <code>render</code>
+
+          
+            <div class="context" id="c140255475368776">
+              
+                <ol start="98" class="pre-context" id="pre140255475368776"><li onclick="toggle('pre140255475368776', 'post140255475368776')"><pre></pre></li><li onclick="toggle('pre140255475368776', 'post140255475368776')"><pre>        If the content has already been rendered, this is a no-op.</pre></li><li onclick="toggle('pre140255475368776', 'post140255475368776')"><pre></pre></li><li onclick="toggle('pre140255475368776', 'post140255475368776')"><pre>        Returns the baked response instance.</pre></li><li onclick="toggle('pre140255475368776', 'post140255475368776')"><pre>        &quot;&quot;&quot;</pre></li><li onclick="toggle('pre140255475368776', 'post140255475368776')"><pre>        retval = self</pre></li><li onclick="toggle('pre140255475368776', 'post140255475368776')"><pre>        if not self._is_rendered:</pre></li></ol>
+              
+              <ol start="105" class="context-line"><li onclick="toggle('pre140255475368776', 'post140255475368776')"><pre>            self.content = self.rendered_content</pre> <span>...</span></li></ol>
+              
+                <ol start='106' class="post-context" id="post140255475368776"><li onclick="toggle('pre140255475368776', 'post140255475368776')"><pre>            for post_callback in self._post_render_callbacks:</pre></li><li onclick="toggle('pre140255475368776', 'post140255475368776')"><pre>                newretval = post_callback(retval)</pre></li><li onclick="toggle('pre140255475368776', 'post140255475368776')"><pre>                if newretval is not None:</pre></li><li onclick="toggle('pre140255475368776', 'post140255475368776')"><pre>                    retval = newretval</pre></li><li onclick="toggle('pre140255475368776', 'post140255475368776')"><pre>        return retval</pre></li><li onclick="toggle('pre140255475368776', 'post140255475368776')"><pre></pre></li></ol>
+              
+            </div>
+          
+
+          
+            <div class="commands">
+                
+                    <a href="#" onclick="return varToggle(this, '140255475368776')"><span>&#x25b6;</span> Local vars</a>
+                
+            </div>
+            <table class="vars" id="v140255475368776">
+              <thead>
+                <tr>
+                  <th>Variable</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td>retval</td>
+                    <td class="code"><pre>&lt;rest_framework.response.Response object at 0x7f8fc5700e48&gt;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>self</td>
+                    <td class="code"><pre>&lt;rest_framework.response.Response object at 0x7f8fc5700e48&gt;</pre></td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          
+        </li>
+      
+        <li class="frame user">
+          <code>/home/ctulhu/anylist/virt/lib/python3.4/site-packages/rest_framework/response.py</code> in <code>rendered_content</code>
+
+          
+            <div class="context" id="c140255469445320">
+              
+                <ol start="52" class="pre-context" id="pre140255469445320"><li onclick="toggle('pre140255469445320', 'post140255469445320')"><pre></pre></li><li onclick="toggle('pre140255469445320', 'post140255469445320')"><pre>        if content_type is None and charset is not None:</pre></li><li onclick="toggle('pre140255469445320', 'post140255469445320')"><pre>            content_type = &quot;{0}; charset={1}&quot;.format(media_type, charset)</pre></li><li onclick="toggle('pre140255469445320', 'post140255469445320')"><pre>        elif content_type is None:</pre></li><li onclick="toggle('pre140255469445320', 'post140255469445320')"><pre>            content_type = media_type</pre></li><li onclick="toggle('pre140255469445320', 'post140255469445320')"><pre>        self[&#39;Content-Type&#39;] = content_type</pre></li><li onclick="toggle('pre140255469445320', 'post140255469445320')"><pre></pre></li></ol>
+              
+              <ol start="59" class="context-line"><li onclick="toggle('pre140255469445320', 'post140255469445320')"><pre>        ret = renderer.render(self.data, media_type, context)</pre> <span>...</span></li></ol>
+              
+                <ol start='60' class="post-context" id="post140255469445320"><li onclick="toggle('pre140255469445320', 'post140255469445320')"><pre>        if isinstance(ret, six.text_type):</pre></li><li onclick="toggle('pre140255469445320', 'post140255469445320')"><pre>            assert charset, &#39;renderer returned unicode, and did not specify &#39; \</pre></li><li onclick="toggle('pre140255469445320', 'post140255469445320')"><pre>            &#39;a charset value.&#39;</pre></li><li onclick="toggle('pre140255469445320', 'post140255469445320')"><pre>            return bytes(ret.encode(charset))</pre></li><li onclick="toggle('pre140255469445320', 'post140255469445320')"><pre></pre></li><li onclick="toggle('pre140255469445320', 'post140255469445320')"><pre>        if not ret:</pre></li></ol>
+              
+            </div>
+          
+
+          
+            <div class="commands">
+                
+                    <a href="#" onclick="return varToggle(this, '140255469445320')"><span>&#x25b6;</span> Local vars</a>
+                
+            </div>
+            <table class="vars" id="v140255469445320">
+              <thead>
+                <tr>
+                  <th>Variable</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td>content_type</td>
+                    <td class="code"><pre>&#39;application/json&#39;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>self</td>
+                    <td class="code"><pre>&lt;rest_framework.response.Response object at 0x7f8fc5700e48&gt;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>renderer</td>
+                    <td class="code"><pre>&lt;rest_framework.renderers.JSONRenderer object at 0x7f8fc5700128&gt;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>charset</td>
+                    <td class="code"><pre>None</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>context</td>
+                    <td class="code"><pre>{&#39;args&#39;: (),
+ &#39;kwargs&#39;: {&#39;pk&#39;: &#39;1&#39;},
+ &#39;request&#39;: &lt;rest_framework.request.Request object at 0x7f8fc5700eb8&gt;,
+ &#39;response&#39;: &lt;rest_framework.response.Response object at 0x7f8fc5700e48&gt;,
+ &#39;view&#39;: &lt;myapp.views.StatusView object at 0x7f8fc5df2780&gt;}</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>media_type</td>
+                    <td class="code"><pre>&#39;application/json&#39;</pre></td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          
+        </li>
+      
+        <li class="frame user">
+          <code>/home/ctulhu/anylist/virt/lib/python3.4/site-packages/rest_framework/renderers.py</code> in <code>render</code>
+
+          
+            <div class="context" id="c140255438766984">
+              
+                <ol start="78" class="pre-context" id="pre140255438766984"><li onclick="toggle('pre140255438766984', 'post140255438766984')"><pre>            indent = params.get(&#39;indent&#39;, indent)</pre></li><li onclick="toggle('pre140255438766984', 'post140255438766984')"><pre>            try:</pre></li><li onclick="toggle('pre140255438766984', 'post140255438766984')"><pre>                indent = max(min(int(indent), 8), 0)</pre></li><li onclick="toggle('pre140255438766984', 'post140255438766984')"><pre>            except (ValueError, TypeError):</pre></li><li onclick="toggle('pre140255438766984', 'post140255438766984')"><pre>                indent = None</pre></li><li onclick="toggle('pre140255438766984', 'post140255438766984')"><pre></pre></li><li onclick="toggle('pre140255438766984', 'post140255438766984')"><pre>        ret = json.dumps(data, cls=self.encoder_class,</pre></li></ol>
+              
+              <ol start="85" class="context-line"><li onclick="toggle('pre140255438766984', 'post140255438766984')"><pre>            indent=indent, ensure_ascii=self.ensure_ascii)</pre> <span>...</span></li></ol>
+              
+                <ol start='86' class="post-context" id="post140255438766984"><li onclick="toggle('pre140255438766984', 'post140255438766984')"><pre></pre></li><li onclick="toggle('pre140255438766984', 'post140255438766984')"><pre>        # On python 2.x json.dumps() returns bytestrings if ensure_ascii=True,</pre></li><li onclick="toggle('pre140255438766984', 'post140255438766984')"><pre>        # but if ensure_ascii=False, the return type is underspecified,</pre></li><li onclick="toggle('pre140255438766984', 'post140255438766984')"><pre>        # and may (or may not) be unicode.</pre></li><li onclick="toggle('pre140255438766984', 'post140255438766984')"><pre>        # On python 3.x json.dumps() returns unicode strings.</pre></li><li onclick="toggle('pre140255438766984', 'post140255438766984')"><pre>        if isinstance(ret, six.text_type):</pre></li></ol>
+              
+            </div>
+          
+
+          
+            <div class="commands">
+                
+                    <a href="#" onclick="return varToggle(this, '140255438766984')"><span>&#x25b6;</span> Local vars</a>
+                
+            </div>
+            <table class="vars" id="v140255438766984">
+              <thead>
+                <tr>
+                  <th>Variable</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td>params</td>
+                    <td class="code"><pre>{}</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>indent</td>
+                    <td class="code"><pre>None</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>self</td>
+                    <td class="code"><pre>&lt;rest_framework.renderers.JSONRenderer object at 0x7f8fc5700128&gt;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>accepted_media_type</td>
+                    <td class="code"><pre>&#39;application/json&#39;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>base_media_type</td>
+                    <td class="code"><pre>&#39;application/json&#39;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>data</td>
+                    <td class="code"><pre>{&#39;status&#39;: &lt;Status: ReWatching&gt;}</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>renderer_context</td>
+                    <td class="code"><pre>{&#39;args&#39;: (),
+ &#39;kwargs&#39;: {&#39;pk&#39;: &#39;1&#39;},
+ &#39;request&#39;: &lt;rest_framework.request.Request object at 0x7f8fc5700eb8&gt;,
+ &#39;response&#39;: &lt;rest_framework.response.Response object at 0x7f8fc5700e48&gt;,
+ &#39;view&#39;: &lt;myapp.views.StatusView object at 0x7f8fc5df2780&gt;}</pre></td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          
+        </li>
+      
+        <li class="frame user">
+          <code>/usr/lib/python3.4/json/__init__.py</code> in <code>dumps</code>
+
+          
+            <div class="context" id="c140255332854920">
+              
+                <ol start="230" class="pre-context" id="pre140255332854920"><li onclick="toggle('pre140255332854920', 'post140255332854920')"><pre>        return _default_encoder.encode(obj)</pre></li><li onclick="toggle('pre140255332854920', 'post140255332854920')"><pre>    if cls is None:</pre></li><li onclick="toggle('pre140255332854920', 'post140255332854920')"><pre>        cls = JSONEncoder</pre></li><li onclick="toggle('pre140255332854920', 'post140255332854920')"><pre>    return cls(</pre></li><li onclick="toggle('pre140255332854920', 'post140255332854920')"><pre>        skipkeys=skipkeys, ensure_ascii=ensure_ascii,</pre></li><li onclick="toggle('pre140255332854920', 'post140255332854920')"><pre>        check_circular=check_circular, allow_nan=allow_nan, indent=indent,</pre></li><li onclick="toggle('pre140255332854920', 'post140255332854920')"><pre>        separators=separators, default=default, sort_keys=sort_keys,</pre></li></ol>
+              
+              <ol start="237" class="context-line"><li onclick="toggle('pre140255332854920', 'post140255332854920')"><pre>        **kw).encode(obj)</pre> <span>...</span></li></ol>
+              
+                <ol start='238' class="post-context" id="post140255332854920"><li onclick="toggle('pre140255332854920', 'post140255332854920')"><pre></pre></li><li onclick="toggle('pre140255332854920', 'post140255332854920')"><pre></pre></li><li onclick="toggle('pre140255332854920', 'post140255332854920')"><pre>_default_decoder = JSONDecoder(object_hook=None, object_pairs_hook=None)</pre></li><li onclick="toggle('pre140255332854920', 'post140255332854920')"><pre></pre></li><li onclick="toggle('pre140255332854920', 'post140255332854920')"><pre></pre></li><li onclick="toggle('pre140255332854920', 'post140255332854920')"><pre>def load(fp, cls=None, object_hook=None, parse_float=None,</pre></li></ol>
+              
+            </div>
+          
+
+          
+            <div class="commands">
+                
+                    <a href="#" onclick="return varToggle(this, '140255332854920')"><span>&#x25b6;</span> Local vars</a>
+                
+            </div>
+            <table class="vars" id="v140255332854920">
+              <thead>
+                <tr>
+                  <th>Variable</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td>skipkeys</td>
+                    <td class="code"><pre>False</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>indent</td>
+                    <td class="code"><pre>None</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>default</td>
+                    <td class="code"><pre>None</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>allow_nan</td>
+                    <td class="code"><pre>True</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>separators</td>
+                    <td class="code"><pre>None</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>obj</td>
+                    <td class="code"><pre>{&#39;status&#39;: &lt;Status: ReWatching&gt;}</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>cls</td>
+                    <td class="code"><pre>&lt;class &#39;rest_framework.utils.encoders.JSONEncoder&#39;&gt;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>ensure_ascii</td>
+                    <td class="code"><pre>True</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>check_circular</td>
+                    <td class="code"><pre>True</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>kw</td>
+                    <td class="code"><pre>{}</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>sort_keys</td>
+                    <td class="code"><pre>False</pre></td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          
+        </li>
+      
+        <li class="frame user">
+          <code>/usr/lib/python3.4/json/encoder.py</code> in <code>encode</code>
+
+          
+            <div class="context" id="c140255332854408">
+              
+                <ol start="185" class="pre-context" id="pre140255332854408"><li onclick="toggle('pre140255332854408', 'post140255332854408')"><pre>            if self.ensure_ascii:</pre></li><li onclick="toggle('pre140255332854408', 'post140255332854408')"><pre>                return encode_basestring_ascii(o)</pre></li><li onclick="toggle('pre140255332854408', 'post140255332854408')"><pre>            else:</pre></li><li onclick="toggle('pre140255332854408', 'post140255332854408')"><pre>                return encode_basestring(o)</pre></li><li onclick="toggle('pre140255332854408', 'post140255332854408')"><pre>        # This doesn&#39;t pass the iterator directly to &#39;&#39;.join() because the</pre></li><li onclick="toggle('pre140255332854408', 'post140255332854408')"><pre>        # exceptions aren&#39;t as detailed.  The list call should be roughly</pre></li><li onclick="toggle('pre140255332854408', 'post140255332854408')"><pre>        # equivalent to the PySequence_Fast that &#39;&#39;.join() would do.</pre></li></ol>
+              
+              <ol start="192" class="context-line"><li onclick="toggle('pre140255332854408', 'post140255332854408')"><pre>        chunks = self.iterencode(o, _one_shot=True)</pre> <span>...</span></li></ol>
+              
+                <ol start='193' class="post-context" id="post140255332854408"><li onclick="toggle('pre140255332854408', 'post140255332854408')"><pre>        if not isinstance(chunks, (list, tuple)):</pre></li><li onclick="toggle('pre140255332854408', 'post140255332854408')"><pre>            chunks = list(chunks)</pre></li><li onclick="toggle('pre140255332854408', 'post140255332854408')"><pre>        return &#39;&#39;.join(chunks)</pre></li><li onclick="toggle('pre140255332854408', 'post140255332854408')"><pre></pre></li><li onclick="toggle('pre140255332854408', 'post140255332854408')"><pre>    def iterencode(self, o, _one_shot=False):</pre></li><li onclick="toggle('pre140255332854408', 'post140255332854408')"><pre>        &quot;&quot;&quot;Encode the given object and yield each string</pre></li></ol>
+              
+            </div>
+          
+
+          
+            <div class="commands">
+                
+                    <a href="#" onclick="return varToggle(this, '140255332854408')"><span>&#x25b6;</span> Local vars</a>
+                
+            </div>
+            <table class="vars" id="v140255332854408">
+              <thead>
+                <tr>
+                  <th>Variable</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td>o</td>
+                    <td class="code"><pre>{&#39;status&#39;: &lt;Status: ReWatching&gt;}</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>self</td>
+                    <td class="code"><pre>&lt;rest_framework.utils.encoders.JSONEncoder object at 0x7f8fc5700b70&gt;</pre></td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          
+        </li>
+      
+        <li class="frame user">
+          <code>/usr/lib/python3.4/json/encoder.py</code> in <code>iterencode</code>
+
+          
+            <div class="context" id="c140255439889864">
+              
+                <ol start="243" class="pre-context" id="pre140255439889864"><li onclick="toggle('pre140255439889864', 'post140255439889864')"><pre>                self.key_separator, self.item_separator, self.sort_keys,</pre></li><li onclick="toggle('pre140255439889864', 'post140255439889864')"><pre>                self.skipkeys, self.allow_nan)</pre></li><li onclick="toggle('pre140255439889864', 'post140255439889864')"><pre>        else:</pre></li><li onclick="toggle('pre140255439889864', 'post140255439889864')"><pre>            _iterencode = _make_iterencode(</pre></li><li onclick="toggle('pre140255439889864', 'post140255439889864')"><pre>                markers, self.default, _encoder, self.indent, floatstr,</pre></li><li onclick="toggle('pre140255439889864', 'post140255439889864')"><pre>                self.key_separator, self.item_separator, self.sort_keys,</pre></li><li onclick="toggle('pre140255439889864', 'post140255439889864')"><pre>                self.skipkeys, _one_shot)</pre></li></ol>
+              
+              <ol start="250" class="context-line"><li onclick="toggle('pre140255439889864', 'post140255439889864')"><pre>        return _iterencode(o, 0)</pre> <span>...</span></li></ol>
+              
+                <ol start='251' class="post-context" id="post140255439889864"><li onclick="toggle('pre140255439889864', 'post140255439889864')"><pre></pre></li><li onclick="toggle('pre140255439889864', 'post140255439889864')"><pre>def _make_iterencode(markers, _default, _encoder, _indent, _floatstr,</pre></li><li onclick="toggle('pre140255439889864', 'post140255439889864')"><pre>        _key_separator, _item_separator, _sort_keys, _skipkeys, _one_shot,</pre></li><li onclick="toggle('pre140255439889864', 'post140255439889864')"><pre>        ## HACK: hand-optimized bytecode; turn globals into locals</pre></li><li onclick="toggle('pre140255439889864', 'post140255439889864')"><pre>        ValueError=ValueError,</pre></li><li onclick="toggle('pre140255439889864', 'post140255439889864')"><pre>        dict=dict,</pre></li></ol>
+              
+            </div>
+          
+
+          
+            <div class="commands">
+                
+                    <a href="#" onclick="return varToggle(this, '140255439889864')"><span>&#x25b6;</span> Local vars</a>
+                
+            </div>
+            <table class="vars" id="v140255439889864">
+              <thead>
+                <tr>
+                  <th>Variable</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td>_one_shot</td>
+                    <td class="code"><pre>True</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>_iterencode</td>
+                    <td class="code"><pre>&lt;_json.Encoder object at 0x7f8fc5e36198&gt;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>o</td>
+                    <td class="code"><pre>{&#39;status&#39;: &lt;Status: ReWatching&gt;}</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>self</td>
+                    <td class="code"><pre>&lt;rest_framework.utils.encoders.JSONEncoder object at 0x7f8fc5700b70&gt;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>markers</td>
+                    <td class="code"><pre>{140255332654536: {&#39;status&#39;: &lt;Status: ReWatching&gt;},
+ 140255332683448: &lt;Status: ReWatching&gt;}</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>_encoder</td>
+                    <td class="code"><pre>&lt;built-in function encode_basestring_ascii&gt;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>floatstr</td>
+                    <td class="code"><pre>&lt;function JSONEncoder.iterencode.&lt;locals&gt;.floatstr at 0x7f8fbdb2b8c8&gt;</pre></td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          
+        </li>
+      
+        <li class="frame user">
+          <code>/home/ctulhu/anylist/virt/lib/python3.4/site-packages/rest_framework/utils/encoders.py</code> in <code>default</code>
+
+          
+            <div class="context" id="c140255332885448">
+              
+                <ol start="50" class="pre-context" id="pre140255332885448"><li onclick="toggle('pre140255332885448', 'post140255332885448')"><pre>        elif hasattr(o, &#39;__getitem__&#39;):</pre></li><li onclick="toggle('pre140255332885448', 'post140255332885448')"><pre>            try:</pre></li><li onclick="toggle('pre140255332885448', 'post140255332885448')"><pre>                return dict(o)</pre></li><li onclick="toggle('pre140255332885448', 'post140255332885448')"><pre>            except:</pre></li><li onclick="toggle('pre140255332885448', 'post140255332885448')"><pre>                pass</pre></li><li onclick="toggle('pre140255332885448', 'post140255332885448')"><pre>        elif hasattr(o, &#39;__iter__&#39;):</pre></li><li onclick="toggle('pre140255332885448', 'post140255332885448')"><pre>            return [i for i in o]</pre></li></ol>
+              
+              <ol start="57" class="context-line"><li onclick="toggle('pre140255332885448', 'post140255332885448')"><pre>        return super(JSONEncoder, self).default(o)</pre> <span>...</span></li></ol>
+              
+                <ol start='58' class="post-context" id="post140255332885448"><li onclick="toggle('pre140255332885448', 'post140255332885448')"><pre></pre></li><li onclick="toggle('pre140255332885448', 'post140255332885448')"><pre></pre></li><li onclick="toggle('pre140255332885448', 'post140255332885448')"><pre>try:</pre></li><li onclick="toggle('pre140255332885448', 'post140255332885448')"><pre>    import yaml</pre></li><li onclick="toggle('pre140255332885448', 'post140255332885448')"><pre>except ImportError:</pre></li><li onclick="toggle('pre140255332885448', 'post140255332885448')"><pre>    SafeDumper = None</pre></li></ol>
+              
+            </div>
+          
+
+          
+            <div class="commands">
+                
+                    <a href="#" onclick="return varToggle(this, '140255332885448')"><span>&#x25b6;</span> Local vars</a>
+                
+            </div>
+            <table class="vars" id="v140255332885448">
+              <thead>
+                <tr>
+                  <th>Variable</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td>o</td>
+                    <td class="code"><pre>&lt;Status: ReWatching&gt;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>self</td>
+                    <td class="code"><pre>&lt;rest_framework.utils.encoders.JSONEncoder object at 0x7f8fc5700b70&gt;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>__class__</td>
+                    <td class="code"><pre>&lt;class &#39;rest_framework.utils.encoders.JSONEncoder&#39;&gt;</pre></td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          
+        </li>
+      
+        <li class="frame user">
+          <code>/usr/lib/python3.4/json/encoder.py</code> in <code>default</code>
+
+          
+            <div class="context" id="c140255332881672">
+              
+                <ol start="166" class="pre-context" id="pre140255332881672"><li onclick="toggle('pre140255332881672', 'post140255332881672')"><pre>                    pass</pre></li><li onclick="toggle('pre140255332881672', 'post140255332881672')"><pre>                else:</pre></li><li onclick="toggle('pre140255332881672', 'post140255332881672')"><pre>                    return list(iterable)</pre></li><li onclick="toggle('pre140255332881672', 'post140255332881672')"><pre>                # Let the base class default method raise the TypeError</pre></li><li onclick="toggle('pre140255332881672', 'post140255332881672')"><pre>                return JSONEncoder.default(self, o)</pre></li><li onclick="toggle('pre140255332881672', 'post140255332881672')"><pre></pre></li><li onclick="toggle('pre140255332881672', 'post140255332881672')"><pre>        &quot;&quot;&quot;</pre></li></ol>
+              
+              <ol start="173" class="context-line"><li onclick="toggle('pre140255332881672', 'post140255332881672')"><pre>        raise TypeError(repr(o) + &quot; is not JSON serializable&quot;)</pre> <span>...</span></li></ol>
+              
+                <ol start='174' class="post-context" id="post140255332881672"><li onclick="toggle('pre140255332881672', 'post140255332881672')"><pre></pre></li><li onclick="toggle('pre140255332881672', 'post140255332881672')"><pre>    def encode(self, o):</pre></li><li onclick="toggle('pre140255332881672', 'post140255332881672')"><pre>        &quot;&quot;&quot;Return a JSON string representation of a Python data structure.</pre></li><li onclick="toggle('pre140255332881672', 'post140255332881672')"><pre></pre></li><li onclick="toggle('pre140255332881672', 'post140255332881672')"><pre>        &gt;&gt;&gt; from json.encoder import JSONEncoder</pre></li><li onclick="toggle('pre140255332881672', 'post140255332881672')"><pre>        &gt;&gt;&gt; JSONEncoder().encode({&quot;foo&quot;: [&quot;bar&quot;, &quot;baz&quot;]})</pre></li></ol>
+              
+            </div>
+          
+
+          
+            <div class="commands">
+                
+                    <a href="#" onclick="return varToggle(this, '140255332881672')"><span>&#x25b6;</span> Local vars</a>
+                
+            </div>
+            <table class="vars" id="v140255332881672">
+              <thead>
+                <tr>
+                  <th>Variable</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  <tr>
+                    <td>o</td>
+                    <td class="code"><pre>&lt;Status: ReWatching&gt;</pre></td>
+                  </tr>
+                
+                  <tr>
+                    <td>self</td>
+                    <td class="code"><pre>&lt;rest_framework.utils.encoders.JSONEncoder object at 0x7f8fc5700b70&gt;</pre></td>
+                  </tr>
+                
+              </tbody>
+            </table>
+          
+        </li>
+      
+    </ul>
+  </div>
+  
+  <form action="http://dpaste.com/" name="pasteform" id="pasteform" method="post">
+
+  <div id="pastebinTraceback" class="pastebin">
+    <input type="hidden" name="language" value="PythonConsole">
+    <input type="hidden" name="title" value="TypeError at /api/products/id:1/status">
+    <input type="hidden" name="source" value="Django Dpaste Agent">
+    <input type="hidden" name="poster" value="Django">
+    <textarea name="content" id="traceback_area" cols="140" rows="25">
+Environment:
+
+
+Request Method: GET
+Request URL: http://localhost:8000/api/products/id:1/status
+
+Django Version: 1.6.5
+Python Version: 3.4.0
+Installed Applications:
+(&#39;django.contrib.admin&#39;,
+ &#39;django.contrib.auth&#39;,
+ &#39;django.contrib.contenttypes&#39;,
+ &#39;django.contrib.sessions&#39;,
+ &#39;django.contrib.messages&#39;,
+ &#39;django.contrib.staticfiles&#39;,
+ &#39;myapp&#39;,
+ &#39;south&#39;,
+ &#39;django_wysiwyg&#39;,
+ &#39;easy_thumbnails&#39;,
+ &#39;rest_framework&#39;,
+ &#39;rest_framework.authtoken&#39;)
+Installed Middleware:
+(&#39;django.contrib.sessions.middleware.SessionMiddleware&#39;,
+ &#39;django.middleware.common.CommonMiddleware&#39;,
+ &#39;django.middleware.csrf.CsrfViewMiddleware&#39;,
+ &#39;django.contrib.auth.middleware.AuthenticationMiddleware&#39;,
+ &#39;django.contrib.messages.middleware.MessageMiddleware&#39;,
+ &#39;django.middleware.clickjacking.XFrameOptionsMiddleware&#39;)
+
+
+Traceback:
+File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/django/core/handlers/base.py" in get_response
+  137.                 response = response.render()
+File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/django/template/response.py" in render
+  105.             self.content = self.rendered_content
+File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/rest_framework/response.py" in rendered_content
+  59.         ret = renderer.render(self.data, media_type, context)
+File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/rest_framework/renderers.py" in render
+  85.             indent=indent, ensure_ascii=self.ensure_ascii)
+File "/usr/lib/python3.4/json/__init__.py" in dumps
+  237.         **kw).encode(obj)
+File "/usr/lib/python3.4/json/encoder.py" in encode
+  192.         chunks = self.iterencode(o, _one_shot=True)
+File "/usr/lib/python3.4/json/encoder.py" in iterencode
+  250.         return _iterencode(o, 0)
+File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/rest_framework/utils/encoders.py" in default
+  57.         return super(JSONEncoder, self).default(o)
+File "/usr/lib/python3.4/json/encoder.py" in default
+  173.         raise TypeError(repr(o) + &quot; is not JSON serializable&quot;)
+
+Exception Type: TypeError at /api/products/id:1/status
+Exception Value: &lt;Status: ReWatching&gt; is not JSON serializable
+</textarea>
+  <br><br>
+  <input type="submit" value="Share this traceback on a public Web site">
+  </div>
+</form>
+</div>
+
+
+
+<div id="requestinfo">
+  <h2>Request information</h2>
+
+
+  <h3 id="get-info">GET</h3>
+  
+    <p>No GET data</p>
+  
+
+  <h3 id="post-info">POST</h3>
+  
+    <p>No POST data</p>
+  
+  <h3 id="files-info">FILES</h3>
+  
+    <p>No FILES data</p>
+  
+
+
+  <h3 id="cookie-info">COOKIES</h3>
+  
+    <table class="req">
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          <tr>
+            <td>csrftoken</td>
+            <td class="code"><pre>&#39;AcjoDQlO5Z1TaLmK4l2cSP2GOJIe5ktq&#39;</pre></td>
+          </tr>
+        
+          <tr>
+            <td>sessionid</td>
+            <td class="code"><pre>&#39;vccxup15k5bmlkix9clj9tfvkbqdl9re&#39;</pre></td>
+          </tr>
+        
+      </tbody>
+    </table>
+  
+
+  <h3 id="meta-info">META</h3>
+  <table class="req">
+    <thead>
+      <tr>
+        <th>Variable</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td>GPG_AGENT_INFO</td>
+          <td class="code"><pre>&#39;/run/user/1000/keyring-lf0Gdn/gpg:0:1&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>GTK_IM_MODULE</td>
+          <td class="code"><pre>&#39;ibus&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>LANG</td>
+          <td class="code"><pre>&#39;ru_RU.UTF-8&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>CLUTTER_IM_MODULE</td>
+          <td class="code"><pre>&#39;xim&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>VTE_VERSION</td>
+          <td class="code"><pre>&#39;3409&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>HTTP_ACCEPT</td>
+          <td class="code"><pre>&#39;application/json, text/plain, */*&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SHLVL</td>
+          <td class="code"><pre>&#39;1&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>XDG_SEAT_PATH</td>
+          <td class="code"><pre>&#39;/org/freedesktop/DisplayManager/Seat0&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>QT_QPA_PLATFORMTHEME</td>
+          <td class="code"><pre>&#39;appmenu-qt5&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>TEXTDOMAINDIR</td>
+          <td class="code"><pre>&#39;/usr/share/locale/&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>XDG_SEAT</td>
+          <td class="code"><pre>&#39;seat0&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DBUS_SESSION_BUS_ADDRESS</td>
+          <td class="code"><pre>&#39;unix:abstract=/tmp/dbus-LagldBjfv8&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>QUERY_STRING</td>
+          <td class="code"><pre>&#39;&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SSH_AUTH_SOCK</td>
+          <td class="code"><pre>&#39;/run/user/1000/keyring-lf0Gdn/ssh&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SERVER_SOFTWARE</td>
+          <td class="code"><pre>&#39;WSGIServer/0.2&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>GNOME_KEYRING_PID</td>
+          <td class="code"><pre>&#39;2023&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>INSTANCE</td>
+          <td class="code"><pre>&#39;&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>HTTP_ACCEPT_LANGUAGE</td>
+          <td class="code"><pre>&#39;ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DEFAULTS_PATH</td>
+          <td class="code"><pre>&#39;/usr/share/gconf/ubuntu.default.path&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>_</td>
+          <td class="code"><pre>&#39;/home/ctulhu/anylist/virt/bin/python&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DJANGO_SETTINGS_MODULE</td>
+          <td class="code"><pre>&#39;anylist.settings&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>HTTP_ACCEPT_ENCODING</td>
+          <td class="code"><pre>&#39;gzip, deflate&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>HTTP_COOKIE</td>
+          <td class="code"><pre>&#39;csrftoken=AcjoDQlO5Z1TaLmK4l2cSP2GOJIe5ktq; &#39;
+&#39;sessionid=vccxup15k5bmlkix9clj9tfvkbqdl9re&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>HOME</td>
+          <td class="code"><pre>&#39;/home/ctulhu&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DESKTOP_SESSION</td>
+          <td class="code"><pre>&#39;ubuntu&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SHELL</td>
+          <td class="code"><pre>&#39;/bin/bash&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>JOB</td>
+          <td class="code"><pre>&#39;dbus&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>HTTP_AUTHORIZATION</td>
+          <td class="code"><pre>&#39;Basic Y3R1bGh1OlNob2NraU5n&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>wsgi.input</td>
+          <td class="code"><pre>&lt;_io.BufferedReader name=6&gt;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>RUN_MAIN</td>
+          <td class="code"><pre>&#39;true&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>XDG_VTNR</td>
+          <td class="code"><pre>&#39;7&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>wsgi.run_once</td>
+          <td class="code"><pre>False</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SSH_AGENT_PID</td>
+          <td class="code"><pre>&#39;2121&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>wsgi.multithread</td>
+          <td class="code"><pre>True</pre></td>
+        </tr>
+      
+        <tr>
+          <td>wsgi.version</td>
+          <td class="code"><pre>(1, 0)</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SCRIPT_NAME</td>
+          <td class="code"><pre>&#39;&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>XDG_RUNTIME_DIR</td>
+          <td class="code"><pre>&#39;/run/user/1000&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>GDMSESSION</td>
+          <td class="code"><pre>&#39;ubuntu&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SSH_AGENT_LAUNCHER</td>
+          <td class="code"><pre>&#39;upstart&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>GNOME_KEYRING_CONTROL</td>
+          <td class="code"><pre>&#39;/run/user/1000/keyring-lf0Gdn&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>HTTP_USER_AGENT</td>
+          <td class="code"><pre>&#39;Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>GATEWAY_INTERFACE</td>
+          <td class="code"><pre>&#39;CGI/1.1&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>USER</td>
+          <td class="code"><pre>&#39;ctulhu&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>XDG_CONFIG_DIRS</td>
+          <td class="code"><pre>&#39;/etc/xdg/xdg-ubuntu:/usr/share/upstart/xdg:/etc/xdg&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>XAUTHORITY</td>
+          <td class="code"><pre>&#39;/home/ctulhu/.Xauthority&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>CSRF_COOKIE</td>
+          <td class="code"><pre>&#39;AcjoDQlO5Z1TaLmK4l2cSP2GOJIe5ktq&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>XDG_SESSION_ID</td>
+          <td class="code"><pre>&#39;c2&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>wsgi.url_scheme</td>
+          <td class="code"><pre>&#39;http&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>TEXTDOMAIN</td>
+          <td class="code"><pre>&#39;im-config&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>HTTP_DNT</td>
+          <td class="code"><pre>&#39;1&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>GDM_LANG</td>
+          <td class="code"><pre>&#39;ru&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SERVER_NAME</td>
+          <td class="code"><pre>&#39;localhost&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>UPSTART_SESSION</td>
+          <td class="code"><pre>&#39;unix:abstract=/com/ubuntu/upstart-session/1000/2037&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>wsgi.errors</td>
+          <td class="code"><pre>&lt;_io.TextIOWrapper name=&#39;&lt;stderr&gt;&#39; mode=&#39;w&#39; encoding=&#39;UTF-8&#39;&gt;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>wsgi.multiprocess</td>
+          <td class="code"><pre>False</pre></td>
+        </tr>
+      
+        <tr>
+          <td>COMP_WORDBREAKS</td>
+          <td class="code"><pre>&#39; \t\n&quot;\&#39;&gt;&lt;;|&amp;(:&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>COMPIZ_BIN_PATH</td>
+          <td class="code"><pre>&#39;/usr/bin/&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>QT4_IM_MODULE</td>
+          <td class="code"><pre>&#39;xim&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>PATH_INFO</td>
+          <td class="code"><pre>&#39;/api/products/id:1/status&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>LESSOPEN</td>
+          <td class="code"><pre>&#39;| /usr/bin/lesspipe %s&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>VIRTUALENVWRAPPER_SCRIPT</td>
+          <td class="code"><pre>&#39;/usr/share/virtualenvwrapper/virtualenvwrapper.sh&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>CONTENT_TYPE</td>
+          <td class="code"><pre>&#39;text/plain&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SESSION_MANAGER</td>
+          <td class="code"><pre>&#39;local/ctulhu-Aspire-V3-571G:@/tmp/.ICE-unix/2181,unix/ctulhu-Aspire-V3-571G:/tmp/.ICE-unix/2181&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>_VIRTUALENVWRAPPER_API</td>
+          <td class="code"><pre>&#39; mkvirtualenv rmvirtualenv lsvirtualenv showvirtualenv workon add2virtualenv &#39;
+&#39;cdsitepackages cdvirtualenv lssitepackages toggleglobalsitepackages &#39;
+&#39;cpvirtualenv setvirtualenvproject mkproject cdproject mktmpenv&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SESSIONTYPE</td>
+          <td class="code"><pre>&#39;gnome-session&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>GTK_MODULES</td>
+          <td class="code"><pre>&#39;overlay-scrollbar:unity-gtk-module&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>PS1</td>
+          <td class="code"><pre>&#39;(virt)\\[\\e]0;\\u@\\h: &#39;
+&#39;\\w\\a\\]${debian_chroot:+($debian_chroot)}\\u@\\h:\\w\\$ &#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>TZ</td>
+          <td class="code"><pre>&#39;UTC&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>LOGNAME</td>
+          <td class="code"><pre>&#39;ctulhu&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>UBUNTU_MENUPROXY</td>
+          <td class="code"><pre>&#39;1&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>XDG_MENU_PREFIX</td>
+          <td class="code"><pre>&#39;gnome-&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>COLORTERM</td>
+          <td class="code"><pre>&#39;gnome-terminal&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>CONTENT_LENGTH</td>
+          <td class="code"><pre>&#39;&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>REQUEST_METHOD</td>
+          <td class="code"><pre>&#39;GET&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>MANDATORY_PATH</td>
+          <td class="code"><pre>&#39;/usr/share/gconf/ubuntu.mandatory.path&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>OLDPWD</td>
+          <td class="code"><pre>&#39;/home/ctulhu&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>GNOME_DESKTOP_SESSION_ID</td>
+          <td class="code"><pre>&#39;this-is-deprecated&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SELINUX_INIT</td>
+          <td class="code"><pre>&#39;YES&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SERVER_PROTOCOL</td>
+          <td class="code"><pre>&#39;HTTP/1.1&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>TERM</td>
+          <td class="code"><pre>&#39;xterm&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DISPLAY</td>
+          <td class="code"><pre>&#39;:0&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>IM_CONFIG_PHASE</td>
+          <td class="code"><pre>&#39;1&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>XDG_GREETER_DATA_DIR</td>
+          <td class="code"><pre>&#39;/var/lib/lightdm-data/ctulhu&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>PWD</td>
+          <td class="code"><pre>&#39;/home/ctulhu/anylist&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>HTTP_REFERER</td>
+          <td class="code"><pre>&#39;http://localhost:8000/anime/1-MahoukaKoukounoRettousei/&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SERVER_PORT</td>
+          <td class="code"><pre>&#39;8000&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>REMOTE_ADDR</td>
+          <td class="code"><pre>&#39;127.0.0.1&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>HTTP_CACHE_CONTROL</td>
+          <td class="code"><pre>&#39;max-age=0&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>XMODIFIERS</td>
+          <td class="code"><pre>&#39;@im=ibus&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>REMOTE_HOST</td>
+          <td class="code"><pre>&#39;&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>HTTP_HOST</td>
+          <td class="code"><pre>&#39;localhost:8000&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>WINDOWID</td>
+          <td class="code"><pre>&#39;56623115&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>COMPIZ_CONFIG_PROFILE</td>
+          <td class="code"><pre>&#39;ubuntu&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>LS_COLORS</td>
+          <td class="code"><pre>&#39;rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lz=01;31:*.xz=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.axv=01;35:*.anx=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.axa=00;36:*.oga=00;36:*.spx=00;36:*.xspf=00;36:&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SESSION</td>
+          <td class="code"><pre>&#39;ubuntu&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>PATH</td>
+          <td class="code"><pre>&#39;/home/ctulhu/anylist/virt/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>LESSCLOSE</td>
+          <td class="code"><pre>&#39;/usr/bin/lesspipe %s %s&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>QT_IM_MODULE</td>
+          <td class="code"><pre>&#39;ibus&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>VIRTUAL_ENV</td>
+          <td class="code"><pre>&#39;/home/ctulhu/anylist/virt&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>XDG_DATA_DIRS</td>
+          <td class="code"><pre>&#39;/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>XDG_SESSION_PATH</td>
+          <td class="code"><pre>&#39;/org/freedesktop/DisplayManager/Session0&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>LANGUAGE</td>
+          <td class="code"><pre>&#39;ru&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>XDG_CURRENT_DESKTOP</td>
+          <td class="code"><pre>&#39;Unity&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>wsgi.file_wrapper</td>
+          <td class="code"><pre>&#39;&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>HTTP_CONNECTION</td>
+          <td class="code"><pre>&#39;keep-alive&#39;</pre></td>
+        </tr>
+      
+    </tbody>
+  </table>
+
+
+  <h3 id="settings-info">Settings</h3>
+  <h4>Using settings module <code>anylist.settings</code></h4>
+  <table class="req">
+    <thead>
+      <tr>
+        <th>Setting</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td>DATETIME_FORMAT</td>
+          <td class="code"><pre>&#39;N j, Y, P&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>LOGIN_URL</td>
+          <td class="code"><pre>&#39;/accounts/login/&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>FILE_UPLOAD_PERMISSIONS</td>
+          <td class="code"><pre>None</pre></td>
+        </tr>
+      
+        <tr>
+          <td>REST_FRAMEWORK</td>
+          <td class="code"><pre>{&#39;DEFAULT_AUTHENTICATION_CLASSES&#39;: (&#39;rest_framework.authentication.BasicAuthentication&#39;,),
+ &#39;DEFAULT_MODEL_SERIALIZER_CLASS&#39;: &#39;rest_framework.serializers.HyperlinkedModelSerializer&#39;,
+ &#39;DEFAULT_PERMISSION_CLASSES&#39;: [&#39;rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly&#39;]}</pre></td>
+        </tr>
+      
+        <tr>
+          <td>NUMBER_GROUPING</td>
+          <td class="code"><pre>0</pre></td>
+        </tr>
+      
+        <tr>
+          <td>FILE_UPLOAD_TEMP_DIR</td>
+          <td class="code"><pre>None</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DEFAULT_FILE_STORAGE</td>
+          <td class="code"><pre>&#39;django.core.files.storage.FileSystemStorage&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>CACHE_MIDDLEWARE_ALIAS</td>
+          <td class="code"><pre>&#39;default&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>CACHE_MIDDLEWARE_SECONDS</td>
+          <td class="code"><pre>600</pre></td>
+        </tr>
+      
+        <tr>
+          <td>FIRST_DAY_OF_WEEK</td>
+          <td class="code"><pre>0</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SOUTH_MIGRATION_MODULES</td>
+          <td class="code"><pre>{&#39;easy_thumbnails&#39;: &#39;easy_thumbnails.south_migrations&#39;}</pre></td>
+        </tr>
+      
+        <tr>
+          <td>X_FRAME_OPTIONS</td>
+          <td class="code"><pre>&#39;SAMEORIGIN&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SESSION_ENGINE</td>
+          <td class="code"><pre>&#39;django.contrib.sessions.backends.db&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DATE_FORMAT</td>
+          <td class="code"><pre>&#39;N j, Y&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SESSION_COOKIE_DOMAIN</td>
+          <td class="code"><pre>None</pre></td>
+        </tr>
+      
+        <tr>
+          <td>MIDDLEWARE_CLASSES</td>
+          <td class="code"><pre>(&#39;django.contrib.sessions.middleware.SessionMiddleware&#39;,
+ &#39;django.middleware.common.CommonMiddleware&#39;,
+ &#39;django.middleware.csrf.CsrfViewMiddleware&#39;,
+ &#39;django.contrib.auth.middleware.AuthenticationMiddleware&#39;,
+ &#39;django.contrib.messages.middleware.MessageMiddleware&#39;,
+ &#39;django.middleware.clickjacking.XFrameOptionsMiddleware&#39;)</pre></td>
+        </tr>
+      
+        <tr>
+          <td>TEMPLATE_STRING_IF_INVALID</td>
+          <td class="code"><pre>&#39;&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>EMAIL_BACKEND</td>
+          <td class="code"><pre>&#39;django.core.mail.backends.smtp.EmailBackend&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SERVER_EMAIL</td>
+          <td class="code"><pre>&#39;root@localhost&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>FILE_CHARSET</td>
+          <td class="code"><pre>&#39;utf-8&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>TIME_ZONE</td>
+          <td class="code"><pre>&#39;UTC&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>ABSOLUTE_URL_OVERRIDES</td>
+          <td class="code"><pre>{}</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SEND_BROKEN_LINK_EMAILS</td>
+          <td class="code"><pre>False</pre></td>
+        </tr>
+      
+        <tr>
+          <td>FORMAT_MODULE_PATH</td>
+          <td class="code"><pre>None</pre></td>
+        </tr>
+      
+        <tr>
+          <td>EMAIL_PORT</td>
+          <td class="code"><pre>25</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DEFAULT_CHARSET</td>
+          <td class="code"><pre>&#39;utf-8&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>CACHE_MIDDLEWARE_KEY_PREFIX</td>
+          <td class="code"><pre>&#39;********************&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>USE_X_FORWARDED_HOST</td>
+          <td class="code"><pre>False</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DEFAULT_FROM_EMAIL</td>
+          <td class="code"><pre>&#39;webmaster@localhost&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>CSRF_COOKIE_NAME</td>
+          <td class="code"><pre>&#39;csrftoken&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>ALLOWED_INCLUDE_ROOTS</td>
+          <td class="code"><pre>()</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DJANGO_WYSIWYG_FLAVOR</td>
+          <td class="code"><pre>&#39;ckeditor&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SESSION_COOKIE_NAME</td>
+          <td class="code"><pre>&#39;sessionid&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>CSRF_COOKIE_SECURE</td>
+          <td class="code"><pre>False</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SESSION_FILE_PATH</td>
+          <td class="code"><pre>None</pre></td>
+        </tr>
+      
+        <tr>
+          <td>AUTH_USER_MODEL</td>
+          <td class="code"><pre>&#39;auth.User&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>PASSWORD_HASHERS</td>
+          <td class="code"><pre>&#39;********************&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>ADMINS</td>
+          <td class="code"><pre>()</pre></td>
+        </tr>
+      
+        <tr>
+          <td>LOGOUT_URL</td>
+          <td class="code"><pre>&#39;/accounts/logout/&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SESSION_EXPIRE_AT_BROWSER_CLOSE</td>
+          <td class="code"><pre>False</pre></td>
+        </tr>
+      
+        <tr>
+          <td>MEDIA_URL</td>
+          <td class="code"><pre>&#39;/media/&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>EMAIL_HOST</td>
+          <td class="code"><pre>&#39;localhost&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SHORT_DATE_FORMAT</td>
+          <td class="code"><pre>&#39;m/d/Y&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>IGNORABLE_404_URLS</td>
+          <td class="code"><pre>()</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SESSION_CACHE_ALIAS</td>
+          <td class="code"><pre>&#39;default&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>EMAIL_HOST_USER</td>
+          <td class="code"><pre>&#39;&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>CACHES</td>
+          <td class="code"><pre>{&#39;default&#39;: {&#39;BACKEND&#39;: &#39;django.core.cache.backends.locmem.LocMemCache&#39;}}</pre></td>
+        </tr>
+      
+        <tr>
+          <td>LANGUAGE_COOKIE_NAME</td>
+          <td class="code"><pre>&#39;django_language&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SIGNING_BACKEND</td>
+          <td class="code"><pre>&#39;django.core.signing.TimestampSigner&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>LANGUAGE_CODE</td>
+          <td class="code"><pre>&#39;en-us&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SESSION_SAVE_EVERY_REQUEST</td>
+          <td class="code"><pre>False</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DATE_INPUT_FORMATS</td>
+          <td class="code"><pre>(&#39;%Y-%m-%d&#39;,
+ &#39;%m/%d/%Y&#39;,
+ &#39;%m/%d/%y&#39;,
+ &#39;%b %d %Y&#39;,
+ &#39;%b %d, %Y&#39;,
+ &#39;%d %b %Y&#39;,
+ &#39;%d %b, %Y&#39;,
+ &#39;%B %d %Y&#39;,
+ &#39;%B %d, %Y&#39;,
+ &#39;%d %B %Y&#39;,
+ &#39;%d %B, %Y&#39;)</pre></td>
+        </tr>
+      
+        <tr>
+          <td>YEAR_MONTH_FORMAT</td>
+          <td class="code"><pre>&#39;F Y&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>MEDIA_ROOT</td>
+          <td class="code"><pre>&#39;/home/ctulhu/anylist/anylist/media&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DEBUG_PROPAGATE_EXCEPTIONS</td>
+          <td class="code"><pre>False</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DEFAULT_CONTENT_TYPE</td>
+          <td class="code"><pre>&#39;text/html&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>LOCALE_PATHS</td>
+          <td class="code"><pre>()</pre></td>
+        </tr>
+      
+        <tr>
+          <td>CSRF_FAILURE_VIEW</td>
+          <td class="code"><pre>&#39;django.views.csrf.csrf_failure&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SECRET_KEY</td>
+          <td class="code"><pre>&#39;********************&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>FORCE_SCRIPT_NAME</td>
+          <td class="code"><pre>None</pre></td>
+        </tr>
+      
+        <tr>
+          <td>FILE_UPLOAD_MAX_MEMORY_SIZE</td>
+          <td class="code"><pre>2621440</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DEFAULT_EXCEPTION_REPORTER_FILTER</td>
+          <td class="code"><pre>&#39;django.views.debug.SafeExceptionReporterFilter&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>CSRF_COOKIE_DOMAIN</td>
+          <td class="code"><pre>None</pre></td>
+        </tr>
+      
+        <tr>
+          <td>USE_I18N</td>
+          <td class="code"><pre>True</pre></td>
+        </tr>
+      
+        <tr>
+          <td>TEMPLATE_DEBUG</td>
+          <td class="code"><pre>False</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DEFAULT_TABLESPACE</td>
+          <td class="code"><pre>&#39;&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>AUTHENTICATION_BACKENDS</td>
+          <td class="code"><pre>(&#39;django.contrib.auth.backends.ModelBackend&#39;,)</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SECURE_PROXY_SSL_HEADER</td>
+          <td class="code"><pre>None</pre></td>
+        </tr>
+      
+        <tr>
+          <td>STATIC_ROOT</td>
+          <td class="code"><pre>&#39;/home/ctulhu/anylist/anylist/staticfiles&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SHORT_DATETIME_FORMAT</td>
+          <td class="code"><pre>&#39;m/d/Y P&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DATABASE_ROUTERS</td>
+          <td class="code"><pre>[]</pre></td>
+        </tr>
+      
+        <tr>
+          <td>THUMBNAIL_ALIASES</td>
+          <td class="code"><pre>{&#39;&#39;: {&#39;avatar&#39;: {&#39;crop&#39;: True, &#39;size&#39;: (50, 50)}}}</pre></td>
+        </tr>
+      
+        <tr>
+          <td>ADMIN_FOR</td>
+          <td class="code"><pre>()</pre></td>
+        </tr>
+      
+        <tr>
+          <td>STATICFILES_FINDERS</td>
+          <td class="code"><pre>(&#39;django.contrib.staticfiles.finders.FileSystemFinder&#39;,
+ &#39;django.contrib.staticfiles.finders.AppDirectoriesFinder&#39;)</pre></td>
+        </tr>
+      
+        <tr>
+          <td>TEMPLATE_CONTEXT_PROCESSORS</td>
+          <td class="code"><pre>(&#39;django.contrib.auth.context_processors.auth&#39;,
+ &#39;django.core.context_processors.debug&#39;,
+ &#39;django.core.context_processors.i18n&#39;,
+ &#39;django.core.context_processors.media&#39;,
+ &#39;django.core.context_processors.static&#39;,
+ &#39;django.core.context_processors.tz&#39;,
+ &#39;django.contrib.messages.context_processors.messages&#39;)</pre></td>
+        </tr>
+      
+        <tr>
+          <td>WSGI_APPLICATION</td>
+          <td class="code"><pre>&#39;anylist.wsgi.application&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>THOUSAND_SEPARATOR</td>
+          <td class="code"><pre>&#39;,&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>TRANSACTIONS_MANAGED</td>
+          <td class="code"><pre>False</pre></td>
+        </tr>
+      
+        <tr>
+          <td>TIME_FORMAT</td>
+          <td class="code"><pre>&#39;P&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>LOGGING</td>
+          <td class="code"><pre>{}</pre></td>
+        </tr>
+      
+        <tr>
+          <td>STATICFILES_DIRS</td>
+          <td class="code"><pre>(&#39;/home/ctulhu/anylist/anylist/static&#39;,)</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DEBUG</td>
+          <td class="code"><pre>True</pre></td>
+        </tr>
+      
+        <tr>
+          <td>LOGGING_CONFIG</td>
+          <td class="code"><pre>&#39;django.utils.log.dictConfig&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>LOGIN_REDIRECT_URL</td>
+          <td class="code"><pre>&#39;/accounts/profile/&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>USE_THOUSAND_SEPARATOR</td>
+          <td class="code"><pre>False</pre></td>
+        </tr>
+      
+        <tr>
+          <td>PASSWORD_RESET_TIMEOUT_DAYS</td>
+          <td class="code"><pre>&#39;********************&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>TEMPLATE_LOADERS</td>
+          <td class="code"><pre>(&#39;django.template.loaders.filesystem.Loader&#39;,
+ &#39;django.template.loaders.app_directories.Loader&#39;)</pre></td>
+        </tr>
+      
+        <tr>
+          <td>FILE_UPLOAD_HANDLERS</td>
+          <td class="code"><pre>(&#39;django.core.files.uploadhandler.MemoryFileUploadHandler&#39;,
+ &#39;django.core.files.uploadhandler.TemporaryFileUploadHandler&#39;)</pre></td>
+        </tr>
+      
+        <tr>
+          <td>PROFANITIES_LIST</td>
+          <td class="code"><pre>&#39;********************&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>FIXTURE_DIRS</td>
+          <td class="code"><pre>()</pre></td>
+        </tr>
+      
+        <tr>
+          <td>APPEND_SLASH</td>
+          <td class="code"><pre>True</pre></td>
+        </tr>
+      
+        <tr>
+          <td>COMMENTS_ALLOW_PROFANITIES</td>
+          <td class="code"><pre>False</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DATABASES</td>
+          <td class="code"><pre>{&#39;default&#39;: {&#39;ATOMIC_REQUESTS&#39;: False,
+             &#39;AUTOCOMMIT&#39;: True,
+             &#39;CONN_MAX_AGE&#39;: 0,
+             &#39;ENGINE&#39;: &#39;django.db.backends.postgresql_psycopg2&#39;,
+             &#39;HOST&#39;: &#39;&#39;,
+             &#39;NAME&#39;: &#39;product_db&#39;,
+             &#39;OPTIONS&#39;: {},
+             &#39;PASSWORD&#39;: &#39;********************&#39;,
+             &#39;PORT&#39;: &#39;&#39;,
+             &#39;TEST_CHARSET&#39;: None,
+             &#39;TEST_COLLATION&#39;: None,
+             &#39;TEST_MIRROR&#39;: None,
+             &#39;TEST_NAME&#39;: None,
+             &#39;TIME_ZONE&#39;: &#39;UTC&#39;,
+             &#39;USER&#39;: &#39;ctulhu&#39;}}</pre></td>
+        </tr>
+      
+        <tr>
+          <td>EMAIL_USE_TLS</td>
+          <td class="code"><pre>False</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SESSION_SERIALIZER</td>
+          <td class="code"><pre>&#39;django.contrib.sessions.serializers.JSONSerializer&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>TIME_INPUT_FORMATS</td>
+          <td class="code"><pre>(&#39;%H:%M:%S&#39;, &#39;%H:%M:%S.%f&#39;, &#39;%H:%M&#39;)</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SETTINGS_MODULE</td>
+          <td class="code"><pre>&#39;anylist.settings&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>TEMPLATE_DIRS</td>
+          <td class="code"><pre>(&#39;/home/ctulhu/anylist/anylist/templates&#39;,)</pre></td>
+        </tr>
+      
+        <tr>
+          <td>EMAIL_SUBJECT_PREFIX</td>
+          <td class="code"><pre>&#39;[Django] &#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SESSION_COOKIE_HTTPONLY</td>
+          <td class="code"><pre>True</pre></td>
+        </tr>
+      
+        <tr>
+          <td>INTERNAL_IPS</td>
+          <td class="code"><pre>()</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DECIMAL_SEPARATOR</td>
+          <td class="code"><pre>&#39;.&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>BASE_DIR</td>
+          <td class="code"><pre>&#39;/home/ctulhu/anylist/anylist&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>ALLOWED_HOSTS</td>
+          <td class="code"><pre>[]</pre></td>
+        </tr>
+      
+        <tr>
+          <td>CSRF_COOKIE_PATH</td>
+          <td class="code"><pre>&#39;/&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>USE_ETAGS</td>
+          <td class="code"><pre>False</pre></td>
+        </tr>
+      
+        <tr>
+          <td>USE_L10N</td>
+          <td class="code"><pre>True</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SESSION_COOKIE_AGE</td>
+          <td class="code"><pre>1209600</pre></td>
+        </tr>
+      
+        <tr>
+          <td>TEST_RUNNER</td>
+          <td class="code"><pre>&#39;django.test.runner.DiscoverRunner&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>EMAIL_HOST_PASSWORD</td>
+          <td class="code"><pre>&#39;********************&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>LANGUAGES_BIDI</td>
+          <td class="code"><pre>(&#39;he&#39;, &#39;ar&#39;, &#39;fa&#39;, &#39;ur&#39;)</pre></td>
+        </tr>
+      
+        <tr>
+          <td>MANAGERS</td>
+          <td class="code"><pre>()</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SESSION_COOKIE_SECURE</td>
+          <td class="code"><pre>False</pre></td>
+        </tr>
+      
+        <tr>
+          <td>USE_TZ</td>
+          <td class="code"><pre>True</pre></td>
+        </tr>
+      
+        <tr>
+          <td>INSTALLED_APPS</td>
+          <td class="code"><pre>(&#39;django.contrib.admin&#39;,
+ &#39;django.contrib.auth&#39;,
+ &#39;django.contrib.contenttypes&#39;,
+ &#39;django.contrib.sessions&#39;,
+ &#39;django.contrib.messages&#39;,
+ &#39;django.contrib.staticfiles&#39;,
+ &#39;myapp&#39;,
+ &#39;south&#39;,
+ &#39;django_wysiwyg&#39;,
+ &#39;easy_thumbnails&#39;,
+ &#39;rest_framework&#39;,
+ &#39;rest_framework.authtoken&#39;)</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DJANGO_LIVE_TEST_SERVER_ADDRESS</td>
+          <td class="code"><pre>&#39;localhost:8082&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DISALLOWED_USER_AGENTS</td>
+          <td class="code"><pre>()</pre></td>
+        </tr>
+      
+        <tr>
+          <td>LANGUAGES</td>
+          <td class="code"><pre>((&#39;af&#39;, &#39;Afrikaans&#39;),
+ (&#39;ar&#39;, &#39;Arabic&#39;),
+ (&#39;az&#39;, &#39;Azerbaijani&#39;),
+ (&#39;bg&#39;, &#39;Bulgarian&#39;),
+ (&#39;be&#39;, &#39;Belarusian&#39;),
+ (&#39;bn&#39;, &#39;Bengali&#39;),
+ (&#39;br&#39;, &#39;Breton&#39;),
+ (&#39;bs&#39;, &#39;Bosnian&#39;),
+ (&#39;ca&#39;, &#39;Catalan&#39;),
+ (&#39;cs&#39;, &#39;Czech&#39;),
+ (&#39;cy&#39;, &#39;Welsh&#39;),
+ (&#39;da&#39;, &#39;Danish&#39;),
+ (&#39;de&#39;, &#39;German&#39;),
+ (&#39;el&#39;, &#39;Greek&#39;),
+ (&#39;en&#39;, &#39;English&#39;),
+ (&#39;en-gb&#39;, &#39;British English&#39;),
+ (&#39;eo&#39;, &#39;Esperanto&#39;),
+ (&#39;es&#39;, &#39;Spanish&#39;),
+ (&#39;es-ar&#39;, &#39;Argentinian Spanish&#39;),
+ (&#39;es-mx&#39;, &#39;Mexican Spanish&#39;),
+ (&#39;es-ni&#39;, &#39;Nicaraguan Spanish&#39;),
+ (&#39;es-ve&#39;, &#39;Venezuelan Spanish&#39;),
+ (&#39;et&#39;, &#39;Estonian&#39;),
+ (&#39;eu&#39;, &#39;Basque&#39;),
+ (&#39;fa&#39;, &#39;Persian&#39;),
+ (&#39;fi&#39;, &#39;Finnish&#39;),
+ (&#39;fr&#39;, &#39;French&#39;),
+ (&#39;fy-nl&#39;, &#39;Frisian&#39;),
+ (&#39;ga&#39;, &#39;Irish&#39;),
+ (&#39;gl&#39;, &#39;Galician&#39;),
+ (&#39;he&#39;, &#39;Hebrew&#39;),
+ (&#39;hi&#39;, &#39;Hindi&#39;),
+ (&#39;hr&#39;, &#39;Croatian&#39;),
+ (&#39;hu&#39;, &#39;Hungarian&#39;),
+ (&#39;ia&#39;, &#39;Interlingua&#39;),
+ (&#39;id&#39;, &#39;Indonesian&#39;),
+ (&#39;is&#39;, &#39;Icelandic&#39;),
+ (&#39;it&#39;, &#39;Italian&#39;),
+ (&#39;ja&#39;, &#39;Japanese&#39;),
+ (&#39;ka&#39;, &#39;Georgian&#39;),
+ (&#39;kk&#39;, &#39;Kazakh&#39;),
+ (&#39;km&#39;, &#39;Khmer&#39;),
+ (&#39;kn&#39;, &#39;Kannada&#39;),
+ (&#39;ko&#39;, &#39;Korean&#39;),
+ (&#39;lb&#39;, &#39;Luxembourgish&#39;),
+ (&#39;lt&#39;, &#39;Lithuanian&#39;),
+ (&#39;lv&#39;, &#39;Latvian&#39;),
+ (&#39;mk&#39;, &#39;Macedonian&#39;),
+ (&#39;ml&#39;, &#39;Malayalam&#39;),
+ (&#39;mn&#39;, &#39;Mongolian&#39;),
+ (&#39;my&#39;, &#39;Burmese&#39;),
+ (&#39;nb&#39;, &#39;Norwegian Bokmal&#39;),
+ (&#39;ne&#39;, &#39;Nepali&#39;),
+ (&#39;nl&#39;, &#39;Dutch&#39;),
+ (&#39;nn&#39;, &#39;Norwegian Nynorsk&#39;),
+ (&#39;os&#39;, &#39;Ossetic&#39;),
+ (&#39;pa&#39;, &#39;Punjabi&#39;),
+ (&#39;pl&#39;, &#39;Polish&#39;),
+ (&#39;pt&#39;, &#39;Portuguese&#39;),
+ (&#39;pt-br&#39;, &#39;Brazilian Portuguese&#39;),
+ (&#39;ro&#39;, &#39;Romanian&#39;),
+ (&#39;ru&#39;, &#39;Russian&#39;),
+ (&#39;sk&#39;, &#39;Slovak&#39;),
+ (&#39;sl&#39;, &#39;Slovenian&#39;),
+ (&#39;sq&#39;, &#39;Albanian&#39;),
+ (&#39;sr&#39;, &#39;Serbian&#39;),
+ (&#39;sr-latn&#39;, &#39;Serbian Latin&#39;),
+ (&#39;sv&#39;, &#39;Swedish&#39;),
+ (&#39;sw&#39;, &#39;Swahili&#39;),
+ (&#39;ta&#39;, &#39;Tamil&#39;),
+ (&#39;te&#39;, &#39;Telugu&#39;),
+ (&#39;th&#39;, &#39;Thai&#39;),
+ (&#39;tr&#39;, &#39;Turkish&#39;),
+ (&#39;tt&#39;, &#39;Tatar&#39;),
+ (&#39;udm&#39;, &#39;Udmurt&#39;),
+ (&#39;uk&#39;, &#39;Ukrainian&#39;),
+ (&#39;ur&#39;, &#39;Urdu&#39;),
+ (&#39;vi&#39;, &#39;Vietnamese&#39;),
+ (&#39;zh-cn&#39;, &#39;Simplified Chinese&#39;),
+ (&#39;zh-tw&#39;, &#39;Traditional Chinese&#39;))</pre></td>
+        </tr>
+      
+        <tr>
+          <td>STATIC_URL</td>
+          <td class="code"><pre>&#39;/static/&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>MESSAGE_STORAGE</td>
+          <td class="code"><pre>&#39;django.contrib.messages.storage.fallback.FallbackStorage&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>SESSION_COOKIE_PATH</td>
+          <td class="code"><pre>&#39;/&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>PREPEND_WWW</td>
+          <td class="code"><pre>False</pre></td>
+        </tr>
+      
+        <tr>
+          <td>MONTH_DAY_FORMAT</td>
+          <td class="code"><pre>&#39;F j&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>STATICFILES_STORAGE</td>
+          <td class="code"><pre>&#39;django.contrib.staticfiles.storage.StaticFilesStorage&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DATETIME_INPUT_FORMATS</td>
+          <td class="code"><pre>(&#39;%Y-%m-%d %H:%M:%S&#39;,
+ &#39;%Y-%m-%d %H:%M:%S.%f&#39;,
+ &#39;%Y-%m-%d %H:%M&#39;,
+ &#39;%Y-%m-%d&#39;,
+ &#39;%m/%d/%Y %H:%M:%S&#39;,
+ &#39;%m/%d/%Y %H:%M:%S.%f&#39;,
+ &#39;%m/%d/%Y %H:%M&#39;,
+ &#39;%m/%d/%Y&#39;,
+ &#39;%m/%d/%y %H:%M:%S&#39;,
+ &#39;%m/%d/%y %H:%M:%S.%f&#39;,
+ &#39;%m/%d/%y %H:%M&#39;,
+ &#39;%m/%d/%y&#39;)</pre></td>
+        </tr>
+      
+        <tr>
+          <td>CSRF_COOKIE_HTTPONLY</td>
+          <td class="code"><pre>False</pre></td>
+        </tr>
+      
+        <tr>
+          <td>DEFAULT_INDEX_TABLESPACE</td>
+          <td class="code"><pre>&#39;&#39;</pre></td>
+        </tr>
+      
+        <tr>
+          <td>ROOT_URLCONF</td>
+          <td class="code"><pre>&#39;anylist.urls&#39;</pre></td>
+        </tr>
+      
+    </tbody>
+  </table>
+
+</div>
+
+  <div id="explanation">
+    <p>
+      You're seeing this error because you have <code>DEBUG = True</code> in your
+      Django settings file. Change that to <code>False</code>, and Django will
+      display a standard 500 page.
+    </p>
+  </div>
+
+</body>
+</html>

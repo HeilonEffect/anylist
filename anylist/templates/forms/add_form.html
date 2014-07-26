@@ -7,9 +7,10 @@
 		<input type="text" ng-model="product.title" name="title">
 		<textarea ng-model="product.description" name="description"></textarea>
 		
+		<img src="{[{product.avatar}]}">
 		<input type="file" ng-model="product.avatar" nv-file-select uploader="uploader">
 		
-		<pre><span ng-repeat="genre in active_genres">{[{genre.name}]} </span></pre>
+		<pre>Genres: <span ng-repeat="genre in active_genres">"{[{genre.name}]}" </span></pre>
 		<button ng-click="show_genres()">Add Genres</button>
 		<div ng-show="visibility_genres" ng-click="show_genres()">
 			<div ng-click="show_genres()">
@@ -24,7 +25,7 @@
 			</div>
 		</div>
 		<select>
-			<option ng-repeat="limit in raiting" value="{[{limit.id}]}" ng-click="select_raiting(limit.id)">{[{limit.name}]}</option>
+			<option ng-repeat="limit in raiting" value="{[{limit.id}]}" ng-click="select_raiting(limit.id)" ng-selected="limit.name==product.old_limit.name">{[{limit.name}]}</option>
 		</select>
 		<input type="submit" value="Create" ng-click="add_product()">
 	</form>
@@ -40,7 +41,7 @@
 
 			var category = window.location.pathname.split('/')[1];
 
-			// Убрать
+			// Убрать впоследствии
 			$http.get('/api/categories').success(function (data) {
 				for (var i in data)
 					for (var key in data[i]['categories'])
@@ -50,6 +51,16 @@
 
 			$scope.show_genres = function () {
 				$scope.visibility_genres = !$scope.visibility_genres;
+			}
+
+			if (window.location.pathname.split('/').length > 3) {
+				var id = window.location.pathname.split('/')[2].split('-')[0]
+				$http.get('/api/products/id:' + id).success(function (data) {
+					$scope.product = data;
+					var tmp = data.avatar.split('/');
+					$scope.product.avatar = '/media/' + tmp[tmp.length - 1];
+					$scope.active_genres = $scope.product.genres;
+				});
 			}
 
 			$scope.select_genre = function (genre) {
@@ -73,6 +84,16 @@
 
 			$http.get('/api/genres/category:' + category).success(function (data) {
 				$scope.genre_groups = data;
+
+				// $scope.genre_groups = data.map(function (elem) {
+				// 	return elem.genres.map(function (genre) {
+				// 		if ($scope.product.genres.indexOf(genre) != -1) {
+				// 			genre['checked'] = true;
+				// 		}
+				// 		return genre;
+				// 	});
+				// });
+				// console.log($scope.genre_groups);
 			});
 
 			$scope.add_product = function () {
