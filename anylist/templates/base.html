@@ -18,19 +18,23 @@
 </head>
 <body ng-controller="DefaultCtrl">
 	<header>
+		<a href="/">A</a>
 		<menu>
 			<div class="search_block">
 				<img src="/static/img/search.jpg">
 				<input type="search" placeholder="Search" ng-change="searcher()" ng-model="search_data">
 				<nav>
-					<p ng-repeat="item in search_result"><a href="{[{item.link}]}">{[{item.name}]}</a></p>
+					<a ng-repeat="item in search_result" href="{[{item.link}]}"><p>{[{item.name}]}</p></a>
 				</nav>
 			</div>
 			<img src="/static/img/show_main_menu.png" ng-click="show_menu()">
 			{% if user.is_authenticated %}
-				<span ng-click="show_user_menu()">{{ user.username }}</span>
-				<!-- <a href="/profile">{{ user.username }}</a> -->
-				<!-- <button ng-click="logout()">Log Out</button> -->
+			<span ng-mouseover="show_user_menu()" ng-mouseleave="hide_user_menu()">{{ user.username }}</span>
+			<div class="user_menu" ng-show="visibility_user" ng-mouseleave="hide_user_menu()" ng-mouseover="show_user_menu()">
+				<a href="/profile"><p>Profile</p></a>
+				<a href=""><p>Settings</p></a>
+				<a href="logout/"><p>Log Out</p></a>
+			</div>
 			{% else %}
 				<button ng-click="login()">Log In</button>
 			{% endif %}

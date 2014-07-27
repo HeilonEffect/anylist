@@ -9,6 +9,52 @@ defaultApp.config(function ($interpolateProvider) {
 	$interpolateProvider.endSymbol('}]}');
 });
 
+
+defaultApp.directive('ngThumb', ['$window', function($window) {
+        var helper = {
+            support: !!($window.FileReader && $window.CanvasRenderingContext2D),
+            isFile: function(item) {
+                return angular.isObject(item) && item instanceof $window.File;
+            },
+            isImage: function(file) {
+                var type = '|' + file.type.slice(file.type.lastIndexOf('/') + 1) + '|';
+                return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
+            }
+        };
+
+        return {
+            restrict: 'A',
+            template: '<canvas/>',
+            link: function(scope, element, attributes) {
+                if (!helper.support) return;
+
+                var params = scope.$eval(attributes.ngThumb);
+
+                if (!helper.isFile(params.file)) return;
+                if (!helper.isImage(params.file)) return;
+
+                var canvas = element.find('canvas');
+                var reader = new FileReader();
+
+                reader.onload = onLoadFile;
+                reader.readAsDataURL(params.file);
+
+                function onLoadFile(event) {
+                    var img = new Image();
+                    img.onload = onLoadImage;
+                    img.src = event.target.result;
+                }
+
+                function onLoadImage() {
+                    var width = params.width || this.width / this.height * params.height;
+                    var height = params.height || this.height / this.width * params.width;
+                    canvas.attr({ width: width, height: height });
+                    canvas[0].getContext('2d').drawImage(this, 0, 0, width, height);
+                }
+            }
+        };
+}]);
+
 defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location',
 	function ($scope, $http, $location) {
 		$scope.hidden_menu = false;
@@ -20,7 +66,11 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location',
 		}
 
 		$scope.show_user_menu = function () {
-			$scope.visibility_user = !$scope.visibility_user;
+			$scope.visibility_user = true;
+		}
+
+		$scope.hide_user_menu = function () {
+			$scope.visibility_user = false;
 		}
 
 		$http.get('/api/categories/?format=json').success(function (data) {
@@ -64,9 +114,15 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location',
 	}
 ]);
 
+/*
+	Список продуктов конкретной категории
+*/
 defaultApp.controller('ListCtrl', ['$scope', '$http', '$location',
 	function ($scope, $http, $location) {
 		$scope.panel_visibility = false;
+		$scope.edit_visibility = false;
+		$scope.add_form_visible = true;
+
 		$scope.active_genres = {};
 		$scope.active_limits = {};
 		var limits = $location.absUrl().split('/').slice(5);
@@ -86,10 +142,16 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location',
 		var category = $location.absUrl().split('/');
 		category = category[3];
 
+		$scope.mouse_over = function (elem) {
+			console.log(elem);
+		}
+
 		$http.get('/api/genres/category:' + category).success(function (data) {
 			$scope.genre_groups = data;
+			$scope.all_genres = [];
 			for (var i in data)
 				for (var j in data[i].genres) {
+					$scope.all_genres.push(data[i].genres[j]);
 					if (genres.indexOf(data[i].genres[j].name) != -1)
 						$scope.genre_groups[i].genres[j].checked = true;
 					else
@@ -154,11 +216,15 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location',
 		}
 		
 		$scope.add_form = function () {
-			window.location.href = $location.absUrl().split('/').slice(0, 4).join('/') + "/add";
+			$scope.add_form_visible = !$scope.add_form_visible;
+			// window.location.href = $location.absUrl().split('/').slice(0, 4).join('/') + "/add";
 		}
 	}
 ]);
 
+/*
+	Добавление/изменение продукта
+*/
 defaultApp.controller('AddFormCtrl', function ($scope, $http, $location, FileUploader) {
 		$scope.uploader = new FileUploader();
 
@@ -179,13 +245,40 @@ defaultApp.controller('AddFormCtrl', function ($scope, $http, $location, FileUpl
 			$scope.visibility_genres = !$scope.visibility_genres;
 		}
 
-		if (window.location.pathname.split('/').length > 3) {
-			var id = window.location.pathname.split('/')[2].split('-')[0]
+		var is_edit = !window.location.pathname.endsWith('/add/');
+		var id = window.location.pathname.split('/')[2].split('-')[0]
+
+		if (is_edit) {;
 			$http.get('/api/products/id:' + id).success(function (data) {
 				$scope.product = data;
 				var tmp = data.avatar.split('/');
 				$scope.product.avatar = '/media/' + tmp[tmp.length - 1];
-				$scope.active_genres = $scope.product.genres;
+				// $scope.active_genres = $scope.product.genres;
+
+				$http.get('/api/genres').success(function (data) {
+					$scope.active_genres = data.filter(function (elem) {
+						return $scope.product.genres.indexOf(elem.id) != -1;
+					});
+					var ids = $scope.active_genres.map(function (elem) {
+						return elem.id;
+					});
+
+					$http.get('/api/genres/category:' + category).success(function (data) {
+						$scope.genre_groups = data;
+						$scope.genre_groups = data.map(function (group) {
+							group.genres = group.genres.map(function (genre) {
+								if (ids.indexOf(genre.id) != -1)
+									genre.checked = true;
+								return genre;
+							});
+							return group;
+						});
+					});
+				});
+			});
+		} else {
+			$http.get('/api/genres/category:' + category).success(function (data) {
+				$scope.genre_groups = data;
 			});
 		}
 
@@ -208,22 +301,34 @@ defaultApp.controller('AddFormCtrl', function ($scope, $http, $location, FileUpl
 			$scope.raiting = data;
 		});
 
-		$http.get('/api/genres/category:' + category).success(function (data) {
-			$scope.genre_groups = data;
-		});
-
 		$scope.add_product = function () {
 			if (!$scope.product)
 				$scope.product = {};
 			$scope.product['genres'] = $scope.active_genres.map(function (elem) {
 				return elem.id;
 			});
-			$scope.product['category'] = $scope.category_id;
-			$scope.uploader.queue[0].alias = "avatar";
-			$scope.uploader.queue[0].formData.push($scope.product);
-			$scope.uploader.queue[0].url = "/api/products";
-			console.log($scope.product);
-			$scope.uploader.uploadAll();
+			if (is_edit) {
+				console.log($scope.product);
+				console.log($scope.uploader);
+				if ($scope.uploader.queue.length > 0) {
+					$scope.uploader.queue[0].alias = 'avatar';
+					$scope.uploader.queue[0].formData.push($scope.product);
+					$scope.uploader.queue[0].url = "/api/products/id:" + id;
+					$scope.uploader.queue[0].method = "PUT";
+				}
+				$http({
+					method: "PUT",
+					url: "/api/products/id:" + id,
+					data: $scope.product
+				});
+			} else {
+				$scope.product['category'] = $scope.category_id;
+				$scope.uploader.queue[0].alias = "avatar";
+				$scope.uploader.queue[0].formData.push($scope.product);
+				$scope.uploader.queue[0].url = "/api/products";
+				console.log($scope.uploader.queue[0]);
+				$scope.uploader.uploadAll();
+			}
 		}
 	}
 );

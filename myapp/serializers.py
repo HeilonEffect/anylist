@@ -25,7 +25,8 @@ class ProductSerializer(serializers.ModelSerializer):
     url = serializers.Field(source='get_absolute_url')
     genres = serializers.PrimaryKeyRelatedField(many=True)
     old_limit = serializers.PrimaryKeyRelatedField()
-    series = serializers.IntegerField(source='serie_set.count', read_only=True)
+    series = serializers.IntegerField(
+        source='serie_set.count', read_only=True, required=False)
 
     class Meta:
         model = Product
@@ -73,6 +74,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
 
 class SeriesSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Serie
         fields = ('number', 'name', 'num_season', 'start_date', 'length',)

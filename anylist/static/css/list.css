@@ -1,12 +1,14 @@
 .add_form {
 	position: fixed;
 	background-color: green;
+	border-radius: 1em;
 	top: 3em;
 	left: 2.5em;
 	width: 2em;
 	height: 2em;
 }
 .expand {
+	border-radius: 1em;
 	position: fixed;
 	background-color: green;
 	right: 3em;
@@ -21,4 +23,64 @@ main > nav {
 	right: 0;
 	width: 10em;
 	background-color: white;
+}
+figure figcaption {
+/*.cards figure figcaption {*/
+	background-color: rgba(0, 0, 0, .5);
+	color: white;
+	height: 2.5em;
+	position: absolute;
+	margin-top: -2.7em;
+	width: 11em;
+	text-indent: .5em;
+}
+.edit_in_list {
+	position: absolute;
+	width: 2em;
+	height: 2em;
+	margin-left: 9em;
+}
+.add_product_form {
+	position: fixed;
+	top: 5%;
+	left: 5%;
+	right: 5%;
+	bottom: 5%;
+	background-color: white;
+	z-index: 20;
+	font-size: 28px;
+}
+.add_product_form_parent {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: rgba(0,0,0,0.2);
+}
+.add_product_form div {
+	margin-top: 1em;
+	margin-left: 2em;
+	padding: 0;
+}
+.add_product_form label {
+	margin: 0;
+}
+.add_product_form input[type="text"] {
+	margin: 3em 4em 1em 5em;
+	width: 40%;
+	height: 3em;
+	border: none;
+	border-bottom: 1px solid black;
+}
+.add_product_form textarea {
+	border: 1px solid rgba(0,0,0, 0.3);
+	height: 10em;
+	width: 25em;
+}
+.add_product_form input[type="file"] {
+	margin: 1em;
+}
+.add_product_form option {
+	width: 10em;
 }

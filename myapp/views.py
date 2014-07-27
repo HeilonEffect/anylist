@@ -47,8 +47,11 @@ class ProductList(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated, )
 
     def post(self, request, *args, **kwargs):
-        serializer = ProductSerializer(data=request.DATA, files=request.FILES)
+        # Костыль
+        # request.DATA['genres'] = request.DATA['genres'].split(',')
+        print(type(request.DATA['genres']))
         print(request.DATA)
+        serializer = ProductSerializer(data=request.DATA, files=request.FILES)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -143,7 +146,7 @@ class StatusView(generics.GenericAPIView):
         p = UserList.objects.filter(user=request.user,
                                     product__id=pk).first()
         if p:
-            content = { 'status': p.status.name}
+            content = {'status': p.status.name}
             return Response(content)
         else:
             return HTTP_400_BAD_REQUEST()

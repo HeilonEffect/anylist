@@ -5,14 +5,20 @@
 <main ng-controller="AddFormCtrl">
 	<form>
 		<input type="text" ng-model="product.title" name="title">
+
 		<textarea ng-model="product.description" name="description"></textarea>
 		
-		<img src="{[{product.avatar}]}">
-		<input type="file" ng-model="product.avatar" nv-file-select uploader="uploader">
-		
+		<div ng-repeat="item in uploader.queue" class="load_preview_parent">
+			<div ng-show="uploader.isHTML5" ng-thumb="{ file: item._file, height: 300 }" class="load_preview"></div>
+		</div>
+		<img src="{[{product.avatar}]}" ng-if="product">
+		<!-- <div class="img-up-form"> -->
+			<input type="file" ng-model="product.avatar" nv-file-select uploader="uploader">
+		<!-- </div> -->
+
 		<pre>Genres: <span ng-repeat="genre in active_genres">"{[{genre.name}]}" </span></pre>
 		<button ng-click="show_genres()">Add Genres</button>
-		<div ng-show="visibility_genres" ng-click="show_genres()">
+		<div ng-show="visibility_genres" ng-click="show_genres()" class="genres_background">
 			<div ng-click="show_genres()">
 			<ul ng-repeat-start="group in genre_groups">
 				<li ng-repeat="genre in group.genres">
@@ -26,7 +32,7 @@
 		</div>
 		<select>
 			<option>--> Select limit</option>
-			<option ng-repeat="limit in raiting" value="{[{limit.id}]}" ng-click="select_raiting(limit.id)" ng-selected="limit.name==product.old_limit">{[{limit.name}]}</option>
+			<option ng-repeat="limit in raiting" value="{[{limit.id}]}" ng-click="select_raiting(limit.id)" ng-selected="limit.id==product.old_limit">{[{limit.name}]}</option>
 		</select>
 		<input type="submit" value="Create" ng-click="add_product()">
 	</form>

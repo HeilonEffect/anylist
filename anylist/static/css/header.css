@@ -1,6 +1,12 @@
 body {
 	font: 20px normal Times,Georgia,Cambria,"Times New Roman",serif;
-	/*background-color: #cfd8dc;*/
+}
+ul {
+	list-style: none;
+}
+a {
+	text-decoration: none;
+	color: black;
 }
 header {
 	position: fixed;
@@ -8,18 +14,19 @@ header {
 	top: 0;
 	right: 0;
 	height: 4em;
-	background-color: #b39ddb;
-	/*background-color: #fafafa;*/
+	background-color: #fafafa;
+	border-bottom: .2px solid #444;
 }
 header h1 {
 	color: #444;
 	max-width: 20em;
 	text-indent: 2.3em;
-	margin-top: .2em;
+	margin-top: -0.3em;
 }
 header menu {
 	float: right;
-	margin-top: 0;
+	margin-top: -.2em;
+	margin-right: 2.5em;
 }
 header button {
 	height: 2em;
@@ -56,7 +63,10 @@ input[type="search"] {
 header > menu > img {
 	margin-top: .6em;
 	padding: .8em;
-	border: .7px solid rgba(0, 0, 0, 1);
+	border: .7px solid rgba(0, 0, 0, 0);
+}
+header > menu > img:hover {
+	border: .7px solid rgba(0, 0, 0, 0.3);
 }
 details {
 	position: fixed;
@@ -113,6 +123,42 @@ header form input[type="submit"] {
 menu > a {
 	float: left;
 }
+header menu span {
+	font-size: 28px;
+}
 header menu nav {
 	background-color: white;
+	margin-top: .3em;
+}
+header menu nav p {
+	padding: 0.5em;
+	margin: 0;
+	border-bottom: 1px solid rgba(0, 0, 0, .3);
+}
+header menu nav p a {
+	width: 100%;
+	height: 100%;
+}
+header menu nav p:hover {
+	background-color: rgba(0, 0, 0, .1);
+}
+.user_menu {
+	position: fixed;
+	right: 1em;
+	font-size: 26px;
+	top: 2.5em;
+	padding: 0;
+	width: 5em;
+	border: 1px solid rgba(0, 0, 0, .3);
+	background-color: white;
+}
+.user_menu a {
+	margin: 0;
+	width: 100%;
+	border-bottom: 1px solid rgba(0, 0, 0, .3);
+}
+.user_menu a p {
+	width: 100%;
+	height: 100%;
+	border-bottom: 1px solid rgba(0, 0, 0, .3);
 }

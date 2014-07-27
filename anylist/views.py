@@ -191,6 +191,7 @@ def product_list(request, category):
 
 
 @require_http_methods(['POST'])
+@csrf_exempt
 @login_required
 def status_update(request, pk):
     ''' Process post-request with new status
