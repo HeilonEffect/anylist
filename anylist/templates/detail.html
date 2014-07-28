@@ -6,7 +6,7 @@
 	<a href="edit"><img src="/static/img/edit.png" class="edit_product"></a>
 	<article>
 		<img src="{{ object.avatar_path }}">
-		Genres: <a href="/{[{category}]}/filter/genres/{[{genres[genre - 1].name}]}" ng-repeat="genre in product.genres">{[{genres[genre - 1].name}]}, </a>
+		Genres: <a href="/{[{category}]}/filter/genres/{[{genre.name}]}" ng-repeat="genre in product.genres_list">{[{genre.name}]}, </a>
 		<p>Old raiting: <a href="/{[{category}]}/filter/old_limit/{[{raiting[product.old_limit - 1]}]}">{[{raiting[product.old_limit - 1]}]}</a></p>
 		<br>
 		<p>

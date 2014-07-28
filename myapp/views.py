@@ -49,7 +49,6 @@ class ProductList(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         # Костыль
         # request.DATA['genres'] = request.DATA['genres'].split(',')
-        print(type(request.DATA['genres']))
         print(request.DATA)
         serializer = ProductSerializer(data=request.DATA, files=request.FILES)
         if serializer.is_valid():

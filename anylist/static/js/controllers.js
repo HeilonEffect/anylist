@@ -117,11 +117,15 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location',
 /*
 	Список продуктов конкретной категории
 */
-defaultApp.controller('ListCtrl', ['$scope', '$http', '$location',
-	function ($scope, $http, $location) {
+defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader',
+	function ($scope, $http, $location, FileUploader) {
 		$scope.panel_visibility = false;
 		$scope.edit_visibility = false;
-		$scope.add_form_visible = true;
+		$scope.add_form_visible = false;
+
+		$scope.uploader = new FileUploader();
+		$scope.uploader.queueLimit = 1;
+		$scope.uploader.removeAfterUpload = true;
 
 		$scope.active_genres = {};
 		$scope.active_limits = {};
@@ -143,7 +147,15 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location',
 		category = category[3];
 
 		$scope.mouse_over = function (elem) {
-			console.log(elem);
+			elem.product.edit_btn = true;
+		}
+
+		$scope.mouse_leave = function (elem) {
+			elem.product.edit_btn = false;
+		}
+
+		$scope.show_edit_form = function (elem) {
+			$scope.visibility_form = true;
 		}
 
 		$http.get('/api/genres/category:' + category).success(function (data) {
@@ -205,10 +217,16 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location',
 
 		var url = $location.absUrl().split('/').slice(3).join('/');
 
+		$scope.remove_image = function () {
+			$scope.uploader.removeFromQueue(0);
+		}
+
 		$http.get('/api/products/category:' + url).success(function (data) {
 			$scope.products = data;
-			for (var i in data)
+			for (var i in data) {
 				$scope.products[i].avatar = "/media/" + data[i].avatar.split('/').pop();
+				$scope.products[i].edit_btn = false;
+			}
 		});
 
 		$scope.show_panel = function () {
@@ -218,6 +236,23 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location',
 		$scope.add_form = function () {
 			$scope.add_form_visible = !$scope.add_form_visible;
 			// window.location.href = $location.absUrl().split('/').slice(0, 4).join('/') + "/add";
+		}
+
+
+		$http.get('/api/categories').success(function (data) {
+			for (var i in data)
+				for (var key in data[i]['categories'])
+					if (data[i]['categories'][key].url == category)
+						$scope.category_id = data[i]['categories'][key].id;
+		});
+
+		$scope.add_product = function () {
+			$scope.product['category'] = $scope.category_id;
+			$scope.uploader.queue[0].alias = "avatar";
+			$scope.uploader.queue[0].formData.push($scope.product);
+			$scope.uploader.queue[0].url = "/api/products";
+			console.log($scope.uploader.queue[0].formData);
+			$scope.uploader.uploadAll();
 		}
 	}
 ]);

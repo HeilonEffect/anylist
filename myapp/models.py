@@ -160,6 +160,9 @@ class Product(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        ordering = ('title',)
+
 
 class SeriesGroup(models.Model):
     number = models.PositiveSmallIntegerField(null=True, blank=True)
