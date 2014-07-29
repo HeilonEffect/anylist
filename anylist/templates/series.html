@@ -1,14 +1,22 @@
 {% extends "base.html" %}
 {% block body %}
-<main ng-controller="SeriesCtrl">
-	<ul ng-repeat=""></ul>
+<main ng-controller="SeriesCtrl" class="series">
+	<form ng-submit="create_season()">
+		<input type="number" placeholder="Number" ng-model="season.number">
+		<input type="text" placeholder="Name" ng-model="season.name">
+		<input type="submit" value="Create New Season">
+	</form>
+	<div ng-repeat="season in series" class="series_block">
+		<form ng-submit="create_serie()">
+			<input type="number" placeholder="Number" ng-model="new_serie.number">
+			<input type="text" placeholder="Name" ng-model="new_serie.name">
+			<quick-datepicker ng-model="new_serie.start_date" disable-timepicker="true" date-format="MM/dd/yyyy"></quick-datepicker>
+			<input type="number" ng-model="new_serie.length" placeholder="Length">
+			<input type="submit" value="Add new Serie">
+		</form>
+		<ul>
+			<li ng-repeat="serie in season.series">a</li>
+		</ul>
+	</div>
 </main>
-{% endblock %}
-{% block script %}
-<script>
-	defaultApp.controller('SeriesCtrl', ['$scope', '$http',
-		function ($scope, $http) {
-			;
-		}]);
-</script>
 {% endblock %}

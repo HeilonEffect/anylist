@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from .models import (
-    CategoryGroup, Product, Raiting,  GenreGroup, UserList, Genre, Serie)
+    CategoryGroup, Product, Raiting,  GenreGroup, UserList, Genre, Serie,
+    SeriesGroup)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -66,18 +67,18 @@ class UserListSerializer(serializers.ModelSerializer):
         fields = ('user', 'score', 'status', 'product',)
 
 
-class ProductDetailSerializer(serializers.ModelSerializer):
-
-    '''
-    Для одиночного продукта
-    '''
-    class Meta:
-        model = Product
-        fields = ('title', 'description', 'avatar', 'category', )
-
-
 class SeriesSerializer(serializers.ModelSerializer):
+    start_date = serializers.DateField(input_formats=['%m.%d.%y'])
 
     class Meta:
         model = Serie
-        fields = ('number', 'name', 'num_season', 'start_date', 'length',)
+        fields = ('number', 'name', 'season', 'start_date', 'length',)
+
+
+class SeasonsSerializer(serializers.ModelSerializer):
+    series = serializers.PrimaryKeyRelatedField(
+        many=True, source='serie_set', read_only=True)
+
+    class Meta:
+        model = SeriesGroup
+        fields = ('id', 'number', 'name', 'series', 'product',)

@@ -361,12 +361,13 @@ class SerieView(BasePageMixin, ListView):
             user_list__user=self.request.user.id)
         return self.queryset
 
-    def get_context_data(self, **kwargs):
-        context = super(SerieView, self).get_context_data(**kwargs)
-        p = Serie.objects.filter(product__id=self.kwargs['pk'])
+    # def get_context_data(self, **kwargs):
+    #     context = super(SerieView, self).get_context_data(**kwargs)
+    #     # p = Serie.objects.filter(season__id=self.kwargs['pk'])
+    #     p = Serie.objects.all()
 
-        context['series'], context['num_season'] = self.series_serialize()
-        return context
+    #     context['series'], context['num_season'] = self.series_serialize()
+    #     return context
 
 
 class HeroView(BasePageMixin, DetailView):

@@ -1,0 +1,15 @@
+.series_block {
+	list-style: none;
+}
+.series {}
+.series input[type="number"] {
+	width: 5em;
+	height: 2em;
+	border: none;
+	border-bottom: .5px solid rgba(0, 0, 0, .4);
+}
+.series input[type="text"] {
+	width: 25em;
+	border: none;
+	border-bottom: .5px solid rgba(0, 0, 0, .4);
+}

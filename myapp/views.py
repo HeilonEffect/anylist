@@ -21,7 +21,8 @@ from .models import (
     Raiting,
     GenreGroup,
     UserList,
-    Serie
+    Serie,
+    SeriesGroup
 )
 
 from .serializers import (
@@ -32,7 +33,8 @@ from .serializers import (
     UsersSerializer,
     UserListSerializer,
     SeriesSerializer,
-    GenreSerializer
+    GenreSerializer,
+    SeasonsSerializer
 )
 
 
@@ -47,8 +49,6 @@ class ProductList(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated, )
 
     def post(self, request, *args, **kwargs):
-        # Костыль
-        # request.DATA['genres'] = request.DATA['genres'].split(',')
         print(request.DATA)
         serializer = ProductSerializer(data=request.DATA, files=request.FILES)
         if serializer.is_valid():
@@ -151,11 +151,25 @@ class StatusView(generics.GenericAPIView):
             return HTTP_400_BAD_REQUEST()
 
 
-class SeriesView(generics.ListCreateAPIView):
-    permission_classes = (AllowAny,)
-    serializer_class = SeriesSerializer
-
-
 class GenreView(generics.ListAPIView):
     serializer_class = GenreSerializer
     queryset = Genre.objects.all().order_by('id')
+
+
+class SeasonsView(generics.ListCreateAPIView):
+    serializer_class = SeasonsSerializer
+    model = SeriesGroup
+
+
+class SeriesView(generics.ListCreateAPIView):
+    serializer_class = SeriesSerializer
+    model = Serie
+
+    def post(self, request, *args, **kwargs):
+        print(request.DATA)
+        serializer = SeriesSerializer(data=request.DATA, files=request.FILES)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

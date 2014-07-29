@@ -1,5 +1,5 @@
 var defaultApp = angular.module('defaultApp', [
-	'angularFileUpload', 'ngCookies'
+	'angularFileUpload', 'ngQuickDate', 'ngCookies'
 ]).run(function ($http, $cookies) {
 	$http.defaults.headers.post['X-CSRFToken'] = '{{ csrf_token }}';
 });
@@ -251,7 +251,6 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			$scope.uploader.queue[0].alias = "avatar";
 			$scope.uploader.queue[0].formData.push($scope.product);
 			$scope.uploader.queue[0].url = "/api/products";
-			console.log($scope.uploader.queue[0].formData);
 			$scope.uploader.uploadAll();
 		}
 	}
@@ -343,8 +342,6 @@ defaultApp.controller('AddFormCtrl', function ($scope, $http, $location, FileUpl
 				return elem.id;
 			});
 			if (is_edit) {
-				console.log($scope.product);
-				console.log($scope.uploader);
 				if ($scope.uploader.queue.length > 0) {
 					$scope.uploader.queue[0].alias = 'avatar';
 					$scope.uploader.queue[0].formData.push($scope.product);
@@ -361,7 +358,6 @@ defaultApp.controller('AddFormCtrl', function ($scope, $http, $location, FileUpl
 				$scope.uploader.queue[0].alias = "avatar";
 				$scope.uploader.queue[0].formData.push($scope.product);
 				$scope.uploader.queue[0].url = "/api/products";
-				console.log($scope.uploader.queue[0]);
 				$scope.uploader.uploadAll();
 			}
 		}
@@ -411,6 +407,42 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location',
 			}).success(function (data) {
 				$scope.active_status = elem.status;
 			});
+		}
+	}
+]);
+
+
+defaultApp.controller('SeriesCtrl', ['$scope', '$http',
+	function ($scope, $http) {
+		var id = window.location.pathname.split("/")[2].split("-")[0];
+		$scope.new_serie = {};
+
+		$http.get('/api/seasons?product=' + id).success(function (data) {
+			$scope.series = data;
+		});
+
+		$scope.create_season = function () {
+			// Создаём новый сезон
+			var data = "number=" + $scope.season.number + "&product=" + id + "&name=" + $scope.season.name;
+			data = data.replace("undefined", "");
+			$http({
+				method: "POST",
+				url: "/api/seasons",
+				data: data,
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				}
+			}).success(function (data) {
+				$scope.series.push($scope.season);
+			});
+		}
+
+		$scope.create_serie = function () {
+			// console.log($scope.)
+			var data = "number=" + $scope.new_serie.number + "&name=" + $scope.new_serie.name +
+				"&start_date=" + $scope.new_serie.start_date.toLocaleDateString() + "&length=" + $scope.new_serie.length;
+			data = data.replace("undefined", "", "g");
+			console.log(data);
 		}
 	}
 ]);

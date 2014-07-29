@@ -21,10 +21,10 @@ class AddSerieForm(ModelForm):
 		fields = '__all__'
 
 
-class AddToListSerieForm(ModelForm):
-	class Meta:
-		model = Serie
-		fields = ('number', 'num_season', 'product', )
+# class AddToListSerieForm(ModelForm):
+# 	class Meta:
+# 		model = Serie
+# 		fields = ('number', 'num_season', 'product', )
 
 
 class RegisterForm(forms.Form):
