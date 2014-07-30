@@ -1,14 +1,73 @@
 .series_block {
 	list-style: none;
+	margin-left: 2em;
 }
-.series {}
+.series_block ul li {
+	display: block;
+	padding: .7em;
+	border: 1px solid #E3E3E3;
+}
+.series_block li:hover {
+	background-color: #e91e63;
+	border: 1px solid #e91e63;
+}
+.series_block p {
+	text-indent: 1em;
+}
+.serie .menu {
+	float: right;
+}
+.serie div {
+	left: 40em;
+	margin-top: -1.3em;
+}
+.series input[type="submit"] {
+	background-color: #f36c60;
+	border: none;
+	height: 2em;
+}
+.series_block img {
+	width: 25px;
+	height: 25px;
+}
+.series_block span menu {
+	position: fixed;
+	left: 40em;
+}
+.add_season {
+	position: fixed;
+	width: 4em;
+	height: 4em;
+	bottom: 1em;
+	z-index: 20;
+	right: 1em;
+	background-color: #42bd41;
+	border-radius: 2em;
+}
+.series_block .number {
+	margin-left: 1em;
+	width: 3em;
+}
+.series_block .name {
+	margin-left: 4em;
+	width: 5em;
+}
+.series_block .start_date {
+	float: right;
+	margin-right: 4em;
+}
+.series_block .length {
+	float: right;
+	width: 1em;
+	margin-right: 2em;
+}
 .series input[type="number"] {
 	width: 5em;
 	height: 2em;
 	border: none;
-	border-bottom: .5px solid rgba(0, 0, 0, .4);
+	border-bottom: 1px solid #E3E3E3;	
 }
-.series input[type="text"] {
+.text_field {
 	width: 25em;
 	border: none;
 	border-bottom: .5px solid rgba(0, 0, 0, .4);

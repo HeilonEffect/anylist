@@ -1,4 +1,5 @@
 import functools
+import json
 import operator
 
 from django.contrib.auth.models import User
@@ -12,6 +13,8 @@ from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from .forms import AddProductForm
 
 from .models import (
     CategoryGroup,
@@ -50,7 +53,8 @@ class ProductList(generics.ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         print(request.DATA)
-        serializer = ProductSerializer(data=request.DATA, files=request.FILES)
+        data = json.loads(request.DATA['data'])
+        serializer = ProductSerializer(data=data, files=request.FILES)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -159,6 +163,24 @@ class GenreView(generics.ListAPIView):
 class SeasonsView(generics.ListCreateAPIView):
     serializer_class = SeasonsSerializer
     model = SeriesGroup
+
+    def post(self, request, *args, **kwargs):
+        ''' Создание нового "сезона" '''
+        product = request.DATA['product']
+        num_season = self.model.objects.filter(
+            product=product).count() + 1
+        self.model.objects.create(number=num_season,
+                                  product=Product.objects.get(id=product))
+        print(serializer_class(self.model.objects.last()))
+        return HTTP_201_CREATED()
+
+    def get_queryset(self):
+        print(self.request.GET)
+        if 'product' in self.request.GET:
+            return self.model.objects.filter(
+                product=self.request.GET['product'])
+        else:
+            return self.model.objects.all()
 
 
 class SeriesView(generics.ListCreateAPIView):

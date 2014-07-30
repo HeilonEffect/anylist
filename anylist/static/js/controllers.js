@@ -248,8 +248,10 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 
 		$scope.add_product = function () {
 			$scope.product['category'] = $scope.category_id;
+			 // JSON.stringify($scope.product);
 			$scope.uploader.queue[0].alias = "avatar";
-			$scope.uploader.queue[0].formData.push($scope.product);
+			// $scope.uploader.queue[0].formData.push($scope.product);
+			$scope.uploader.queue[0].formData.push({'data': JSON.stringify($scope.product)});
 			$scope.uploader.queue[0].url = "/api/products";
 			$scope.uploader.uploadAll();
 		}
@@ -418,31 +420,67 @@ defaultApp.controller('SeriesCtrl', ['$scope', '$http',
 		$scope.new_serie = {};
 
 		$http.get('/api/seasons?product=' + id).success(function (data) {
-			$scope.series = data;
+			$scope.seasons = data;
+			for (var i in data)
+				for (var j in data[i].series) {
+					if (!data[i].series[j]['length'])
+						$scope.seasons[i].series[j]['length']= " ";
+					if (data[i].series[j].start_date) {
+						var tmp = data[i].series[j].start_date.slice(0, 10)
+						$scope.seasons[i].series[j].start_date = tmp;
+					}
+				}
 		});
 
 		$scope.create_season = function () {
-			// Создаём новый сезон
-			var data = "number=" + $scope.season.number + "&product=" + id + "&name=" + $scope.season.name;
-			data = data.replace("undefined", "");
 			$http({
 				method: "POST",
 				url: "/api/seasons",
+				data: "product=" + id,
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				}
+			}).success(function (data) {
+			});
+		}
+
+		$scope.create_serie = function (season) {
+			// Добавляем отсутсвующий ноль
+			var start_date = $scope.new_serie.start_date.toLocaleString().split(' ').join(' 0') || "";
+
+			var data = "number=" + $scope.new_serie.number + "&name=" + $scope.new_serie.name +
+				"&start_date=" + start_date + "&length=" + $scope.new_serie.length;
+			data = data.replace("undefined", "", "g");
+			data += "&season=" + season.id;
+			$http({
+				method: "POST",
+				url: "/api/series",
 				data: data,
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded'
 				}
 			}).success(function (data) {
-				$scope.series.push($scope.season);
+				season.series.unshift($scope.new_serie);
 			});
 		}
 
-		$scope.create_serie = function () {
-			// console.log($scope.)
-			var data = "number=" + $scope.new_serie.number + "&name=" + $scope.new_serie.name +
-				"&start_date=" + $scope.new_serie.start_date.toLocaleDateString() + "&length=" + $scope.new_serie.length;
-			data = data.replace("undefined", "", "g");
-			console.log(data);
+		$scope.serie_mouse_enter = function (serie) {
+			serie.edit = true;
 		}
+
+		$scope.serie_mouse_leave = function (serie) {
+			serie.edit = false;
+		}
+
+		$scope.show_menu = function (serie) {
+			serie.menu = !serie.menu;
+		}
+		var tmp = window.location.pathname.split('/');
+		$scope.contents = [
+			{'name': 'Description', 'url': tmp.slice(0, tmp.length - 2).join('/')},
+			{'name': 'Series', 'url': ''},
+			{'name': 'Heroes', 'url': 'heroes'},
+			{'name': 'Creators', 'url': 'creators'}
+		];
 	}
 ]);

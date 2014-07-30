@@ -28,14 +28,14 @@ class ProductSerializer(serializers.ModelSerializer):
     old_limit = serializers.PrimaryKeyRelatedField()
     genres_list = GenreSerializer(
         source='genres.values', required=False, read_only=True)
-    series = serializers.IntegerField(
-        source='serie_set.count', read_only=True, required=False)
+    # series = serializers.IntegerField(
+    #     source='serie_set.count', read_only=True, required=False)
 
     class Meta:
         model = Product
         ordering = ('title',)
         fields = ('title', 'description', 'avatar', 'url',
-                  'old_limit', 'category', 'genres', 'series', 'genres_list',)
+                  'old_limit', 'category', 'genres', 'genres_list',)
 
 
 class GenreGroupSerializer(serializers.ModelSerializer):
@@ -68,7 +68,8 @@ class UserListSerializer(serializers.ModelSerializer):
 
 
 class SeriesSerializer(serializers.ModelSerializer):
-    start_date = serializers.DateField(input_formats=['%m.%d.%y'])
+    start_date = serializers.DateField(input_formats=['%d.%m.%Y, %H:%M:%S'],
+                                       required=False)
 
     class Meta:
         model = Serie
@@ -76,8 +77,9 @@ class SeriesSerializer(serializers.ModelSerializer):
 
 
 class SeasonsSerializer(serializers.ModelSerializer):
-    series = serializers.PrimaryKeyRelatedField(
-        many=True, source='serie_set', read_only=True)
+    series = serializers.Field(source='serie_set.values')
+    # series = serializers.PrimaryKeyRelatedField(
+    #     many=True, source='serie_set', read_only=True)
 
     class Meta:
         model = SeriesGroup

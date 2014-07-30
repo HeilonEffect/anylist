@@ -182,8 +182,7 @@ class Serie(models.Model):
         ordering = ('-number', )
 
     def __str__(self):
-        return '<%s>: Season: %d Serie: %d' % (self.product, self.num_season,
-                                               self.number)
+        return 'Serie: %d' % (self.number)
 
 
 class Status(TemplateModel):
