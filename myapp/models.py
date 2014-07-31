@@ -139,7 +139,7 @@ class Product(models.Model):
     heroes = models.ManyToManyField(Hero)
 
     def _series(self):
-        return Serie.objects.filter(product=self.id).order_by(
+        return Serie.objects.filter(season__product=self.id).order_by(
             '-num_season', '-number')
     series = property(_series)
 

@@ -2,9 +2,7 @@ from django.contrib.auth.models import User
 
 from rest_framework import serializers
 
-from .models import (
-    CategoryGroup, Product, Raiting,  GenreGroup, UserList, Genre, Serie,
-    SeriesGroup)
+from .models import *
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -28,13 +26,10 @@ class ProductSerializer(serializers.ModelSerializer):
     old_limit = serializers.PrimaryKeyRelatedField()
     genres_list = GenreSerializer(
         source='genres.values', required=False, read_only=True)
-    # series = serializers.IntegerField(
-    #     source='serie_set.count', read_only=True, required=False)
 
     class Meta:
         model = Product
-        ordering = ('title',)
-        fields = ('title', 'description', 'avatar', 'url',
+        fields = ('id', 'title', 'description', 'avatar', 'url',
                   'old_limit', 'category', 'genres', 'genres_list',)
 
 
@@ -84,3 +79,9 @@ class SeasonsSerializer(serializers.ModelSerializer):
     class Meta:
         model = SeriesGroup
         fields = ('id', 'number', 'name', 'series', 'product',)
+
+
+class UserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserList
+        fields = ('user', 'product', 'score', 'status',)

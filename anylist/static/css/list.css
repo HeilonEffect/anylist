@@ -25,8 +25,19 @@ main > nav {
 	width: 10em;
 	background-color: white;
 }
+.product_status {
+	width: 11.5em;
+	height: 15.5em;
+	position: absolute;
+	background-color: rgba(255, 255, 255, 0.5);
+	margin-bottom: 0;
+	margin-left: 0;
+}
+.product_status p {
+	/*color: white;*/
+	text-indent: 1em;
+}
 figure figcaption {
-/*.cards figure figcaption {*/
 	background-color: rgba(0, 0, 0, .5);
 	color: white;
 	height: 2.5em;
@@ -42,7 +53,7 @@ figure figcaption {
 	margin-left: 9em;
 	margin-top: .5em;
 	border-radius: 1em;
-	background-color: rgba(0,0,0, .6);
+	background-color: #ffc107;
 }
 .add_product_form {
 	position: fixed;
@@ -68,6 +79,15 @@ figure figcaption {
 	margin-left: 2em;
 	padding: 0;
 }
+.add_to_list {
+	position: absolute;
+	width: 2em;
+	height: 2em;
+	margin-left: 6.5em;
+	margin-top: .5em;
+	border-radius: 1em;
+	background-color: #e84e40;
+}
 .add_product_form label {
 	margin: 0;
 	margin-left: 2em;
@@ -77,11 +97,11 @@ figure figcaption {
 	width: 40%;
 	height: 3em;
 	border: none;
-	border-bottom: 1px solid black;
+	border-bottom: 1px solid #E3E3E3;
 }
 .add_product_form textarea {
 	border: none;
-	border-bottom: 1px solid rgba(0,0,0, 0.3);
+	border-bottom: 1px solid #E3E3E3;
 	margin-left: 5em;
 	height: 150px;
 	width: 40%;

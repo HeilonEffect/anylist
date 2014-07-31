@@ -28,17 +28,7 @@ from .models import (
     SeriesGroup
 )
 
-from .serializers import (
-    CategorySerializer,
-    ProductSerializer,
-    RaitingSerializer,
-    GenreGroupSerializer,
-    UsersSerializer,
-    UserListSerializer,
-    SeriesSerializer,
-    GenreSerializer,
-    SeasonsSerializer
-)
+from .serializers import *
 
 
 class CategoriesList(generics.ListAPIView):
@@ -52,13 +42,11 @@ class ProductList(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated, )
 
     def post(self, request, *args, **kwargs):
-        print(request.DATA)
         data = json.loads(request.DATA['data'])
         serializer = ProductSerializer(data=data, files=request.FILES)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
@@ -175,7 +163,6 @@ class SeasonsView(generics.ListCreateAPIView):
         return HTTP_201_CREATED()
 
     def get_queryset(self):
-        print(self.request.GET)
         if 'product' in self.request.GET:
             return self.model.objects.filter(
                 product=self.request.GET['product'])
@@ -195,3 +182,18 @@ class SeriesView(generics.ListCreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserListView(generics.ListCreateAPIView):
+    serializer_class = UserListSerializer
+    model = UserList
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        category = self.request.QUERY_PARAMS.get('category')
+        for item in Category.objects.all():
+            if item.get_absolute_url()[1:-1] ==\
+                    self.request.QUERY_PARAMS['category']:
+                category = item
+        return self.model.objects.filter(user=self.request.user,
+                                         product__category=category)

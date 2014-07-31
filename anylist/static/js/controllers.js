@@ -154,8 +154,10 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			elem.product.edit_btn = false;
 		}
 
-		$scope.show_edit_form = function (elem) {
-			$scope.visibility_form = true;
+		$scope.show_edit_form = function (elem, $event) {
+			$scope.add_form_visible = true;
+			$scope.product = elem.product;
+			$event.preventDefault();
 		}
 
 		$http.get('/api/genres/category:' + category).success(function (data) {
@@ -235,7 +237,6 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 		
 		$scope.add_form = function () {
 			$scope.add_form_visible = !$scope.add_form_visible;
-			// window.location.href = $location.absUrl().split('/').slice(0, 4).join('/') + "/add";
 		}
 
 
@@ -246,126 +247,36 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 						$scope.category_id = data[i]['categories'][key].id;
 		});
 
+		// $scope.add_to_list = function (elem, $event) {
+		// 	console.log(elem.product.id);
+		// 	$http({
+		// 		method: "POST",
+		// 		url: "/api/userlists"
+		// 	});
+		// 	$event.preventDefault();
+		// }
+
+		$http.get('/api/userlist?category=' + category).success(function (data) {
+			var statuses = ["", "Planned", "Watch", "ReWatching", "Watched", "Deffered", "Dropped"];
+			// $scope.userlist = data;
+			$scope.user_list = {};
+			for (var i in data) {
+				var key = '' + data[i].product;
+				data[i].status = statuses[data[i].status];
+				$scope.user_list[key] = data[i];
+			}
+		});
+
+
 		$scope.add_product = function () {
 			$scope.product['category'] = $scope.category_id;
-			 // JSON.stringify($scope.product);
 			$scope.uploader.queue[0].alias = "avatar";
-			// $scope.uploader.queue[0].formData.push($scope.product);
 			$scope.uploader.queue[0].formData.push({'data': JSON.stringify($scope.product)});
 			$scope.uploader.queue[0].url = "/api/products";
 			$scope.uploader.uploadAll();
 		}
 	}
 ]);
-
-/*
-	Добавление/изменение продукта
-*/
-defaultApp.controller('AddFormCtrl', function ($scope, $http, $location, FileUploader) {
-		$scope.uploader = new FileUploader();
-
-		$scope.visibility_genres = false;
-		$scope.active_genres = [];
-
-		var category = window.location.pathname.split('/')[1];
-
-		// Убрать впоследствии
-		$http.get('/api/categories').success(function (data) {
-			for (var i in data)
-				for (var key in data[i]['categories'])
-					if (data[i]['categories'][key].url == category)
-						$scope.category_id = data[i]['categories'][key].id;
-		});
-
-		$scope.show_genres = function () {
-			$scope.visibility_genres = !$scope.visibility_genres;
-		}
-
-		var is_edit = !window.location.pathname.endsWith('/add/');
-		var id = window.location.pathname.split('/')[2].split('-')[0]
-
-		if (is_edit) {;
-			$http.get('/api/products/id:' + id).success(function (data) {
-				$scope.product = data;
-				var tmp = data.avatar.split('/');
-				$scope.product.avatar = '/media/' + tmp[tmp.length - 1];
-				// $scope.active_genres = $scope.product.genres;
-
-				$http.get('/api/genres').success(function (data) {
-					$scope.active_genres = data.filter(function (elem) {
-						return $scope.product.genres.indexOf(elem.id) != -1;
-					});
-					var ids = $scope.active_genres.map(function (elem) {
-						return elem.id;
-					});
-
-					$http.get('/api/genres/category:' + category).success(function (data) {
-						$scope.genre_groups = data;
-						$scope.genre_groups = data.map(function (group) {
-							group.genres = group.genres.map(function (genre) {
-								if (ids.indexOf(genre.id) != -1)
-									genre.checked = true;
-								return genre;
-							});
-							return group;
-						});
-					});
-				});
-			});
-		} else {
-			$http.get('/api/genres/category:' + category).success(function (data) {
-				$scope.genre_groups = data;
-			});
-		}
-
-		$scope.select_genre = function (genre) {
-			if (genre.checked)
-				$scope.active_genres.push(genre);
-			else
-				$scope.active_genres = $scope.active_genres.filter(function (elem) {
-					return elem.name != genre.name;
-				});
-		}
-
-		$scope.select_raiting = function (limit) {
-			if (!$scope.product)
-				$scope.product = {};
-			$scope.product['old_limit'] = limit;
-		}
-
-		$http.get('/api/raitings/').success(function (data) {
-			$scope.raiting = data;
-		});
-
-		$scope.add_product = function () {
-			if (!$scope.product)
-				$scope.product = {};
-			$scope.product['genres'] = $scope.active_genres.map(function (elem) {
-				return elem.id;
-			});
-			if (is_edit) {
-				if ($scope.uploader.queue.length > 0) {
-					$scope.uploader.queue[0].alias = 'avatar';
-					$scope.uploader.queue[0].formData.push($scope.product);
-					$scope.uploader.queue[0].url = "/api/products/id:" + id;
-					$scope.uploader.queue[0].method = "PUT";
-				}
-				$http({
-					method: "PUT",
-					url: "/api/products/id:" + id,
-					data: $scope.product
-				});
-			} else {
-				$scope.product['category'] = $scope.category_id;
-				$scope.uploader.queue[0].alias = "avatar";
-				$scope.uploader.queue[0].formData.push($scope.product);
-				$scope.uploader.queue[0].url = "/api/products";
-				$scope.uploader.uploadAll();
-			}
-		}
-	}
-);
-
 
 /*
 	Отображает описание продукта
