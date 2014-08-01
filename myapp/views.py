@@ -10,36 +10,32 @@ from rest_framework import generics, permissions, status
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import api_view
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .forms import AddProductForm
 
-from .models import (
-    CategoryGroup,
-    Product,
-    Category,
-    Genre,
-    Raiting,
-    GenreGroup,
-    UserList,
-    Serie,
-    SeriesGroup
-)
+from .models import *
 
 from .serializers import *
 
 
 class CategoriesList(generics.ListAPIView):
+    ''' Список разделов сайта '''
     model = CategoryGroup
     serializer_class = CategorySerializer
+    permission_classes = (AllowAny,)
 
 
 class ProductList(generics.ListCreateAPIView):
+    '''
+    Список медийных продуктов, читать могут все, править -
+     зарегестрированные пользователи
+     '''
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticatedOrReadOnly, )
 
     def post(self, request, *args, **kwargs):
         data = json.loads(request.DATA['data'])
@@ -96,11 +92,13 @@ class ProductList(generics.ListCreateAPIView):
 class RaitingList(generics.ListAPIView):
     model = Raiting
     serializer_class = RaitingSerializer
+    permission_classes = (AllowAny,)
 
 
 class GenreGroupList(generics.ListAPIView):
     queryset = GenreGroup.objects.all()
     serializer_class = GenreGroupSerializer
+    permission_classes = (AllowAny,)
 
     def get_queryset(self):
         if 'name' in self.kwargs:
@@ -140,7 +138,7 @@ class StatusView(generics.GenericAPIView):
             content = {'status': p.status.name}
             return Response(content)
         else:
-            return HTTP_400_BAD_REQUEST()
+            return Response('', status=status.HTTP_400_BAD_REQUEST)
 
 
 class GenreView(generics.ListAPIView):
@@ -151,6 +149,7 @@ class GenreView(generics.ListAPIView):
 class SeasonsView(generics.ListCreateAPIView):
     serializer_class = SeasonsSerializer
     model = SeriesGroup
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def post(self, request, *args, **kwargs):
         ''' Создание нового "сезона" '''
@@ -160,10 +159,8 @@ class SeasonsView(generics.ListCreateAPIView):
         a = self.model.objects.create(number=num_season,
                                   product=Product.objects.get(id=product))
         d = {'id': a.id, 'product': a.product.id, 'name': a.name, 'number': a.number}
-        print(d)
         serializer = self.serializer_class(data=d)
         if serializer.is_valid():
-            print(serializer.data)
             return Response(serializer.data, status.HTTP_201_CREATED)
         print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -179,6 +176,7 @@ class SeasonsView(generics.ListCreateAPIView):
 class SeriesView(generics.ListCreateAPIView):
     serializer_class = SeriesSerializer
     model = Serie
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def post(self, request, *args, **kwargs):
         serializer = SeriesSerializer(data=request.DATA, files=request.FILES)
@@ -195,6 +193,7 @@ class UserListView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
+        product = self.request.QUERY_PARAMS.get('product')
         category = self.request.QUERY_PARAMS.get('category')
         if category:
             for item in Category.objects.all():
@@ -203,24 +202,34 @@ class UserListView(generics.ListCreateAPIView):
                     category = item
             return self.model.objects.filter(user=self.request.user,
                                              product__category=category)
+        elif product:
+            return  self.model.objects.filter(product=product, user=self.request.user)
         else:
             return self.model.objects.all()
 
     def post(self, request, *args, **kwargs):
         ''' Обрабатывает такие случаи, как
             - добавить в список
-            - оценить 
+            - оценить
         '''
         data = {}
-        data['product'] = request.DATA['product']
-        data['status'] = request.DATA['status']
+        data['product'] = request.DATA.get('product')
+        data['status'] = request.DATA.get('status')
         data['user'] = request.user.id
-        print(data)
-        serializer = UsersSerializer(data=data)
-        # serializer = UsersSerializer(data=request.DATA)
+        # serializer = UsersSerializer(data=data)
+        serializer = UsersSerializer(data=request.DATA)
         if serializer.is_valid():
             print(serializer.DATA)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SerieListView(APIView):
+    model = SerieList
+    serializer_class = SerieListSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return self.model.objects.all()

@@ -84,3 +84,9 @@ class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserList
         fields = ('user', 'product', 'score', 'status',)
+
+
+class SerieListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SerieList
+        fields = ('serie', 'user_list', 'like',)

@@ -1,13 +1,22 @@
 from abc import ABCMeta, abstractmethod
 import re
 
-from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 from django.db import models
+from django.dispatch import receiver
 
 from easy_thumbnails.files import get_thumbnailer
+from rest_framework.authtoken.models import Token
 
 from anylist.settings import MEDIA_ROOT
+
+
+@receiver(post_save, sender=get_user_model())
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
 
 
 class TemplateModel(models.Model):
@@ -169,6 +178,9 @@ class SeriesGroup(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     frozen = models.BooleanField(default=False)
     product = models.ForeignKey(Product)
+
+    class Meta:
+        ordering = ('-number',)
 
 
 class Serie(models.Model):

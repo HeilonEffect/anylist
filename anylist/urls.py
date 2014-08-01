@@ -47,6 +47,7 @@ urlpatterns = patterns('',
     url(r'^\w+/series/edit$', edit_serie),
 
     # API
+    url(r'^api-token-auth/$', 'rest_framework.authtoken.views.obtain_auth_token'),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api/', include('myapp.urls')),
 )

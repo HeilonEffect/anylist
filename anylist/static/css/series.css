@@ -1,10 +1,13 @@
 .series_block {
 	list-style: none;
 	margin-left: 2em;
+    min-width: 65%;
 }
 .series_block ul li {
+    min-width: 30em;
 	display: block;
 	padding: .7em;
+    margin: 0;
 	border: 1px solid #E3E3E3;
 }
 .series_block li:hover {
@@ -31,8 +34,13 @@ input[type="submit"] {
 	height: 25px;
 }
 .series_block span menu {
-	position: fixed;
-	left: 40em;
+	position: absolute;
+	left: 38em;
+}
+.series_block span menu li {
+	background-color: white;
+    width: 5%;
+	cursor: pointer;
 }
 .add_season {
 	position: fixed;
@@ -71,4 +79,14 @@ input[type="submit"] {
 	width: 25em;
 	border: none;
 	border-bottom: .5px solid rgba(0, 0, 0, .4);
+}
+#series_form {
+	border: 1px solid #E3E3E3;
+}
+#plus_one_serie {
+	width: 2em;
+	height: 2em;
+}
+.detail select {
+	margin-top: 1em;
 }

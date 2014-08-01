@@ -1,14 +1,8 @@
 var defaultApp = angular.module('defaultApp', [
-	'angularFileUpload', 'ngQuickDate', 'ngCookies'
-]).run(function ($http, $cookies) {
-	$http.defaults.headers.post['X-CSRFToken'] = '{{ csrf_token }}';
-});
-
-defaultApp.config(function ($interpolateProvider) {
-	$interpolateProvider.startSymbol('{[{');
-	$interpolateProvider.endSymbol('}]}');
-});
-
+	'ngCookies',
+    'angularFileUpload',
+    'ngQuickDate'
+]);
 
 defaultApp.directive('ngThumb', ['$window', function($window) {
         var helper = {
@@ -55,11 +49,18 @@ defaultApp.directive('ngThumb', ['$window', function($window) {
         };
 }]);
 
-defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location',
-	function ($scope, $http, $location) {
+
+defaultApp.config(function ($interpolateProvider) {
+	$interpolateProvider.startSymbol('{[{');
+	$interpolateProvider.endSymbol('}]}');
+});
+
+defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
+	function ($scope, $http, $location, $window) {
 		$scope.hidden_menu = false;
 		$scope.visibility_form = false;
 		$scope.visibility_user = false;
+        $scope.username = $window.localStorage.username;
 				
 		$scope.show_menu = function () {
 			$scope.hidden_menu = !$scope.hidden_menu;
@@ -78,26 +79,24 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location',
 		});
 
 		$scope.auth_me = function () {
-			var url = $location.absUrl()
-			if ($scope.auth['is_reg'])
-				url += 'register/';
-			else
-				url += 'login/';
-			var data = '';
-			for (var key in $scope.auth)
-				data += ("&" + key + '=' + $scope.auth[key]);
-			data = data.replace('undefined', '').slice(1);
-			$http({
-				method: "POST",
-				url: url,
-				data: data,
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded"
-				}
-			}).success(function (data) {
-				window.location.href = window.location.href;
-			});
+            var url = $location.absUrl();
+            var data = "username=" + $scope.auth['username'] + "&password=" + $scope.auth['password'];
+            $http.post('/api-token-auth/', {
+                username: $scope.auth['username'],
+                password: $scope.auth['password']
+            }, {
+                headers:{
+                    'Content-Type': 'application/json'
+                }
+            }).success(function (data) {
+                console.log(data);
+                $window.localStorage['token'] = data['token'];
+                $window.localStorage['username'] = $scope.auth['username'];
+                $http.defaults.headers.common.Authorization = 'Token ' + data['token'];
+//                $http.defaults.headers.common['auth-token'] = data;
+            });
 		}
+
 
 		$scope.logout = function () {
 			window.location.pathname += "logout";
@@ -223,7 +222,8 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			$scope.uploader.removeFromQueue(0);
 		}
 
-		$http.get('/api/products/category:' + url).success(function (data) {
+		$http.get('/api/products/category:' + url, {headers: {'Authorization': 'Token ' + localStorage.token}}
+        ).success(function (data) {
 			$scope.products = data;
 			for (var i in data) {
 				$scope.products[i].avatar = "/media/" + data[i].avatar.split('/').pop();
@@ -259,7 +259,9 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			$event.preventDefault();
 		}
 
-		$http.get('/api/userlist?category=' + category).success(function (data) {
+		$http.get('/api/userlist?category=' + category, {
+            headers: {'Authorization': 'Token ' + localStorage.token}
+        }).success(function (data) {
 			var statuses = ["", "Planned", "Watch", "ReWatching", "Watched", "Deffered", "Dropped"];
 			$scope.user_list = {};
 			for (var i in data) {
@@ -283,9 +285,9 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 /*
 	Отображает описание продукта
 */
-defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location',
-	function ($scope, $http, $location) {
-		$scope.statuses = ['Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
+defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
+	function ($scope, $http, $location, $window) {
+		$scope.statuses = ['', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
 
 		var id = window.location.pathname.split('/')[2].split('-')[0];
 
@@ -296,6 +298,14 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location',
 		$http.get('/api/products/id:' + id).success(function (data) {
 			$scope.product = data;
 		});
+
+        $http.get('/api/userlist?product=' + id, {
+            headers: {'Authentication': 'Token ' + $window.localStorage['token']}
+        }).success(function(data) {
+            console.log(data);
+            $scope.active_status = $scope.statuses[data[0].status];
+            console.log($scope.active_status);
+        });
 
 		$scope.contents = [
 			{'name': 'Description', 'url': ''},
@@ -311,18 +321,30 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location',
 		$scope.category = window.location.pathname.split('/')[1];
 		$scope.raiting = ['G', 'PG', 'PG-13', 'R', 'NC-17'];
 
-		$scope.status_move = function (elem) {
-			$http({
-				method: "POST",
-				url: $location.absUrl() + "status",
-				data: 'name=' + elem.status,
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded'
-				}
-			}).success(function (data) {
-				$scope.active_status = elem.status;
-			});
-		}
+        $scope.status_move = function (elem) {
+            $http({
+                method: "POST",
+                url: "/api/userlist",
+                data: "name=" + elem.status + "&product=" + id,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Token ' + $window.localStorage['token']
+                }
+            });
+        }
+
+//		$scope.status_move = function (elem) {
+//			$http({
+//				method: "POST",
+//				url: $location.absUrl() + "status",
+//				data: 'name=' + elem.status,
+//				headers: {
+//					'Content-Type': 'application/x-www-form-urlencoded'
+//				}
+//			}).success(function (data) {
+//				$scope.active_status = elem.status;
+//			});
+//		}
 	}
 ]);
 
@@ -331,11 +353,14 @@ defaultApp.controller('SeriesCtrl', ['$scope', '$http',
 	function ($scope, $http) {
 		var id = window.location.pathname.split("/")[2].split("-")[0];
 		$scope.new_serie = {};
+        $scope.token = localStorage.token;
 
 		$http.get('/api/seasons?product=' + id).success(function (data) {
 			$scope.seasons = data;
+			var count = 0;
 			for (var i in data)
 				for (var j in data[i].series) {
+					count++;
 					if (!data[i].series[j]['length'])
 						$scope.seasons[i].series[j]['length']= " ";
 					if (data[i].series[j].start_date) {
@@ -343,6 +368,7 @@ defaultApp.controller('SeriesCtrl', ['$scope', '$http',
 						$scope.seasons[i].series[j].start_date = tmp;
 					}
 				}
+			$scope.count_series = count;
 		});
 
 		$scope.create_season = function () {
@@ -366,16 +392,17 @@ defaultApp.controller('SeriesCtrl', ['$scope', '$http',
 				"&start_date=" + start_date + "&length=" + $scope.new_serie.length;
 			data = data.replace("undefined", "", "g");
 			data += "&season=" + season.id;
-			$http({
-				method: "POST",
-				url: "/api/series",
-				data: data,
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded'
-				}
-			}).success(function (data) {
-				season.series.unshift($scope.new_serie);
-			});
+			console.log(data);
+			// $http({
+			// 	method: "POST",
+			// 	url: "/api/series",
+			// 	data: data,
+			// 	headers: {
+			// 		'Content-Type': 'application/x-www-form-urlencoded'
+			// 	}
+			// }).success(function (data) {
+			// 	season.series.unshift($scope.new_serie);
+			// });
 		}
 
 		$scope.serie_mouse_enter = function (serie) {

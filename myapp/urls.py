@@ -17,4 +17,6 @@ urlpatterns = patterns('myapp.views',
 	url(r'genres$', GenreView.as_view()),
 	url(r'genres/category:(?P<name>\w+)$', GenreGroupList.as_view()),
 	url(r'userlist$', UserListView.as_view()),
+    url(r'userlist/product:(?P<id>\d+)$', UserListView.as_view()),
+	url(r'serielist$', SerieListView.as_view()),
 )

@@ -4,6 +4,7 @@
 	<meta charset="utf-8">
 	<title>{% block title %}Base title{% endblock %}</title>
 	<script src="/static/lib/angular.min.js"></script>
+{#    <script src="static/lib/angular-route.min.js"></script>#}
 	<!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>-->
 	<script src="/static/lib/angular-cookies.min.js"></script>
 	<script src="/static/lib/angular-file-upload.min.js"></script>
@@ -31,16 +32,13 @@
 				</nav>
 			</div>
 			<img src="/static/img/show_main_menu.png" ng-click="show_menu()">
-			{% if user.is_authenticated %}
-			<span ng-mouseover="show_user_menu()" ng-mouseleave="hide_user_menu()">{{ user.username }}</span>
+			<span ng-mouseover="show_user_menu()" ng-mouseleave="hide_user_menu()" ng-if="username">{[{username}]}</span>
 			<div class="user_menu" ng-show="visibility_user" ng-mouseleave="hide_user_menu()" ng-mouseover="show_user_menu()">
 				<a href="/profile"><p>Profile</p></a>
 				<a href=""><p>Settings</p></a>
 				<a href="logout/"><p>Log Out</p></a>
 			</div>
-			{% else %}
-				<button ng-click="login()">Log In</button>
-			{% endif %}
+			<button ng-click="login()" ng-if="!username">Log In</button>
 		</menu>
 		<h1>{% block header %}Header{% endblock %}</h1>
 			<form ng-submit="auth_me()" ng-show="visibility_form" ng-click="login()">

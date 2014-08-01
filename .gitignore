@@ -1,5 +1,6 @@
 virt/*
 *.pyc
+,idea/
 */__pycache__/*
 *.jpg
 *.png
