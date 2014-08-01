@@ -247,18 +247,20 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 						$scope.category_id = data[i]['categories'][key].id;
 		});
 
-		// $scope.add_to_list = function (elem, $event) {
-		// 	console.log(elem.product.id);
-		// 	$http({
-		// 		method: "POST",
-		// 		url: "/api/userlists"
-		// 	});
-		// 	$event.preventDefault();
-		// }
+		$scope.add_to_list = function (elem, $event) {
+			$http({
+				method: "POST",
+				url: "/api/userlist",
+				data: "status=1&product=" + elem.product.id,
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded"
+				}
+			});
+			$event.preventDefault();
+		}
 
 		$http.get('/api/userlist?category=' + category).success(function (data) {
 			var statuses = ["", "Planned", "Watch", "ReWatching", "Watched", "Deffered", "Dropped"];
-			// $scope.userlist = data;
 			$scope.user_list = {};
 			for (var i in data) {
 				var key = '' + data[i].product;
@@ -352,6 +354,7 @@ defaultApp.controller('SeriesCtrl', ['$scope', '$http',
 					'Content-Type': 'application/x-www-form-urlencoded'
 				}
 			}).success(function (data) {
+				$scope.seasons.unshift(data);
 			});
 		}
 

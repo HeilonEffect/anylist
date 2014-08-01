@@ -156,11 +156,17 @@ class SeasonsView(generics.ListCreateAPIView):
         ''' Создание нового "сезона" '''
         product = request.DATA['product']
         num_season = self.model.objects.filter(
-            product=product).count() + 1
-        self.model.objects.create(number=num_season,
+            product__id=product).count() + 1
+        a = self.model.objects.create(number=num_season,
                                   product=Product.objects.get(id=product))
-        print(serializer_class(self.model.objects.last()))
-        return HTTP_201_CREATED()
+        d = {'id': a.id, 'product': a.product.id, 'name': a.name, 'number': a.number}
+        print(d)
+        serializer = self.serializer_class(data=d)
+        if serializer.is_valid():
+            print(serializer.data)
+            return Response(serializer.data, status.HTTP_201_CREATED)
+        print(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         if 'product' in self.request.GET:
@@ -175,7 +181,6 @@ class SeriesView(generics.ListCreateAPIView):
     model = Serie
 
     def post(self, request, *args, **kwargs):
-        print(request.DATA)
         serializer = SeriesSerializer(data=request.DATA, files=request.FILES)
         if serializer.is_valid():
             serializer.save()
@@ -191,9 +196,31 @@ class UserListView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         category = self.request.QUERY_PARAMS.get('category')
-        for item in Category.objects.all():
-            if item.get_absolute_url()[1:-1] ==\
-                    self.request.QUERY_PARAMS['category']:
-                category = item
-        return self.model.objects.filter(user=self.request.user,
-                                         product__category=category)
+        if category:
+            for item in Category.objects.all():
+                if item.get_absolute_url()[1:-1] ==\
+                        self.request.QUERY_PARAMS['category']:
+                    category = item
+            return self.model.objects.filter(user=self.request.user,
+                                             product__category=category)
+        else:
+            return self.model.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        ''' Обрабатывает такие случаи, как
+            - добавить в список
+            - оценить 
+        '''
+        data = {}
+        data['product'] = request.DATA['product']
+        data['status'] = request.DATA['status']
+        data['user'] = request.user.id
+        print(data)
+        serializer = UsersSerializer(data=data)
+        # serializer = UsersSerializer(data=request.DATA)
+        if serializer.is_valid():
+            print(serializer.DATA)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

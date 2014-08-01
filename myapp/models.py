@@ -182,7 +182,7 @@ class Serie(models.Model):
         ordering = ('-number', )
 
     def __str__(self):
-        return 'Serie: %d' % (self.number)
+        return 'Serie: %s' % (self.number)
 
 
 class Status(TemplateModel):

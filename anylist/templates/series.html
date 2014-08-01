@@ -6,7 +6,7 @@
 		<input type="text" placeholder="Name" ng-model="season.name" class="text_field">
 		<input type="submit" value="Create New Season">
 	</form> -->
-	<img src="/static/img/add.png" class="add_season" ng-click="create_season()">
+	<img src="/static/img/add.png" class="add_season" ng-click="create_season(seasons)">
 	<div ng-repeat="season in seasons" class="series_block">
 		<p>{[{season.number}]} Season</p>
 		<form ng-submit="create_serie(season)">

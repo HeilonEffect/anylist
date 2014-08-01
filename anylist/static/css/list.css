@@ -34,8 +34,18 @@ main > nav {
 	margin-left: 0;
 }
 .product_status p {
-	/*color: white;*/
 	text-indent: 1em;
+}
+.tooltip {
+	background-color: white;
+	z-index: 25;
+	margin-top: 5em;
+	margin-left: 11em;
+	position: absolute;
+	width: 20em;
+	height: 10em;
+	font-size: 18px;
+	overflow: hidden;
 }
 figure figcaption {
 	background-color: rgba(0, 0, 0, .5);

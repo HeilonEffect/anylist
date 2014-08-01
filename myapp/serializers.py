@@ -56,6 +56,7 @@ class UsersSerializer(serializers.ModelSerializer):
 
 
 class UserListSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField()
 
     class Meta:
         model = UserList
@@ -73,8 +74,6 @@ class SeriesSerializer(serializers.ModelSerializer):
 
 class SeasonsSerializer(serializers.ModelSerializer):
     series = serializers.Field(source='serie_set.values')
-    # series = serializers.PrimaryKeyRelatedField(
-    #     many=True, source='serie_set', read_only=True)
 
     class Meta:
         model = SeriesGroup
