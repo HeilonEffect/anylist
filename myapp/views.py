@@ -226,6 +226,29 @@ class UserListView(generics.ListCreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserListUpdate(generics.RetrieveUpdateDestroyAPIView):
+    ''' Одиночные действия со списком продуктов '''
+    model = UserList
+    serializer_class = UserListSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def put(self, request, *args, **kwargs):
+        ''' Обновляет статус продукта
+        (если продукта в списке нет - добавляет) '''
+        st = Status.objects.get(name=request.DATA['name'])
+        p = UserList.objects.get(product__id=kwargs['id'],
+                                user=request.user)
+        p.status = st
+        p.save()
+        return Response('', status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        st = Status.objects.get(name=request.DATA['name'])
+        product = Product.objects.get(id=kwargs['id'])
+        UserList.objects.create(product=product, status=st, user=request.user)
+        return Response('', status=status.HTTP_201_CREATED)
+
+
 class SerieListView(APIView):
     model = SerieList
     serializer_class = SerieListSerializer

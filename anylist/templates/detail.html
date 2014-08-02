@@ -8,7 +8,6 @@
 		<img src="{{ object.avatar_path }}">
 		Genres: <a href="/{[{category}]}/filter/genres/{[{genre.name}]}" ng-repeat="genre in product.genres_list">{[{genre.name}]}, </a>
 		<p>Old raiting: <a href="/{[{category}]}/filter/old_limit/{[{raiting[product.old_limit - 1]}]}">{[{raiting[product.old_limit - 1]}]}</a></p>
-		<br>
 		<p>
 		{[{product.description}]}
 		</p>
@@ -21,11 +20,9 @@
 			</a>
 		</div>
 		<div>
-			<input type="number"><span>/{[{product.series}]}</span>
-			<!-- <img src="/static/img/delete.png"><br> -->
+			<input type="number"><span>/{[{product.series_count}]}</span>
 			<select>
-				<option>--> Add To List</option>
-				<option ng-click="status_move(this)" ng-repeat="status in statuses" ng-selected="status==active_status">{[{status}]}</option>
+				<option ng-click="status_move(this, active_status)" ng-repeat="status in statuses" ng-selected="status==active_status">{[{status}]}</option>
 			</select>
 		</div>
 	</nav>

@@ -147,6 +147,10 @@ class Product(models.Model):
     creators = models.ManyToManyField(Creator)
     heroes = models.ManyToManyField(Hero)
 
+    def series_count(self):
+        return sum([
+            item.serie_set.count() for item in self.seriesgroup_set.all()])
+
     def _series(self):
         return Serie.objects.filter(season__product=self.id).order_by(
             '-num_season', '-number')

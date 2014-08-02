@@ -287,7 +287,7 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 */
 defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
 	function ($scope, $http, $location, $window) {
-		$scope.statuses = ['', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
+		$scope.statuses = ['Add To List', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
 
 		var id = window.location.pathname.split('/')[2].split('-')[0];
 
@@ -302,9 +302,8 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
         $http.get('/api/userlist?product=' + id, {
             headers: {'Authentication': 'Token ' + $window.localStorage['token']}
         }).success(function(data) {
-            console.log(data);
-            $scope.active_status = $scope.statuses[data[0].status];
-            console.log($scope.active_status);
+            if (data[0])
+                $scope.active_status = $scope.statuses[data[0].status];
         });
 
 		$scope.contents = [
@@ -321,30 +320,21 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
 		$scope.category = window.location.pathname.split('/')[1];
 		$scope.raiting = ['G', 'PG', 'PG-13', 'R', 'NC-17'];
 
-        $scope.status_move = function (elem) {
-            $http({
-                method: "POST",
-                url: "/api/userlist",
-                data: "name=" + elem.status + "&product=" + id,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': 'Token ' + $window.localStorage['token']
-                }
-            });
+        $scope.status_move = function (elem, active_status) {
+            var metod = 'POST'
+            if (active_status)
+                metod = "PUT";
+            if (elem.status != $scope.statuses[0])
+                $http({
+                    method: metod,
+                    url: "/api/userlist/product:" + id,
+                    data: "name=" + elem.status,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': 'Token ' + $window.localStorage['token']
+                    }
+                });
         }
-
-//		$scope.status_move = function (elem) {
-//			$http({
-//				method: "POST",
-//				url: $location.absUrl() + "status",
-//				data: 'name=' + elem.status,
-//				headers: {
-//					'Content-Type': 'application/x-www-form-urlencoded'
-//				}
-//			}).success(function (data) {
-//				$scope.active_status = elem.status;
-//			});
-//		}
 	}
 ]);
 

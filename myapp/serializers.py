@@ -26,11 +26,12 @@ class ProductSerializer(serializers.ModelSerializer):
     old_limit = serializers.PrimaryKeyRelatedField()
     genres_list = GenreSerializer(
         source='genres.values', required=False, read_only=True)
+    series_count = serializers.Field(source='series_count')
 
     class Meta:
         model = Product
         fields = ('id', 'title', 'description', 'avatar', 'url',
-                  'old_limit', 'category', 'genres', 'genres_list',)
+                  'old_limit', 'category', 'genres', 'genres_list', 'series_count',)
 
 
 class GenreGroupSerializer(serializers.ModelSerializer):
