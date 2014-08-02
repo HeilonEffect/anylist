@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DataSourceManagerImpl" format="xml" hash="4079676849">
+  <component name="DataSourceManagerImpl" format="xml" hash="1334717197">
     <data-source source="LOCAL" name="Django default" uuid="f894b274-c0f4-4d58-b0fc-f7aa14751752">
       <driver-ref>postgresql</driver-ref>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql:product_db</jdbc-url>
+      <user-name>ctulhu</user-name>
+      <libraries />
+    </data-source>
+    <data-source source="LOCAL" name="PostgreSQL - product_db@localhost" uuid="8f2f37f9-a591-4e03-9e1c-00824b2954cb">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/product_db</jdbc-url>
       <user-name>ctulhu</user-name>
       <libraries />
     </data-source>

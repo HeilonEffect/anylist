@@ -3,4 +3,7 @@
   <data-source source="LOCAL" name="Django default" uuid="f894b274-c0f4-4d58-b0fc-f7aa14751752">
     <database-info product="" version="" jdbc-version="" driver-name="" driver-version=""/>
   </data-source>
+  <data-source source="LOCAL" name="PostgreSQL - product_db@localhost" uuid="8f2f37f9-a591-4e03-9e1c-00824b2954cb">
+    <database-info product="" version="" jdbc-version="" driver-name="" driver-version=""/>
+  </data-source>
 </component>

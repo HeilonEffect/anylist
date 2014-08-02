@@ -233,8 +233,7 @@ class UserListUpdate(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,)
 
     def put(self, request, *args, **kwargs):
-        ''' Обновляет статус продукта
-        (если продукта в списке нет - добавляет) '''
+        ''' Обновляет статус продукта '''
         st = Status.objects.get(name=request.DATA['name'])
         p = UserList.objects.get(product__id=kwargs['id'],
                                 user=request.user)
@@ -243,10 +242,13 @@ class UserListUpdate(generics.RetrieveUpdateDestroyAPIView):
         return Response('', status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
+        ''' Добавляет продукт в список просмотренного '''
         st = Status.objects.get(name=request.DATA['name'])
         product = Product.objects.get(id=kwargs['id'])
-        UserList.objects.create(product=product, status=st, user=request.user)
-        return Response('', status=status.HTTP_201_CREATED)
+        p = UserList.objects.create(product=product, status=st,
+                                    user=request.user)
+        serializer = self.serializer_class(p)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class SerieListView(APIView):

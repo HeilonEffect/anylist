@@ -190,28 +190,6 @@ def product_list(request, category):
     return render(request, 'list.html', context)
 
 
-@require_http_methods(['POST'])
-@csrf_exempt
-@login_required
-def status_update(request, pk):
-    ''' Process post-request with new status
-    (especialy processing situation, where product not in user list yet) '''
-    try:
-        status = Status.objects.get(name=request.POST['name'])
-        p = UserList.objects.filter(
-            user=request.user, product__id=pk)
-        if p:
-            p.update(status=status)
-        else:
-            p = Product.objects.get(id=pk)
-            UserList.objects.create(
-                user=request.user, product=p, status=status)
-        return HttpResponse(request.POST['name'])
-    except Exception as e:
-        logger.error(e)
-        return HttpResponseServerError()
-
-
 class ProductDetail(BasePageMixin, DetailView):
 
     ''' Web page for a single product '''

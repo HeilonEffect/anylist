@@ -46,7 +46,7 @@
 				<div class="product_status" ng-if="user_list[product.id]">
 					<p>{[{user_list[product.id].status}]}</p>
 				</div>
-				<img src="/static/img/add_w.png" class="add_to_list" ng-show="product.edit_btn" ng-click="add_to_list(this, $event)" ng-if="!user_list[product.id]">
+				<img src="/static/img/add_w.png" class="add_to_list" ng-show="product.edit_btn" ng-click="add_to_list(this, $event, user_list)" ng-if="!user_list[product.id]">
 				
 				<img src="/static/img/edit_w.png" class="edit_in_list" ng-show="product.edit_btn" ng-click="show_edit_form(this, $event)">
 				<div class="tooltip" ng-show="product.edit_btn">

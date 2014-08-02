@@ -247,15 +247,20 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 						$scope.category_id = data[i]['categories'][key].id;
 		});
 
-		$scope.add_to_list = function (elem, $event) {
+		$scope.add_to_list = function (elem, $event, user_list) {
+            // Добавление продукта со страницы списка
 			$http({
 				method: "POST",
-				url: "/api/userlist",
-				data: "status=1&product=" + elem.product.id,
+				url: "/api/userlist/product:" + elem.product.id,
+				data: "name=Planned",
 				headers: {
-					"Content-Type": "application/x-www-form-urlencoded"
+					"Content-Type": "application/x-www-form-urlencoded",
+                    "Authorization": 'Token ' + localStorage.token
 				}
-			});
+			}).success(function (data) {
+                data['status'] = 'Planned';
+                user_list[data['product']] = data;
+            });
 			$event.preventDefault();
 		}
 
