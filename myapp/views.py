@@ -179,11 +179,10 @@ class SeriesView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def post(self, request, *args, **kwargs):
-        serializer = SeriesSerializer(data=request.DATA, files=request.FILES)
+        serializer = self.serializer_class(data=request.DATA)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -210,7 +209,7 @@ class UserListView(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         ''' Обрабатывает такие случаи, как
             - добавить в список
-            - оценить
+            - оценить (пока не обрабатывает)
         '''
         data = {}
         data['product'] = request.DATA.get('product')
@@ -227,7 +226,9 @@ class UserListView(generics.ListCreateAPIView):
 
 
 class UserListUpdate(generics.RetrieveUpdateDestroyAPIView):
-    ''' Одиночные действия со списком продуктов '''
+    ''' Одиночные действия со списком продуктов:
+     - добавить в список
+     - обновить статус '''
     model = UserList
     serializer_class = UserListSerializer
     permission_classes = (IsAuthenticated,)
@@ -258,3 +259,13 @@ class SerieListView(APIView):
 
     def get_queryset(self):
         return self.model.objects.all()
+
+
+class SearchView(generics.ListAPIView):
+    model = Product
+    serializer_class = SearchSerializer
+    permission_classes = (AllowAny,)
+
+    def get_queryset(self):
+        return Product.objects.filter(
+            Q(title__icontains=self.request.QUERY_PARAMS['product']))

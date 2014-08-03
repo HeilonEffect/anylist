@@ -63,28 +63,6 @@ def main_page(request):
 
 
 @require_http_methods(['GET'])
-def search(request):
-    ''' Простейший поиск по названиям произведений '''
-    try:
-        if len(request.GET['key']) > 1:
-            result = list(map(
-                lambda item:
-                {'name': item.title, 'link': item.get_absolute_url()},
-                Product.objects.filter(Q(title__icontains=request.GET['key']))
-            ))
-            print(result)
-
-            return HttpResponse(
-                json.dumps(result), content_type='application/json')
-        else:
-            return HttpResponse()
-    except Exception as e:
-        logger.error(e)
-        return HttpResponseServerError()
-
-
-@login_required(login_url='/')
-@require_http_methods(['GET'])
 def profile(request):
     ''' User Profile '''
     result = {}
@@ -338,14 +316,6 @@ class SerieView(BasePageMixin, ListView):
             user_list__product__id=self.kwargs['pk'],
             user_list__user=self.request.user.id)
         return self.queryset
-
-    # def get_context_data(self, **kwargs):
-    #     context = super(SerieView, self).get_context_data(**kwargs)
-    #     # p = Serie.objects.filter(season__id=self.kwargs['pk'])
-    #     p = Serie.objects.all()
-
-    #     context['series'], context['num_season'] = self.series_serialize()
-    #     return context
 
 
 class HeroView(BasePageMixin, DetailView):

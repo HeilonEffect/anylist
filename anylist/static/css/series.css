@@ -10,12 +10,18 @@
     margin: 0;
 	border: 1px solid #E3E3E3;
 }
+.read {
+    background-color: #fff59d;
+}
 .series_block li:hover {
 	background-color: #e91e63;
 	border: 1px solid #e91e63;
 }
 .series_block p {
 	text-indent: 1em;
+}
+.serie {
+    height: 1.2em;
 }
 .serie .menu {
 	float: right;
@@ -54,20 +60,23 @@ input[type="submit"] {
 }
 .series_block .number {
 	margin-left: 1em;
+    position: absolute;
 	width: 3em;
 }
 .series_block .name {
-	margin-left: 4em;
-	width: 5em;
+	margin-left: 5em;
+    position: absolute;
+    height: 2em;
 }
+/* refractor this */
 .series_block .start_date {
-	float: right;
-	margin-right: 4em;
+    position: absolute;
+	left: 34em;
 }
 .series_block .length {
 	float: right;
 	width: 1em;
-	margin-right: 2em;
+	margin-right: 1em;
 }
 .series input[type="number"] {
 	width: 5em;

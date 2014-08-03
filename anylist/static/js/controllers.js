@@ -74,7 +74,7 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
 			$scope.visibility_user = false;
 		}
 
-		$http.get('/api/categories/?format=json').success(function (data) {
+		$http.get('/api/categories').success(function (data) {
 			$scope.category_group = data;
 		});
 
@@ -93,7 +93,6 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
                 $window.localStorage['token'] = data['token'];
                 $window.localStorage['username'] = $scope.auth['username'];
                 $http.defaults.headers.common.Authorization = 'Token ' + data['token'];
-//                $http.defaults.headers.common['auth-token'] = data;
             });
 		}
 
@@ -106,9 +105,12 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
 			$scope.visibility_form = !$scope.visibility_form;
 		}
 		$scope.searcher = function () {
-			$http.get('/search?key=' + $scope.search_data).success(function (data) {
-				$scope.search_result = data;
-			});
+            if ($scope.search_data.length > 1)
+                $http.get('/api/search?product=' + $scope.search_data).success(function (data) {
+                    $scope.search_result = data;
+                });
+            else
+                $scope.search_result = [];
 		}
 	}
 ]);
@@ -128,6 +130,8 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 
 		$scope.active_genres = {};
 		$scope.active_limits = {};
+
+        $scope.token = localStorage.token;
 		var limits = $location.absUrl().split('/').slice(5);
 		var lims = [];
 		var genres = [];
@@ -293,6 +297,7 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
 	function ($scope, $http, $location, $window) {
 		$scope.statuses = ['Add To List', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
+        $scope.token = $window.localStorage['token'];
 
 		var id = window.location.pathname.split('/')[2].split('-')[0];
 
@@ -325,6 +330,7 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
 		$scope.category = window.location.pathname.split('/')[1];
 		$scope.raiting = ['G', 'PG', 'PG-13', 'R', 'NC-17'];
 
+        // Смена статуса продукта
         $scope.status_move = function (elem, active_status) {
             var metod = 'POST'
             if (active_status)
@@ -340,17 +346,8 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
                     }
                 });
         }
-	}
-]);
 
-
-defaultApp.controller('SeriesCtrl', ['$scope', '$http',
-	function ($scope, $http) {
-		var id = window.location.pathname.split("/")[2].split("-")[0];
-		$scope.new_serie = {};
-        $scope.token = localStorage.token;
-
-		$http.get('/api/seasons?product=' + id).success(function (data) {
+        $http.get('/api/seasons?product=' + id).success(function (data) {
 			$scope.seasons = data;
 			var count = 0;
 			for (var i in data)
@@ -366,7 +363,8 @@ defaultApp.controller('SeriesCtrl', ['$scope', '$http',
 			$scope.count_series = count;
 		});
 
-		$scope.create_season = function () {
+        // Создание нового сезона
+        $scope.create_season = function () {
 			$http({
 				method: "POST",
 				url: "/api/seasons",
@@ -379,28 +377,7 @@ defaultApp.controller('SeriesCtrl', ['$scope', '$http',
 			});
 		}
 
-		$scope.create_serie = function (season) {
-			// Добавляем отсутсвующий ноль
-			var start_date = $scope.new_serie.start_date.toLocaleString().split(' ').join(' 0') || "";
-
-			var data = "number=" + $scope.new_serie.number + "&name=" + $scope.new_serie.name +
-				"&start_date=" + start_date + "&length=" + $scope.new_serie.length;
-			data = data.replace("undefined", "", "g");
-			data += "&season=" + season.id;
-			console.log(data);
-			// $http({
-			// 	method: "POST",
-			// 	url: "/api/series",
-			// 	data: data,
-			// 	headers: {
-			// 		'Content-Type': 'application/x-www-form-urlencoded'
-			// 	}
-			// }).success(function (data) {
-			// 	season.series.unshift($scope.new_serie);
-			// });
-		}
-
-		$scope.serie_mouse_enter = function (serie) {
+        $scope.serie_mouse_enter = function (serie) {
 			serie.edit = true;
 		}
 
@@ -411,12 +388,31 @@ defaultApp.controller('SeriesCtrl', ['$scope', '$http',
 		$scope.show_menu = function (serie) {
 			serie.menu = !serie.menu;
 		}
-		var tmp = window.location.pathname.split('/');
-		$scope.contents = [
-			{'name': 'Description', 'url': tmp.slice(0, tmp.length - 2).join('/')},
-			{'name': 'Series', 'url': ''},
-			{'name': 'Heroes', 'url': 'heroes'},
-			{'name': 'Creators', 'url': 'creators'}
-		];
+
+        // Добавление новой серии
+		$scope.create_serie = function (season) {
+			// Добавляем отсутсвующий ноль
+			var start_date = season.new_serie.start_date.toLocaleString().split(' ').join(' 0') || "";
+
+			var data = "number=" + season.new_serie.number + "&name=" + season.new_serie.name +
+				"&start_date=" + start_date + "&length=" + season.new_serie.length;
+			data = data.replace("undefined", "", "g");
+			data += "&season=" + season.id;
+            console.log(data);
+			$http({
+				method: "POST",
+				url: "/api/series",
+				data: data,
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Token ' + $scope.token
+				}
+			}).success(function (data) {
+                data.start_date = data.start_date.slice(0, 10);
+                season.series.unshift(data);
+			});
+		}
+
+        $scope.edit_serie = function (serie) {}
 	}
 ]);

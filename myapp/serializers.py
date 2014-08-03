@@ -91,3 +91,11 @@ class SerieListSerializer(serializers.ModelSerializer):
     class Meta:
         model = SerieList
         fields = ('serie', 'user_list', 'like',)
+
+
+class SearchSerializer(serializers.ModelSerializer):
+    name = serializers.Field(source='title')
+    link = serializers.Field(source='get_absolute_url')
+    class Meta:
+        model = Product
+        fields = ('name', 'link',)

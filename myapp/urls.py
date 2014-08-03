@@ -19,4 +19,5 @@ urlpatterns = patterns('myapp.views',
 	url(r'userlist$', UserListView.as_view()),
     url(r'userlist/product:(?P<id>\d+)$', UserListUpdate.as_view()),
 	url(r'serielist$', SerieListView.as_view()),
+    url(r'search$', SearchView.as_view()),
 )

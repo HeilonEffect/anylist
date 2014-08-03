@@ -17,7 +17,6 @@ urlpatterns = patterns('',
     url(r'^(?P<url>.*)register/$', register),
     url(r'^(?P<url>.*)login/$', auth),
     url(r'^(?P<url>.*)logout/$', log_out),
-    url(r'^search$', search),
 
     url(r'^profile/$', profile),
     url(r'^mylist/series/add$', add_list_serie),
