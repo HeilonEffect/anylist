@@ -86,61 +86,6 @@ def profile(request):
     return render(request, 'profile.html', result)
 
 
-@require_http_methods(['POST'])
-@login_required
-def add_list_serie(request):
-    ''' Add selected serie to SerieList table (watched) '''
-    try:
-        form = AddToListSerieForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            serie = Serie.objects.get(**cd)
-
-            try:
-                user_list = UserList.objects.get(
-                    product=cd['product'], user=request.user)
-            except Exception as e:
-                logger.error(e)  # del it
-                user_list = UserList.objects.create(
-                    product=cd['product'], user=request.user,
-                    status=Status.objects.get(name='Watch'))
-
-            if not SerieList.objects.filter(serie=serie, user_list=user_list):
-                SerieList.objects.create(serie=serie, user_list=user_list)
-            return HttpResponse('Ok')
-        else:
-            logger.error('Invalid data from series addition')
-            logger.error('data %s' % request.POST)
-            return HttpResponse('Ooooops')
-    except Exception as e:
-        logger.error(e)
-        return HttpResponseServerError()
-
-
-@require_http_methods(['POST'])
-@login_required
-def del_list_serie(request):
-    ''' Deleting Serie from UserList '''
-    try:
-        form = AddToListSerieForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            serie = Serie.objects.get(**cd)
-
-            user_list = UserList.objects.get(product=cd['product'],
-                                             user=request.user)
-
-            SerieList.objects.filter(serie=serie, user_list=user_list).delete()
-            return HttpResponse()
-        else:
-            logger.error('Invalid data form series deletion')
-            logger.error('data: %s' % request.POST)
-            return HttpResponse('Ooooops')
-    except Exception as e:
-        logger.error(e)
-        return HttpResponseServerError()
-
-
 class MyList(BasePageMixin, LoginRequiredMixin, ListView):
 
     ''' список произведений, составленный пользователем '''
@@ -281,41 +226,8 @@ def add_product(request, category):
     return render(request, 'forms/add_form.html', context)
 
 
-class SerieView(BasePageMixin, ListView):
-
-    ''' List of series by concrete product '''
-    template_name = 'series.html'
-
-    def series_serialize(self):
-        ''' json-like format, describe series list '''
-        p = Serie.objects.filter(product__id=self.kwargs['pk'])
-        if p:
-            num_season = p.aggregate(Max('num_season'))['num_season__max']
-            result = [{'series': p.filter(num_season=item + 1).values(),
-                       'number': item + 1}
-                      for item in range(num_season)]
-            result = result[::-1]
-
-            vals = [item.serie.id for item in self.queryset]
-
-            if self.request.user.is_authenticated():
-                for season in result:
-                    for serie in season['series']:
-                        if serie['id'] in vals:
-                            serie['listed'] = 'Remove from List'
-                        else:
-                            serie['listed'] = 'Add To List'
-            num_season = len(result)
-            result = str(result).replace('None', '"-"')
-            return result, num_season
-        return [], 0
-
-    def get_queryset(self):
-        ''' List of readed series '''
-        self.queryset = SerieList.objects.filter(
-            user_list__product__id=self.kwargs['pk'],
-            user_list__user=self.request.user.id)
-        return self.queryset
+def serie_view(request, category, pk):
+    return render(request, 'series.html')
 
 
 class HeroView(BasePageMixin, DetailView):

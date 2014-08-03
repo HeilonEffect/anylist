@@ -70,7 +70,7 @@ class SeriesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Serie
-        fields = ('number', 'name', 'season', 'start_date', 'length',)
+        fields = ('id', 'number', 'name', 'season', 'start_date', 'length',)
 
 
 class SeasonsSerializer(serializers.ModelSerializer):
@@ -90,7 +90,7 @@ class UserListSerializer(serializers.ModelSerializer):
 class SerieListSerializer(serializers.ModelSerializer):
     class Meta:
         model = SerieList
-        fields = ('serie', 'user_list', 'like',)
+        fields = ('id', 'serie', 'user_list', 'like',)
 
 
 class SearchSerializer(serializers.ModelSerializer):

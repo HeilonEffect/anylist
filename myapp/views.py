@@ -252,13 +252,37 @@ class UserListUpdate(generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class SerieListView(APIView):
+class SerieListView(generics.ListCreateAPIView):
+    ''' Действия со списоком серий (с множеством объектов) '''
     model = SerieList
     serializer_class = SerieListSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
+        if self.request.user:
+            return self.model.objects.filter(user_list__user=self.request.user)
         return self.model.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        ''' Добавление серии в список просмотренных '''
+        cd = {'serie': request.DATA['serie'], 'like': None}
+        try:
+            user_list = UserList.objects.get(
+                user=request.user, product__id=request.DATA['product'])
+            cd['user_list'] = user_list.id
+        except Exception as e:
+            p = Product.objects.get(id=request.DATA['product'])
+            st = Status.objects.get(name='Watch')
+            user_list = UserList.objects.create(
+                user=request.user, product=p, status=st
+            )
+            cd['user_list'] = user_list.id
+        serializer = self.serializer_class(data=cd)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(serializer.errors)
+        return Response('', status=status.HTTP_400_BAD_REQUEST)
 
 
 class SearchView(generics.ListAPIView):
@@ -269,3 +293,14 @@ class SearchView(generics.ListAPIView):
     def get_queryset(self):
         return Product.objects.filter(
             Q(title__icontains=self.request.QUERY_PARAMS['product']))
+
+
+class SingleSerieListView(generics.RetrieveUpdateDestroyAPIView):
+    ''' Действия над единичным объектом из списка серий, отмеченных юзером '''
+    model = SerieList
+    serializer_class = SerieListSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def delete(self, request, *args, **kwargs):
+        self.model.objects.filter(serie__id=kwargs['id']).delete()
+        return Response('', status=status.HTTP_204_NO_CONTENT)

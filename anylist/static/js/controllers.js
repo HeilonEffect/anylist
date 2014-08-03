@@ -301,16 +301,20 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
 
 		var id = window.location.pathname.split('/')[2].split('-')[0];
 
-		$http.get('/api/products/id:' + id + '/status').success(function (data) {
+		$http.get('/api/products/id:' + id + '/status', {headers: {
+            'Authorization': 'Token ' + $scope.token
+        }}).success(function (data) {
 			$scope.active_status = data['status'];
 		});
 
-		$http.get('/api/products/id:' + id).success(function (data) {
+		$http.get('/api/products/id:' + id, {
+            headers: {'Authorization': 'Token ' + $scope.token}
+        }).success(function (data) {
 			$scope.product = data;
 		});
 
         $http.get('/api/userlist?product=' + id, {
-            headers: {'Authentication': 'Token ' + $window.localStorage['token']}
+            headers: {'Authorization': 'Token ' + $scope.token}
         }).success(function(data) {
             if (data[0])
                 $scope.active_status = $scope.statuses[data[0].status];
@@ -342,12 +346,14 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
                     data: "name=" + elem.status,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        'Authorization': 'Token ' + $window.localStorage['token']
+                        'Authorization': 'Token ' + $scope.token
                     }
                 });
         }
 
-        $http.get('/api/seasons?product=' + id).success(function (data) {
+        $http.get('/api/seasons?product=' + id, { headers: {
+            'Authorization': 'Token ' + $scope.token
+        }}).success(function (data) {
 			$scope.seasons = data;
 			var count = 0;
 			for (var i in data)
@@ -370,7 +376,8 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
 				url: "/api/seasons",
 				data: "product=" + id,
 				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded'
+					'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Token ' + $scope.token
 				}
 			}).success(function (data) {
 				$scope.seasons.unshift(data);
@@ -398,7 +405,6 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
 				"&start_date=" + start_date + "&length=" + season.new_serie.length;
 			data = data.replace("undefined", "", "g");
 			data += "&season=" + season.id;
-            console.log(data);
 			$http({
 				method: "POST",
 				url: "/api/series",
@@ -414,5 +420,50 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
 		}
 
         $scope.edit_serie = function (serie) {}
+
+        $scope.add_to_list_serie = function (serie) {
+            $http({
+                method: "POST",
+                url: "/api/serielist",
+                data: "serie=" + serie.id + "&product=" + id,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Token ' + $scope.token
+                }
+            }).success(function (data) {
+                $scope.serielist['' + data.serie] = data;
+            });
+        }
+
+        $scope.del_from_list_serie = function (serie, serielist) {
+            console.log(serie);
+            $http({
+                method: "DELETE",
+                url: "/api/serielist/serie:" + serie.id,
+                data: "",
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Token ' + $scope.token
+                }
+            }).success(function (data) {
+                delete serielist[serie.id];
+                console.log(data);
+            });
+        }
+
+        $scope.show_editing = function (serie) {
+            serie.new_version = {number: serie.number, name: serie.name, start_date: serie.start_date, length: serie.length};
+            serie.editing = !serie.editing;
+        }
+
+        $http.get('/api/serielist?user=' + localStorage.username, {headers: {
+            'Authorization': 'Token ' + $scope.token
+        }}).success(function (data) {
+            var tmp = {};
+            for (var i in data)
+                tmp['' + data[i]['serie']] = data;
+            $scope.serielist = tmp;
+            console.log($scope.serielist);
+        });
 	}
 ]);

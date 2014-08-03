@@ -11,7 +11,19 @@
 	border: 1px solid #E3E3E3;
 }
 .read {
-    background-color: #fff59d;
+    background-color: #f9a825;
+    opacity: .5;
+    position: absolute;
+    height: 2.7em;
+    left: 2.9em;
+    width: 41.4em;
+    margin-top: -0.7em;
+}
+.read span {
+    position: inherit;
+    text-indent: 9em;
+    margin-top: .3em;
+    font-size: 28px;
 }
 .series_block li:hover {
 	background-color: #e91e63;
@@ -26,11 +38,7 @@
 .serie .menu {
 	float: right;
 }
-.serie div {
-	left: 40em;
-	margin-top: -1.3em;
-}
-input[type="submit"] {
+input[type="submit"], .submit_button {
 	background-color: #f36c60;
 	border: none;
 	height: 2em;
@@ -41,12 +49,12 @@ input[type="submit"] {
 }
 .series_block span menu {
 	position: absolute;
-	left: 38em;
+    margin-left: 12em;
 }
-.series_block span menu li {
-	background-color: white;
-    width: 5%;
+.series_block span menu i {
+    z-index: 10;
 	cursor: pointer;
+    margin-left: 1.2em;
 }
 .add_season {
 	position: fixed;

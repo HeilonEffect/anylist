@@ -18,17 +18,29 @@
 		</form>
 		<ul>
 			<li ng-repeat="serie in season.series" ng-mouseenter="serie_mouse_enter(serie)" class="serie" ng-mouseleave="serie_mouse_leave(serie)">
-				<span class="number">{[{serie.number}]}</span>
-				<span class="name">{[{serie.name}]}</span>
-				<span class="start_date">{[{serie.start_date}]}</span>
-				<span>
-					<menu ng-show="serie.edit" ng-if="token" class="serie_menu">
-						<li>Read</li>
-						<li ng-click="edit_serie(serie)">Edit</li>
-						<li>Delete</li>
-					</menu>
-				</span>
-				<span class="length">{[{serie.length}]}</span>
+                <div ng-if="!serie.editing">
+                    <div class="read" ng-show="serielist[serie.id]"><span>Read</span></div>
+				    <span class="number">{[{serie.number}]}</span>
+				    <span class="name">{[{serie.name}]}</span>
+				    <span class="start_date">{[{serie.start_date}]}</span>
+				    <span class="length">{[{serie.length}]}</span>
+                    <span>
+                        <menu ng-show="serie.edit">
+                            <i class="fa fa-eye" ng-click="add_to_list_serie(serie)" ng-hide="serielist[serie.id]"></i>
+                            <i class="fa fa-eye-slash" ng-show="serielist[serie.id]" ng-click="del_from_list_serie(serie, serielist)"></i>
+                            <i class="fa fa-pencil" ng-click="show_editing(serie)"></i>
+                            <i class="fa fa-trash-o"></i>
+                        </menu>
+                    </span>
+                </div>
+                <form ng-if="serie.editing">
+                    <input type="number" placeholder="Number" ng-model="serie.new_version.number">
+                    <input type="text" placeholder="Name" ng-model="serie.new_version.name">
+                    <quick-datepicker ng-model="serie.new_version.start_date" disable-timepicker="true" date-format="MM/dd/yyyy"></quick-datepicker>
+                    <input type="number" ng-model="serie.new_version.length" placeholder="Length">
+                    <button class="submit_button" ng-click="show_editing(serie)">Cancel</button>
+                    <button class="submit_button">Update</button>
+                </form>
 			</li>
 		</ul>
 	</div>
