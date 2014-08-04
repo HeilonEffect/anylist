@@ -65,7 +65,7 @@ class UserListSerializer(serializers.ModelSerializer):
 
 
 class SeriesSerializer(serializers.ModelSerializer):
-    start_date = serializers.DateField(input_formats=['%d.%m.%Y, %H:%M:%S'],
+    start_date = serializers.DateField(input_formats=['%d.%m.%Y, %H:%M:%S', '%Y-%m-%d'],
                                        required=False)
 
     class Meta:
@@ -82,9 +82,11 @@ class SeasonsSerializer(serializers.ModelSerializer):
 
 
 class UserListSerializer(serializers.ModelSerializer):
+    title = serializers.Field('product.title')
+    url = serializers.Field('product.get_absolute_url')
     class Meta:
         model = UserList
-        fields = ('user', 'product', 'score', 'status',)
+        fields = ('user', 'product', 'score', 'status', 'title', 'url',)
 
 
 class SerieListSerializer(serializers.ModelSerializer):

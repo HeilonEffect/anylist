@@ -431,6 +431,7 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
                     'Authorization': 'Token ' + $scope.token
                 }
             }).success(function (data) {
+                $scope.readed_series++;
                 $scope.serielist['' + data.serie] = data;
             });
         }
@@ -447,7 +448,7 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
                 }
             }).success(function (data) {
                 delete serielist[serie.id];
-                console.log(data);
+                $scope.readed_series--;
             });
         }
 
@@ -459,11 +460,113 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
         $http.get('/api/serielist?user=' + localStorage.username, {headers: {
             'Authorization': 'Token ' + $scope.token
         }}).success(function (data) {
+            $scope.readed_series = data.length;
+            $scope.readed_series_old = data.length;
             var tmp = {};
             for (var i in data)
                 tmp['' + data[i]['serie']] = data;
             $scope.serielist = tmp;
-            console.log($scope.serielist);
         });
+
+        $scope.submit_serie = function (serie) {
+            var start_date = serie.new_version.start_date.toLocaleString().split(' ').join(' 0') || "";
+            var data = "number=" + serie.new_version.number + "&name=" + serie.new_version.name + "&start_date=" +
+                start_date + "&length=" + serie.new_version.length + "&season=" + serie.season_id;
+            $http({
+                method: "PUT",
+                url: "/api/series/id:" + serie.id,
+                data: data,
+                headers: {
+                    'Authorization': 'Token ' + localStorage.token,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }).success(function (data) {
+                serie.editing = false;
+                serie.number = serie.new_version.number;
+                serie.name = serie.new_version.name;
+                serie.start_date = serie.new_version.start_date;
+                serie['length'] = serie.new_version['length'];
+                serie.new_version = None;
+            });
+        }
+
+        // Указывает произвольное число серий
+        $scope.add_series = function () {
+            console.log($scope.readed_series);
+            if ($scope.readed_series > $scope.readed_series_old) {
+                console.log('Просмотренных серий увеличилось');
+                var series = [];
+            } else {
+                console.log('Просмотренных серий уменьшилось');
+            }
+        }
+
+        // Добавление следующей серии в список просмотренных
+        $scope.plus_one = function () {
+            var series = [];
+            var maximum = 0;
+            var next_serie = {};
+            for (var i in $scope.seasons)
+                for (var j = $scope.seasons[i].series.length - 1; j >= 0; j--)
+                    if (!$scope.serielist[$scope.seasons[i].series[j].id])
+                        series.push($scope.seasons[i].series[j]);
+                    else {
+                        maximum = $scope.seasons[i].series[j].number;
+                        if (j > 0)
+                            next_serie = $scope.seasons[i].series[j - 1];
+                    }
+            if (series[series.length - 1].number > maximum) {
+                $http({
+                    method: "POST",
+                    url: "/api/serielist",
+                    data: "serie=" + next_serie.id + "&product=" + id,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': 'Token ' + $scope.token
+                    }
+                }).success(function (data) {
+                    $scope.readed_series++;
+                    $scope.serielist['' + data.serie] = data;
+                });
+            } else {
+                var max_serie = series.reduce(function (previousValue, currentValue, index, array) {
+                    return previousValue.id > currentValue.id ? previousValue : currentValue;
+                });
+                $http({
+                    method: "POST",
+                    url: "/api/serielist",
+                    data: "serie=" + max_serie.id + "&product=" + id,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': 'Token ' + $scope.token
+                    }
+                }).success(function (data) {
+                    $scope.readed_series++;
+                    $scope.serielist['' + data.serie] = data;
+                });
+            }
+        }
 	}
 ]);
+
+
+defaultApp.controller('ProfileController', ['$scope',
+    function ($scope) {
+        ;
+    }]);
+
+defaultApp.controller('UserCtrl', ['$scope', '$http',
+    function ($scope, $http) {
+        $scope.statuses = ['', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
+        $scope.statuses_lower = ['', 'planned', 'watch', 'rewatching', 'watched', 'deffered', 'dropped'];
+        var arr = window.location.pathname.split('/');
+        var category = arr[3];
+        var status = $scope.statuses_lower.indexOf(arr[4]);
+
+        $http.get('/api/userlist?status=' + status + '&category=' + category, {headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ' + localStorage.token
+        }}).success(function (data) {
+            $scope.user_list = data;
+        });
+    }]);

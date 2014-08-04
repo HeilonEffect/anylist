@@ -18,7 +18,7 @@
 		</form>
 		<ul>
 			<li ng-repeat="serie in season.series" ng-mouseenter="serie_mouse_enter(serie)" class="serie" ng-mouseleave="serie_mouse_leave(serie)">
-                <div ng-if="!serie.editing">
+                <div ng-hide="serie.editing">
                     <div class="read" ng-show="serielist[serie.id]"><span>Read</span></div>
 				    <span class="number">{[{serie.number}]}</span>
 				    <span class="name">{[{serie.name}]}</span>
@@ -29,17 +29,16 @@
                             <i class="fa fa-eye" ng-click="add_to_list_serie(serie)" ng-hide="serielist[serie.id]"></i>
                             <i class="fa fa-eye-slash" ng-show="serielist[serie.id]" ng-click="del_from_list_serie(serie, serielist)"></i>
                             <i class="fa fa-pencil" ng-click="show_editing(serie)"></i>
-                            <i class="fa fa-trash-o"></i>
                         </menu>
                     </span>
                 </div>
-                <form ng-if="serie.editing">
+                <form ng-show="serie.editing">
                     <input type="number" placeholder="Number" ng-model="serie.new_version.number">
                     <input type="text" placeholder="Name" ng-model="serie.new_version.name">
                     <quick-datepicker ng-model="serie.new_version.start_date" disable-timepicker="true" date-format="MM/dd/yyyy"></quick-datepicker>
                     <input type="number" ng-model="serie.new_version.length" placeholder="Length">
                     <button class="submit_button" ng-click="show_editing(serie)">Cancel</button>
-                    <button class="submit_button">Update</button>
+                    <button class="submit_button" ng-click="submit_serie(serie)">Update</button>
                 </form>
 			</li>
 		</ul>
@@ -52,7 +51,9 @@
 			</a>
 		</div>
 		<div>
-			<input type="number" id="series_form"><span> / {[{count_series}]}</span><img id="plus_one_serie" src="/static/img/add-1.png">
+            <span>{[{readed_series}]}</span>
+			<!--<input type="number" id="series_form" ng-model="readed_series" ng-change="add_series()">--><span> / {[{count_series}]}</span>
+            <img id="plus_one_serie" src="/static/img/add-1.png" ng-click="plus_one()">
 			<select>
 				<option>--> Add To List</option>
 				<option ng-click="status_move(this, active_status)" ng-repeat="status in statuses" ng-selected="status==active_status">{[{status}]}</option>

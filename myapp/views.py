@@ -194,17 +194,20 @@ class UserListView(generics.ListCreateAPIView):
     def get_queryset(self):
         product = self.request.QUERY_PARAMS.get('product')
         category = self.request.QUERY_PARAMS.get('category')
+        status = self.request.QUERY_PARAMS.get('status')
+        result = self.model.objects.all()
         if category:
             for item in Category.objects.all():
                 if item.get_absolute_url()[1:-1] ==\
                         self.request.QUERY_PARAMS['category']:
                     category = item
-            return self.model.objects.filter(user=self.request.user,
+            result = result.filter(user=self.request.user,
                                              product__category=category)
-        elif product:
-            return  self.model.objects.filter(product=product, user=self.request.user)
-        else:
-            return self.model.objects.all()
+        if product:
+            result = result.filter(product=product, user=self.request.user)
+        if status:
+            result = result.filter(status=status)
+        return  result
 
     def post(self, request, *args, **kwargs):
         ''' Обрабатывает такие случаи, как
@@ -304,3 +307,21 @@ class SingleSerieListView(generics.RetrieveUpdateDestroyAPIView):
     def delete(self, request, *args, **kwargs):
         self.model.objects.filter(serie__id=kwargs['id']).delete()
         return Response('', status=status.HTTP_204_NO_CONTENT)
+
+
+class SingleSerieView(generics.RetrieveUpdateAPIView):
+    model = Serie
+    serializer_class = SeriesSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def put(self, request, *args, **kwargs):
+        ''' Обновление содержимого серии '''
+        print(request.DATA)
+        serializer = self.serializer_class(data=request.DATA)
+        if serializer.is_valid():
+            del serializer.data['id']
+            Serie.objects.filter(id=kwargs['id']).update(**serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response('', status=status.HTTP_200_OK)

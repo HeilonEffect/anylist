@@ -131,37 +131,6 @@ def product_edit(request, category, pk):
     return render(request, 'forms/add_form.html', context)
 
 
-@require_http_methods(['POST'])
-@login_required
-def add_serie(request, category, pk):
-    ''' Добавляем новую серию в указанный сезон '''
-    try:
-        form = AddSerieForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponse()
-        else:
-            return HttpResponseServerError(json.dumps(form.errors))
-    except Exception as e:
-        logger.error(e)
-        return HttpResponseServerError()
-
-
-# TODO: review
-def edit_serie(request):
-    cd = request.POST.copy()
-    g = SeriesGroup.objects.get(
-        product=cd['product'], number=int(cd['season']))
-    old = cd['ident']   # номер той серии, что мы правим
-    cd['season'] = g.id     # id сезона
-    form = AddSerieForm(cd)
-    if form.is_valid():
-        cd = form.cleaned_data
-        Serie.objects.filter(number=old, season=g.id).update(**cd)
-        return HttpResponse('success')
-    result = json.dumps([item for item in form.errors.keys()])
-    return HttpResponse(result)
-
 @csrf_exempt
 @require_http_methods(['POST', 'GET'])
 def auth1(request, url):
@@ -192,24 +161,6 @@ def register(request, url):
         return HttpResponse(str(form))
     else:
         return HttpResponseRedirect('/%s' % url)
-
-
-@csrf_exempt
-@require_http_methods(['POST', 'GET'])
-def auth(request, url):
-    try:
-        if request.POST:
-            form = LoginForm(request.POST)
-            if form.is_valid():
-                cd = form.cleaned_data
-                user = User.objects.get(username=cd['username'])
-                return auth1(request, url)
-            logger.debug(form.errors)
-            return HttpResponse(json.dumps(form.errors))
-        else:
-            return HttpResponseRedirect('/%s' % url)
-    except Exception as e:
-        logger.error(e)
 
 
 @require_http_methods(['POST', 'GET'])

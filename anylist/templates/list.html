@@ -51,7 +51,13 @@
 				    <img src="/static/img/edit_w.png" class="edit_in_list" ng-show="product.edit_btn" ng-click="show_edit_form(this, $event)">
                 </div>
 				<div class="tooltip" ng-show="product.edit_btn">
-					<p>{[{product.description}]}</p>
+                    <div class="description">
+					    <p>{[{product.description}]}</p>
+                    </div>
+                    <div class="detail">
+                        Raiting: {[{raiting[product.old_limit].name}]}
+                        Genres: <span ng-repeat="genre in product.genres">{[{all_genres[genre].name}]} </span>
+                    </div>
 				</div>
 				<figure>
 					<img src="{[{product.avatar}]}">

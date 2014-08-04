@@ -28,3 +28,28 @@ main img {
 	width: 11em;
 	height: 15em;
 }
+/* Список со страницы пользователей */
+.user_product_list {
+    margin-top: 2em;
+}
+.user_product_list li {
+    height: 2em;
+    display: block;
+    width: 35em;
+    border: .5px solid #E3E3E3;
+}
+.user_product_list li:hover {
+	background-color: #e91e63;
+	border: 1px solid #e91e63;
+}
+.user_product_list .title {
+    position: absolute;
+    width: 25em;
+    margin-top: .3em;
+    margin-left: .6em;
+}
+.user_product_list .status {
+    position: absolute;
+    margin-top: .3em;
+    margin-left: 20em;
+}
