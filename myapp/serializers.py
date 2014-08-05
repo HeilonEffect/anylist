@@ -24,6 +24,7 @@ class ProductSerializer(serializers.ModelSerializer):
     url = serializers.Field(source='get_absolute_url')
     genres = serializers.PrimaryKeyRelatedField(many=True)
     old_limit = serializers.PrimaryKeyRelatedField()
+    limit = serializers.CharField(source='old_limit.name', read_only=True)
     genres_list = GenreSerializer(
         source='genres.values', required=False, read_only=True)
     series_count = serializers.Field(source='series_count')
@@ -31,7 +32,8 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('id', 'title', 'description', 'avatar', 'url',
-                  'old_limit', 'category', 'genres', 'genres_list', 'series_count',)
+                  'old_limit', 'category', 'genres', 'genres_list',
+                  'series_count', 'limit',)
 
 
 class GenreGroupSerializer(serializers.ModelSerializer):
@@ -82,11 +84,11 @@ class SeasonsSerializer(serializers.ModelSerializer):
 
 
 class UserListSerializer(serializers.ModelSerializer):
-    title = serializers.Field('product.title')
-    url = serializers.Field('product.get_absolute_url')
+    production = serializers.RelatedField(source='product._values', read_only=True)
+    series = serializers.IntegerField(source='serielist_set.count', read_only=True)
     class Meta:
         model = UserList
-        fields = ('user', 'product', 'score', 'status', 'title', 'url',)
+        fields = ('user', 'product', 'score', 'status', 'production', 'series',)
 
 
 class SerieListSerializer(serializers.ModelSerializer):
@@ -101,3 +103,10 @@ class SearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('name', 'link',)
+
+
+class UserStatisticSerializer(serializers.Serializer):
+    category = serializers.CharField()
+    status = serializers.CharField()
+    count = serializers.IntegerField()
+    url = serializers.CharField()

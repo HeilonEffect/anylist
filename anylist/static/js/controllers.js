@@ -61,6 +61,7 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
 		$scope.visibility_form = false;
 		$scope.visibility_user = false;
         $scope.username = $window.localStorage.username;
+        $scope.token = $window.localStorage.token;
 				
 		$scope.show_menu = function () {
 			$scope.hidden_menu = !$scope.hidden_menu;
@@ -78,6 +79,14 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
 			$scope.category_group = data;
 		});
 
+        $scope.logout = function () {
+            $window.localStorage.removeItem('token');
+            $window.localStorage.removeItem('username');
+            $scope.token = undefined;
+            $scope.username = undefined;
+            $window.location.pathname = $window.location.pathname;
+        }
+
 		$scope.auth_me = function () {
             var url = $location.absUrl();
             var data = "username=" + $scope.auth['username'] + "&password=" + $scope.auth['password'];
@@ -92,13 +101,11 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
                 console.log(data);
                 $window.localStorage['token'] = data['token'];
                 $window.localStorage['username'] = $scope.auth['username'];
-                $http.defaults.headers.common.Authorization = 'Token ' + data['token'];
+//                $scope.token = data['token'];
+//                $scope.username = $scope.auth['username'];
+//                $scope.visibility_form = false;
+                $window.location.pathname = $window.location.pathname;
             });
-		}
-
-
-		$scope.logout = function () {
-			window.location.pathname += "logout";
 		}
 
 		$scope.login = function () {
@@ -127,12 +134,19 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 		$scope.uploader = new FileUploader();
 		$scope.uploader.queueLimit = 1;
 		$scope.uploader.removeAfterUpload = true;
+        $scope.main_check = true;
 
 		$scope.active_genres = {};
 		$scope.active_limits = {};
 
         $scope.token = localStorage.token;
-		var limits = $location.absUrl().split('/').slice(5);
+
+        $scope.main_checked = function () {
+            console.log('choiced');
+            $scope.main_check = !$scope.main_check;
+        }
+
+        var limits = $location.absUrl().split('/').slice(5);
 		var lims = [];
 		var genres = [];
 				
@@ -166,9 +180,11 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 		$http.get('/api/genres/category:' + category).success(function (data) {
 			$scope.genre_groups = data;
 			$scope.all_genres = [];
+            $scope.dict_genres = {};
 			for (var i in data)
 				for (var j in data[i].genres) {
 					$scope.all_genres.push(data[i].genres[j]);
+                    $scope.dict_genres['' + data[i].genres[j].id] = data[i].genres[j].name;
 					if (genres.indexOf(data[i].genres[j].name) != -1)
 						$scope.genre_groups[i].genres[j].checked = true;
 					else
@@ -226,8 +242,7 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			$scope.uploader.removeFromQueue(0);
 		}
 
-		$http.get('/api/products/category:' + url, {headers: {'Authorization': 'Token ' + localStorage.token}}
-        ).success(function (data) {
+		$http.get('/api/products/category:' + url).success(function (data) {
 			$scope.products = data;
 			for (var i in data) {
 				$scope.products[i].avatar = "/media/" + data[i].avatar.split('/').pop();
@@ -283,7 +298,11 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 
 		$scope.add_product = function () {
 			$scope.product['category'] = $scope.category_id;
+            $scope.uploader.onSuccessItem = function (item, response, status, headers) {
+                window.location.pathname = window.location.pathname;
+            }
 			$scope.uploader.queue[0].alias = "avatar";
+            $scope.uploader.queue[0].headers = {'Authorization': 'Token ' + $scope.token};
 			$scope.uploader.queue[0].formData.push({'data': JSON.stringify($scope.product)});
 			$scope.uploader.queue[0].url = "/api/products";
 			$scope.uploader.uploadAll();
@@ -307,9 +326,7 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
 			$scope.active_status = data['status'];
 		});
 
-		$http.get('/api/products/id:' + id, {
-            headers: {'Authorization': 'Token ' + $scope.token}
-        }).success(function (data) {
+		$http.get('/api/products/id:' + id).success(function (data) {
 			$scope.product = data;
 		});
 
@@ -550,9 +567,14 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
 ]);
 
 
-defaultApp.controller('ProfileController', ['$scope',
-    function ($scope) {
-        ;
+defaultApp.controller('ProfileController', ['$scope', '$http', '$window',
+    function ($scope, $http, $window) {
+        $http.get('/api/profile', {headers: {
+            'Authorization': 'Token ' + $window.localStorage.token
+        }}).success(function (data) {
+            console.log(data);
+            $scope.user_list = data;
+        });
     }]);
 
 defaultApp.controller('UserCtrl', ['$scope', '$http',
@@ -567,6 +589,9 @@ defaultApp.controller('UserCtrl', ['$scope', '$http',
             'Content-Type': 'application/json',
             'Authorization': 'Token ' + localStorage.token
         }}).success(function (data) {
+            console.log(data);
             $scope.user_list = data;
         });
+
+        $scope.status_move = function (product, status) {}
     }]);

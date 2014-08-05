@@ -2,14 +2,18 @@
 {% block body %}
 <main ng-controller="UserCtrl">
     <ul class="user_product_list">
-        <li ng-repeat="product in user_list">
-            <span class="title"><a href="{[{product.url}]}">{[{product.title}]}</a></span>
+        <li ng-repeat="item in user_list">
+            <span class="title"><a href="{[{item.production.url}]}">{[{item.production.title}]}</a></span>
             <span class="status">
-                {[{statuses[product.status]}]}
-                <!--<select>
-                    <option ng-repeat="status in statuses">{[{status}]}</option>
-                {[{statuses[product.status]}]}
-                </select>-->
+                <select>
+                    <option ng-repeat="status in statuses" ng-selected="status==statuses[item.status]" ng-click="status_move(
+                        product, statuses[product.status])">
+                        {[{status}]}
+                    </option>
+                </select>
+            </span>
+            <span class="series">
+                {[{item.series}]} / {[{item.production.series_count}]}
             </span>
         </li>
     </ul>

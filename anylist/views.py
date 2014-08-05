@@ -64,48 +64,11 @@ def main_page(request):
 
 @require_http_methods(['GET'])
 def profile(request):
-    ''' User Profile '''
-    result = {}
-    result['nav_groups'] = CategoryGroup.objects.all()
-    mylist = UserList.objects.filter(user=request.user)
-
-    result['object_list'] = []
-    statuses = Status.objects.all()
-    for category in Category.objects.all():
-        tmp = []
-        for status in statuses:
-            p = mylist.filter(
-                product__category=category, status=status).count()
-            if p > 0:
-                tmp.append({
-                    'status': status.name,
-                    'count': p
-                })
-        if tmp:
-            result['object_list'].append({'key': category, 'values': tmp})
-    return render(request, 'profile.html', result)
+    return render(request, 'profile.html')
 
 
-class MyList(BasePageMixin, LoginRequiredMixin, ListView):
-
-    ''' список произведений, составленный пользователем '''
-    template_name = 'user_list.html'
-
-    def get_queryset(self):
-        # ReWrite This!!!
-        status = self.kwargs['status'][:1].upper() +\
-            self.kwargs['status'][1:]
-        if status == 'Rewatching':
-            status = 'ReWatching'
-
-        category = self.kwargs['category']
-        for item in Category.objects.all():
-            if item.get_absolute_url()[1:-1] == category:
-                category = item
-        queryset = UserList.objects.filter(user=self.request.user,
-                                           status__name=status,
-                                           product__category=category)
-        return queryset
+def mylist(request, category, status):
+    return render(request, 'user_list.html')
 
 
 def product_list(request, category):
@@ -113,7 +76,7 @@ def product_list(request, category):
     return render(request, 'list.html', context)
 
 
-class ProductDetail(BasePageMixin, DetailView):
+class ProductDetail(DetailView):
 
     ''' Web page for a single product '''
     model = Product
@@ -161,15 +124,6 @@ def register(request, url):
         return HttpResponse(str(form))
     else:
         return HttpResponseRedirect('/%s' % url)
-
-
-@require_http_methods(['POST', 'GET'])
-@login_required
-def log_out(request, url):
-    logout(request)
-    if 'profile' in url:
-        return HttpResponseRedirect('/')
-    return HttpResponseRedirect('/' + url)
 
 
 def add_product(request, category):

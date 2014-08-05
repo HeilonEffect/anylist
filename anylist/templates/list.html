@@ -3,40 +3,49 @@
 {% block header %}{{ header }}{% endblock %}
 {% block body %}
 <main ng-controller="ListCtrl" class="cards">
-	{% if user.is_authenticated %}
 	<img src="/static/img/add.svg" class="add_season" ng-click="add_form()">
 	
 
 	<!-- Форма создания продукта -->
 	<div class="add_product_form_parent" ng-show="add_form_visible" ng-click="add_form()">
 		<form class="add_product_form" ng-click="add_form()" ng-submit="add_product()">
-			<div>
-				<span>Main</span>
-				<p><label>Title:</label><p>
-				<input type="text" placeholder="Title" ng-model="product.title">
-				<p><label>Description:</label></p>
+			<div ng-show="main_check">
+                <div class="under_choicer">
+				<label>Title:</label><br>
+				<input type="text" placeholder="Title" ng-model="product.title"><br>
+				<label>Description:</label><br>
 				<textarea ng-model="product.description"></textarea>
 				<span ng-repeat="item in uploader.queue">
 					<span ng-show="uploader.isHTML5" ng-thumb="{file: item._file, height: 150}"></span>
 				</span>
 				<img src="/static/img/cancel.png" style="width: 50px;height: 50px" ng-click="remove_image()" ng-if="uploader.queue.length == 1">
 				<input type="file" nv-file-select uploader="uploader" ng-if="uploader.queue.length == 0">
+                <pre>Genres: [<span ng-repeat="genre in product.genres">{[{dict_genres[genre]}]} </span>]
+                </pre>
+				<select ng-model="product.old_limit">
+					<option ng-repeat="limit in raiting" value="{[{limit.id}]}">{[{limit.name}]}</option>
+				</select>
+                </div>
+				<h2 ng-click="main_checked()" class="choicer">Next</h2>
 			</div>
-			<div>
-				<span>Genres</span>
-				<div>
-					<select multiple="multiple" ng-model="product.genres">
+			<div ng-hide="main_check">
+				<div class="under_choicer1">
+                    <ul ng-repeat-start="group in genre_groups">
+                        <li ng-repeat="genre in group.genres">
+                            <input type="checkbox" id="{[{genre}]}" ng-model="genre.checked" ng-change="select_genre(genre)">
+                            <label for="{[{genre}]}">{[{genre.name}]}</label>
+                        </li>
+                    </ul>
+                    <div ng-repeat-end></div>
+					<!--<select multiple="multiple" ng-model="product.genres">
 						<option ng-repeat="genre in all_genres" value="{[{genre.id}]}">{[{genre.name}]}</option>
-					</select>
-					<select ng-model="product.old_limit">
-						<option ng-repeat="limit in raiting" value="{[{limit.id}]}">{[{limit.name}]}</option>
-					</select>
+					</select>-->
 				</div>
+                <h2 ng-click="main_checked()" class="choicer">Prev</h2>
 			</div>
 			<input type="submit" value="Create">
 		</form>
 	</div>
-	{% endif %}
 	<img src="/static/img/expand.png" class="expand" ng-click="show_panel()">
 	<!-- Список продуктов -->
 	<ul>
@@ -55,8 +64,8 @@
 					    <p>{[{product.description}]}</p>
                     </div>
                     <div class="detail">
-                        Raiting: {[{raiting[product.old_limit].name}]}
-                        Genres: <span ng-repeat="genre in product.genres">{[{all_genres[genre].name}]} </span>
+                        Raiting: {[{product.limit}]}
+                        Genres: <span ng-repeat="genre in product.genres_list">{[{genre.name}]} </span>
                     </div>
 				</div>
 				<figure>

@@ -151,9 +151,16 @@ class Product(models.Model):
         return sum([
             item.serie_set.count() for item in self.seriesgroup_set.all()])
 
+    def _values(self):
+        return {'title': self.title, 'id': self.id, 'description': self.description,
+                'avatar': self.avatar_path(), 'url': self.get_absolute_url(),
+                'series_count': self.series_count()}
+
     def _series(self):
         return Serie.objects.filter(season__product=self.id).order_by(
             '-num_season', '-number')
+    def _series_count(self):
+        return Serie.objects.filter(season__product=self.id).count()
     series = property(_series)
 
     def _genres(self):

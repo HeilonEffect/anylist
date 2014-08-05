@@ -325,3 +325,27 @@ class SingleSerieView(generics.RetrieveUpdateAPIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response('', status=status.HTTP_200_OK)
+
+
+class UserStatistic(APIView):
+    ''' Отображает сколько произведений на какой стадии у пользователя '''
+    model = Product
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+        p = UserList.objects.filter(user=self.request.user)
+        result = {}
+        categories = Category.objects.all()
+        statuses = Status.objects.all()
+        for category in categories:
+            result[category.name] = {'items': [], 'count': 0,
+                                     'name': category.name}
+            for status in statuses:
+                tmp = {'status': status.name}
+                tmp['count'] = p.filter(product__category=category,
+                                        status=status).count()
+                tmp['url'] = r'/profile/list/%s/%s' % (category.name.lower(),
+                                                       status.name.lower())
+                result[category.name]['items'].append(tmp)
+                result[category.name]['count'] += tmp['count']
+        return Response(result)

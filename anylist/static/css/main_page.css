@@ -53,3 +53,12 @@ main img {
     margin-top: .3em;
     margin-left: 20em;
 }
+.user_product_list .series {
+    position: absolute;
+    margin-top: .3em;
+    margin-left: 28em;
+}
+.user_categories {
+    width: 60%;
+    margin-left: 3em;
+}

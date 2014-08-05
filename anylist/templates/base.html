@@ -33,13 +33,13 @@
 				</nav>
 			</div>
 			<img src="/static/img/show_main_menu.png" ng-click="show_menu()">
-			<span ng-mouseover="show_user_menu()" ng-mouseleave="hide_user_menu()" ng-if="username">{[{username}]}</span>
+			<span ng-mouseover="show_user_menu()" ng-mouseleave="hide_user_menu()" ng-if="token">{[{username}]}</span>
 			<div class="user_menu" ng-show="visibility_user" ng-mouseleave="hide_user_menu()" ng-mouseover="show_user_menu()">
 				<a href="/profile"><p>Profile</p></a>
 				<a href=""><p>Settings</p></a>
-				<a href="logout/"><p>Log Out</p></a>
+				<a href="" ng-click="logout()"><p>Log Out</p></a>
 			</div>
-			<button ng-click="login()" ng-if="!username">Log In</button>
+			<button ng-click="login()" ng-if="!token">Log In</button>
 		</menu>
 		<h1>{% block header %}Header{% endblock %}</h1>
 			<form ng-submit="auth_me()" ng-show="visibility_form" ng-click="login()">

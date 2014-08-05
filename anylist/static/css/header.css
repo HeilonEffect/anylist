@@ -70,7 +70,7 @@ header > menu > img:hover {
 }
 details {
 	position: fixed;
-	top: 4em;
+	top: 3.4em;
 	bottom: 0;
 	left: 0;
 	z-index: 20;

@@ -2,11 +2,13 @@
 
 {% block body %}
 	<main ng-controller="ProfileController">
-	{% for item in object_list %}
-		<h3>{{ item.key }}</h3>
-		{% for value in item.values %}
-			<a href="list{{ item.key.get_absolute_url }}{{ value.status.lower }}">{{ value.status }} ({{ value.count }})</a>
-		{% endfor %}
-	{% endfor %}
+        <div ng-repeat="category in user_list" class="user_categories">
+            <span ng-repeat="item in category.items" ng-if="category.count != 0">
+                <span ng-if="item.count != 0">
+                    <a href="{[{item.url}]}">{[{item.status}]} ({[{item.count}]})</a>
+                </span>
+            </span>
+            <h3 ng-if="category.count != 0">{[{category.name}]}</h3>
+        </div>
 	</main>
 {% endblock %}

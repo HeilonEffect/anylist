@@ -97,6 +97,7 @@ figure figcaption {
 	z-index: 20;
 }
 .add_product_form div {
+    position: inherit;
 	margin-top: 1em;
 	margin-left: 2em;
 	padding: 0;
@@ -135,5 +136,34 @@ figure figcaption {
 	width: 10em;
 }
 .add_product_form input[type="submit"] {
-	margin-left: 30%;
+	right: 30%;
+    position: inherit;
+    height: 3em;
+    bottom: 5em;
+    width: 10em;
+}
+.choicer {
+    background-color: #fff176;
+    cursor: pointer;
+    position: inherit;
+    left: 30%;
+    bottom: 5em;
+    width: 10em;
+}
+.choicer:hover {
+    background-color: #ffeb3b;
+}
+.under_choicer {
+    position: inherit;
+    left: 5%;
+    right: 5%;
+    top: 5%;
+}
+.under_choicer1 {
+    position: inherit;
+    left: 5%;
+    right: 5%;
+    top: 5%;
+    column-count: 4;
+    -moz-column-count: 4;
 }

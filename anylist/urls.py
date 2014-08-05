@@ -15,10 +15,9 @@ urlpatterns = patterns('',
     url(r'^$', main_page),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^(?P<url>.*)register/$', register),
-    url(r'^(?P<url>.*)logout/$', log_out),
 
     url(r'^profile/$', profile),
-    url(r'^profile/list/(?P<category>\w+)/(?P<status>\w+)$', MyList.as_view()),
+    url(r'^profile/list/(?P<category>\w+)/(?P<status>\w+)$', mylist),
 
     url(r'^creator/add$', AddCreator.as_view()),
     url(r'^creator/(?P<pk>\d+)-\w+$', CreatorView.as_view()),
