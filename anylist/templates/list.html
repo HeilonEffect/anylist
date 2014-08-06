@@ -3,7 +3,7 @@
 {% block header %}{{ header }}{% endblock %}
 {% block body %}
 <main ng-controller="ListCtrl" class="cards">
-	<img src="/static/img/add.svg" class="add_season" ng-click="add_form()">
+	<img src="/static/img/add.svg" class="add_season" ng-click="add_form()" ng-if="token">
 	
 
 	<!-- Форма создания продукта -->
@@ -20,8 +20,6 @@
 				</span>
 				<img src="/static/img/cancel.png" style="width: 50px;height: 50px" ng-click="remove_image()" ng-if="uploader.queue.length == 1">
 				<input type="file" nv-file-select uploader="uploader" ng-if="uploader.queue.length == 0">
-                <pre>Genres: [<span ng-repeat="genre in product.genres">{[{dict_genres[genre]}]} </span>]
-                </pre>
 				<select ng-model="product.old_limit">
 					<option ng-repeat="limit in raiting" value="{[{limit.id}]}">{[{limit.name}]}</option>
 				</select>
@@ -32,8 +30,8 @@
 				<div class="under_choicer1">
                     <ul ng-repeat-start="group in genre_groups">
                         <li ng-repeat="genre in group.genres">
-                            <input type="checkbox" id="{[{genre}]}" ng-model="genre.checked" ng-change="select_genre(genre)">
-                            <label for="{[{genre}]}">{[{genre.name}]}</label>
+                            <input type="checkbox" id="{[{genre}]}_1" ng-model="genre.checked" ng-change="select_genre(genre)">
+                            <label for="{[{genre}]}_1">{[{genre.name}]}</label>
                         </li>
                     </ul>
                     <div ng-repeat-end></div>

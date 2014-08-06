@@ -98,12 +98,8 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
                     'Content-Type': 'application/json'
                 }
             }).success(function (data) {
-                console.log(data);
                 $window.localStorage['token'] = data['token'];
                 $window.localStorage['username'] = $scope.auth['username'];
-//                $scope.token = data['token'];
-//                $scope.username = $scope.auth['username'];
-//                $scope.visibility_form = false;
                 $window.location.pathname = $window.location.pathname;
             });
 		}
@@ -139,14 +135,30 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 		$scope.active_genres = {};
 		$scope.active_limits = {};
 
+        $scope.product_genres = {};
+
         $scope.token = localStorage.token;
 
         $scope.main_checked = function () {
-            console.log('choiced');
-            $scope.main_check = !$scope.main_check;
+            if (!$scope.product || !$scope.product.title) {
+                alert('Enter ')
+            }else if (!$scope.product.description) {
+                console.log('description');
+            } else if (!$scope.product.old_limit)
+                alert('Enter Old Limit, please');
+            else if (!$scope.uploader.queue[0])
+                alert('Load image, please');
+            else
+                $scope.main_check = !$scope.main_check;
         }
 
-        var limits = $location.absUrl().split('/').slice(5);
+        $scope.select_genre = function (genre, product) {
+            $scope.product_genres['' + genre.id] = genre.name;
+        }
+
+        var limits = $location.absUrl().split('/').slice(5).map(function (data) {
+            return data.replace('%20', ' ', 'g');
+        });
 		var lims = [];
 		var genres = [];
 				
@@ -177,7 +189,14 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			$event.preventDefault();
 		}
 
-		$http.get('/api/genres/category:' + category).success(function (data) {
+        var url = '/api/genres/category:' + category;
+        var g = Object($scope.active_genres).keys;
+        console.log(genres);
+        if (genres)
+            url += '?genres=' + genres;
+        console.log(url);
+
+		$http.get(url).success(function (data) {
 			$scope.genre_groups = data;
 			$scope.all_genres = [];
             $scope.dict_genres = {};
@@ -215,7 +234,7 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			var tmp = Object.keys($scope.active_limits).filter(function (elem) {
 				return $scope.active_limits[elem];
 			});
-			// Если елемнты ещё остались - заносим их в схему url'a
+			// Если елементы ещё остались - заносим их в схему url'a
 			if (tmp.length > 0) {
 				next_url += '/old_limit/';
 				for (var i in tmp)
@@ -298,6 +317,10 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 
 		$scope.add_product = function () {
 			$scope.product['category'] = $scope.category_id;
+            $scope.product['genres'] = Object.keys($scope.product_genres).map(function (item) {
+                return Number.parseInt(item);
+            });
+            console.log($scope.product.genres);
             $scope.uploader.onSuccessItem = function (item, response, status, headers) {
                 window.location.pathname = window.location.pathname;
             }
@@ -320,6 +343,12 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
 
 		var id = window.location.pathname.split('/')[2].split('-')[0];
 
+        $scope.main_check = true;
+
+        $scope.main_checked = function () {
+            $scope.main_check = !$scope.main_check;
+        }
+
 		$http.get('/api/products/id:' + id + '/status', {headers: {
             'Authorization': 'Token ' + $scope.token
         }}).success(function (data) {
@@ -336,6 +365,10 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
             if (data[0])
                 $scope.active_status = $scope.statuses[data[0].status];
         });
+
+        $scope.add_form = function () {
+            $scope.add_form_visible = !$scope.add_form_visible;
+        }
 
 		$scope.contents = [
 			{'name': 'Description', 'url': ''},
@@ -594,4 +627,16 @@ defaultApp.controller('UserCtrl', ['$scope', '$http',
         });
 
         $scope.status_move = function (product, status) {}
+    }]);
+
+
+defaultApp.controller('CreatorController', ['$scope',
+    function ($scope) {
+        console.log('Creatorss');
+    }]
+);
+
+defaultApp.controller('HeroController', ['$scope',
+    function ($scope) {
+        ;
     }]);

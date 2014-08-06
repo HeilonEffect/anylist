@@ -23,4 +23,5 @@ urlpatterns = patterns('myapp.views',
 	url(r'serielist$', SerieListView.as_view()),
     url(r'serielist/serie:(?P<id>\d+)$', SingleSerieListView.as_view()),
     url(r'search$', SearchView.as_view()),
+    url(r'creators$', CreatorView.as_view()),
 )

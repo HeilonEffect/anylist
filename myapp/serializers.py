@@ -14,10 +14,11 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
+    count = serializers.IntegerField(required=False, read_only=True)
 
     class Meta:
         model = Genre
-        fields = ('id', 'name',)
+        fields = ('id', 'name', 'count',)
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -110,3 +111,9 @@ class UserStatisticSerializer(serializers.Serializer):
     status = serializers.CharField()
     count = serializers.IntegerField()
     url = serializers.CharField()
+
+
+class CreatorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Creator
+        fields = ()

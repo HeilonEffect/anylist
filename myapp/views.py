@@ -1,4 +1,5 @@
 import functools
+import itertools
 import json
 import operator
 
@@ -101,12 +102,33 @@ class GenreGroupList(generics.ListAPIView):
     permission_classes = (AllowAny,)
 
     def get_queryset(self):
+        result = GenreGroup.objects.all()
+        category = None
         if 'name' in self.kwargs:
             for item in Category.objects.all():
                 if item.get_absolute_url()[1:-1] == self.kwargs['name']:
-                    return GenreGroup.objects.filter(category=item.group)
-        else:
-            return GenreGroup.objects.all()
+                    result = result.filter(category=item.group)
+                    category = item
+        genres = self.request.QUERY_PARAMS.get('genres', None)
+        res = {}
+        if genres:
+            p = Product.objects.all()
+            for genre in genres.split(','):
+                p = p.filter(genres__name=genre)
+            if category:
+                p = p.filter(category=category)
+            counter = [genre['name'] for item in p for genre in item.genres.values('name')]
+            for genre in counter:
+                if genre in res:
+                    res[genre] += 1
+                else:
+                    res[genre] = 1
+        # Добавить в вывод
+        for group in result:
+            for genre in group.genres.all():
+                genre.count = res.get(genre.name, 0)
+            print(group.genres.values())
+        return result
 
 
 class ProductDetail(generics.RetrieveUpdateAPIView):
@@ -295,7 +317,7 @@ class SearchView(generics.ListAPIView):
 
     def get_queryset(self):
         return Product.objects.filter(
-            Q(title__icontains=self.request.QUERY_PARAMS['product']))
+            Q(title__icontains=self.request.QUERY_PARAMS['product']))[:10]
 
 
 class SingleSerieListView(generics.RetrieveUpdateDestroyAPIView):
@@ -349,3 +371,12 @@ class UserStatistic(APIView):
                 result[category.name]['items'].append(tmp)
                 result[category.name]['count'] += tmp['count']
         return Response(result)
+
+
+class CreatorView(generics.ListCreateAPIView):
+    model = Creator
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        result = self.model.objects.all()
+        return result

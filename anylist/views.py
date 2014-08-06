@@ -111,19 +111,33 @@ def auth1(request, url):
     else:
         return HttpResponse('Username or password incorrect')
 
+#
+# @require_http_methods(['POST', 'GET'])
+# def register(request, url):
+#     if request.POST:
+#         form = RegisterForm(request.POST)
+#         if form.is_valid():
+#             cd = form.cleaned_data
+#             user = User.objects.create_user(**cd)
+#             user.save()
+#             return auth1(request, url)
+#         return HttpResponse(str(form))
+#     else:
+#         return HttpResponseRedirect('/%s' % url)
 
-@require_http_methods(['POST', 'GET'])
-def register(request, url):
-    if request.POST:
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            user = User.objects.create_user(**cd)
-            user.save()
-            return auth1(request, url)
-        return HttpResponse(str(form))
-    else:
-        return HttpResponseRedirect('/%s' % url)
+
+@require_http_methods(['POST'])
+def register(request):
+    ''' Регистрация нового пользователя '''
+    form = RegisterForm(request.POST)
+    if form.is_valid():
+        cd = form.cleaned_data
+        user = User.objects.create_user(**cd)
+        user.save()
+        token = Token.objects.create(user=user)
+        return HttpResponse({'token': token, 'username': user.username},
+                            content_type='application/json')
+    return HttpResponse(form.errors)
 
 
 def add_product(request, category):

@@ -73,6 +73,7 @@ class Category(TemplateModel):
 
 
 class Genre(TemplateModel):
+    count = 0
     class Meta:
         ordering = ('name',)
 
