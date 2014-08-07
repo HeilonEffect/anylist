@@ -62,3 +62,33 @@ main img {
     width: 60%;
     margin-left: 3em;
 }
+.creator_form {
+    height: 40em;
+}
+.creator_form textarea {
+    top: 30%;
+}
+.creator_form input[type='file'] {
+    left: 25em;
+}
+.creator_group {
+    width: 20em;
+}
+.img_preview {
+    margin-left: 15em;
+}
+.employers {
+    margin-left: 4em;
+    width: 15em;
+}
+.employers li {
+    border: .5px solid #000000;
+}
+#employs {
+    margin-left: 0;
+    width: 15em;
+}
+#creator_list {
+    position: absolute;
+    width: 80%;
+}

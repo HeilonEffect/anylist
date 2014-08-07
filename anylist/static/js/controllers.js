@@ -65,15 +65,15 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
 				
 		$scope.show_menu = function () {
 			$scope.hidden_menu = !$scope.hidden_menu;
-		}
+		};
 
 		$scope.show_user_menu = function () {
 			$scope.visibility_user = true;
-		}
+		};
 
 		$scope.hide_user_menu = function () {
 			$scope.visibility_user = false;
-		}
+		};
 
 		$http.get('/api/categories').success(function (data) {
 			$scope.category_group = data;
@@ -82,10 +82,10 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
         $scope.logout = function () {
             $window.localStorage.removeItem('token');
             $window.localStorage.removeItem('username');
-            $scope.token = undefined;
-            $scope.username = undefined;
+//            $scope.token = undefined;
+//            $scope.username = undefined;
             $window.location.pathname = $window.location.pathname;
-        }
+        };
 
 		$scope.auth_me = function () {
             var url = $location.absUrl();
@@ -102,11 +102,11 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
                 $window.localStorage['username'] = $scope.auth['username'];
                 $window.location.pathname = $window.location.pathname;
             });
-		}
+		};
 
 		$scope.login = function () {
 			$scope.visibility_form = !$scope.visibility_form;
-		}
+		};
 		$scope.searcher = function () {
             if ($scope.search_data.length > 1)
                 $http.get('/api/search?product=' + $scope.search_data).success(function (data) {
@@ -114,7 +114,7 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
                 });
             else
                 $scope.search_result = [];
-		}
+		};
 	}
 ]);
 
@@ -150,11 +150,11 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
                 alert('Load image, please');
             else
                 $scope.main_check = !$scope.main_check;
-        }
+        };
 
         $scope.select_genre = function (genre, product) {
             $scope.product_genres['' + genre.id] = genre.name;
-        }
+        };
 
         var limits = $location.absUrl().split('/').slice(5).map(function (data) {
             return data.replace('%20', ' ', 'g');
@@ -177,17 +177,17 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 
 		$scope.mouse_over = function (elem) {
 			elem.product.edit_btn = true;
-		}
+		};
 
 		$scope.mouse_leave = function (elem) {
 			elem.product.edit_btn = false;
-		}
+		};
 
 		$scope.show_edit_form = function (elem, $event) {
 			$scope.add_form_visible = true;
 			$scope.product = elem.product;
 			$event.preventDefault();
-		}
+		};
 
         var url = '/api/genres/category:' + category;
         var g = Object($scope.active_genres).keys;
@@ -253,13 +253,13 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			if (next_url == '/filter')
 				next_url = '';
 			window.location.href = $location.absUrl().split('/').slice(0, 4).join('/') + next_url + '/';
-		}
+		};
 
 		var url = $location.absUrl().split('/').slice(3).join('/');
 
 		$scope.remove_image = function () {
 			$scope.uploader.removeFromQueue(0);
-		}
+		};
 
 		$http.get('/api/products/category:' + url).success(function (data) {
 			$scope.products = data;
@@ -271,11 +271,11 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 
 		$scope.show_panel = function () {
 			$scope.panel_visibility = !$scope.panel_visibility;
-		}
+		};
 		
 		$scope.add_form = function () {
 			$scope.add_form_visible = !$scope.add_form_visible;
-		}
+		};
 
 
 		$http.get('/api/categories').success(function (data) {
@@ -300,7 +300,7 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
                 user_list[data['product']] = data;
             });
 			$event.preventDefault();
-		}
+		};
 
 		$http.get('/api/userlist?category=' + category, {
             headers: {'Authorization': 'Token ' + localStorage.token}
@@ -320,7 +320,6 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
             $scope.product['genres'] = Object.keys($scope.product_genres).map(function (item) {
                 return Number.parseInt(item);
             });
-            console.log($scope.product.genres);
             $scope.uploader.onSuccessItem = function (item, response, status, headers) {
                 window.location.pathname = window.location.pathname;
             }
@@ -329,7 +328,7 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			$scope.uploader.queue[0].formData.push({'data': JSON.stringify($scope.product)});
 			$scope.uploader.queue[0].url = "/api/products";
 			$scope.uploader.uploadAll();
-		}
+		};
 	}
 ]);
 
@@ -347,7 +346,7 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
 
         $scope.main_checked = function () {
             $scope.main_check = !$scope.main_check;
-        }
+        };
 
 		$http.get('/api/products/id:' + id + '/status', {headers: {
             'Authorization': 'Token ' + $scope.token
@@ -368,15 +367,19 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
 
         $scope.add_form = function () {
             $scope.add_form_visible = !$scope.add_form_visible;
-        }
+        };
 
-		$scope.contents = [
-			{'name': 'Description', 'url': ''},
-			{'name': 'Series', 'url': 'series'},
-			{'name': 'Heroes', 'url': 'heroes'},
-			{'name': 'Creators', 'url': 'creators'}
+        var product_url = window.location.pathname.split('/');
+        var p_url = product_url.slice(0, product_url.length - 2).join('/');
+        console.log(product_url);
+        if (product_url[product_url.length - 2] != 'series')
+            p_url = product_url.slice(0, product_url.length - 1).join('/');
+        $scope.contents = [
+			{'name': 'Description', 'url': p_url},
+			{'name': 'Series', 'url': p_url + '/series'},
+			{'name': 'Heroes', 'url': p_url + '/heroes'},
+			{'name': 'Creators', 'url': p_url + '/creators'}
 		];
-
 		$http.get('/api/genres').success(function (data) {
 			$scope.genres = data;
 		});
@@ -399,7 +402,7 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
                         'Authorization': 'Token ' + $scope.token
                     }
                 });
-        }
+        };
 
         $http.get('/api/seasons?product=' + id, { headers: {
             'Authorization': 'Token ' + $scope.token
@@ -432,19 +435,19 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
 			}).success(function (data) {
 				$scope.seasons.unshift(data);
 			});
-		}
+		};
 
         $scope.serie_mouse_enter = function (serie) {
 			serie.edit = true;
-		}
+		};
 
 		$scope.serie_mouse_leave = function (serie) {
 			serie.edit = false;
-		}
+		};
 
 		$scope.show_menu = function (serie) {
 			serie.menu = !serie.menu;
-		}
+		};
 
         // Добавление новой серии
 		$scope.create_serie = function (season) {
@@ -467,7 +470,7 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
                 data.start_date = data.start_date.slice(0, 10);
                 season.series.unshift(data);
 			});
-		}
+		};
 
         $scope.edit_serie = function (serie) {}
 
@@ -484,7 +487,7 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
                 $scope.readed_series++;
                 $scope.serielist['' + data.serie] = data;
             });
-        }
+        };
 
         $scope.del_from_list_serie = function (serie, serielist) {
             console.log(serie);
@@ -500,12 +503,12 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
                 delete serielist[serie.id];
                 $scope.readed_series--;
             });
-        }
+        };
 
         $scope.show_editing = function (serie) {
             serie.new_version = {number: serie.number, name: serie.name, start_date: serie.start_date, length: serie.length};
             serie.editing = !serie.editing;
-        }
+        };
 
         $http.get('/api/serielist?user=' + localStorage.username, {headers: {
             'Authorization': 'Token ' + $scope.token
@@ -538,7 +541,7 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
                 serie['length'] = serie.new_version['length'];
                 serie.new_version = None;
             });
-        }
+        };
 
         // Указывает произвольное число серий
         $scope.add_series = function () {
@@ -549,7 +552,7 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
             } else {
                 console.log('Просмотренных серий уменьшилось');
             }
-        }
+        };
 
         // Добавление следующей серии в список просмотренных
         $scope.plus_one = function () {
@@ -626,17 +629,99 @@ defaultApp.controller('UserCtrl', ['$scope', '$http',
             $scope.user_list = data;
         });
 
-        $scope.status_move = function (product, status) {}
+        $scope.status_move = function (product, status) {};
     }]);
 
 
-defaultApp.controller('CreatorController', ['$scope',
-    function ($scope) {
-        console.log('Creatorss');
+defaultApp.controller('CreatorController', ['$scope', 'FileUploader', '$http',
+    function ($scope, FileUploader, $http) {
+        $scope.add_form_visible = false;
+        $scope.uploader = new FileUploader();
+        var id = window.location.pathname.split('/')[2].split('-')[0];
+
+        $scope.add_form = function () {
+            $scope.add_form_visible = !$scope.add_form_visible;
+        };
+
+        $scope.remove_image = function () {
+            $scope.uploader.removeFromQueue(0);
+        };
+
+        $http.get('/api/creators?product=' + id).success(function (data) {
+            $scope.creators = data;
+        });
+
+        $http.get('/api/employs').success(function (data) {
+            $scope.employers = data;
+            $scope.employs = data.slice(5);
+        });
+
+        $scope.filter_employs = function (employ) {
+            $scope.employs = $scope.employers.filter(function (data) {
+                return data.name.search('^.*' + employ + '.*', 'i') != -1;
+            });
+        };
+
+        $scope.select_employ = function (employ) {
+            $scope.creator.employ = employ.name;
+            $scope.employs = [];
+        };
+
+        var product_url = window.location.pathname.split('/');
+        product_url = product_url.slice(0, product_url.length - 2).join('/');
+        $scope.contents = [
+			{'name': 'Description', 'url': product_url},
+			{'name': 'Series', 'url': product_url + '/series'},
+			{'name': 'Heroes', 'url': product_url + '/heroes'},
+			{'name': 'Creators', 'url': product_url + '/creators'}
+		];
+
+        $scope.add_creator = function () {
+            if (!$scope.creator || !$scope.creator.name) {
+                alert('Enter name');
+            } else if (!$scope.creator.employ) {
+                alert('Enter employ please');
+            } else if (!$scope.uploader.queue[0]) {
+                alert('Load image');
+            } else {
+                $scope.creator.product = id;
+                for (var i in $scope.employers)
+                    if ($scope.employers[i].name == $scope.creator.employ)
+                        $scope.creator.employ = $scope.employers[i].id;
+                $scope.uploader.queue[0].alias = "avatar";
+                $scope.uploader.onSuccessItem = function (item, response, status, headers) {
+                    window.location.pathname = window.location.pathname;
+                }
+                $scope.uploader.queue[0].headers = {'Authorization': 'Token ' + window.localStorage.token};
+                $scope.uploader.queue[0].formData.push($scope.creator);
+                $scope.uploader.queue[0].url = "/api/creators";
+                console.log($scope.uploader.queue[0]);
+                $scope.uploader.uploadAll();
+            }
+        };
     }]
 );
 
-defaultApp.controller('HeroController', ['$scope',
-    function ($scope) {
-        ;
+defaultApp.controller('HeroController', ['$scope', 'FileUploader',
+    function ($scope, FileUploader) {
+        var product_url = window.location.pathname.split('/');
+        var p_url = product_url.slice(0, product_url.length - 2).join('/');
+        $scope.contents = [
+			{'name': 'Description', 'url': p_url},
+			{'name': 'Series', 'url': p_url + '/series'},
+			{'name': 'Heroes', 'url': p_url + '/heroes'},
+			{'name': 'Creators', 'url': p_url + '/creators'}
+		];
+
+        $scope.add_form_visible = false;
+        $scope.uploader = new FileUploader();
+        var id = window.location.pathname.split('/')[2].split('-')[0];
+
+        $scope.add_form = function () {
+            $scope.add_form_visible = !$scope.add_form_visible;
+        };
+
+        $scope.remove_image = function () {
+            $scope.uploader.removeFromQueue(0);
+        };
     }]);

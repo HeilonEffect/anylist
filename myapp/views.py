@@ -366,8 +366,9 @@ class UserStatistic(APIView):
                 tmp = {'status': status.name}
                 tmp['count'] = p.filter(product__category=category,
                                         status=status).count()
-                tmp['url'] = r'/profile/list/%s/%s' % (category.name.lower(),
-                                                       status.name.lower())
+                tmp['url'] = r'/profile/list/%s/%s' % (
+                    category.name.lower().replace(' ', '_'),
+                    status.name.lower())
                 result[category.name]['items'].append(tmp)
                 result[category.name]['count'] += tmp['count']
         return Response(result)
@@ -376,7 +377,48 @@ class UserStatistic(APIView):
 class CreatorView(generics.ListCreateAPIView):
     model = Creator
     permission_classes = (IsAuthenticatedOrReadOnly,)
+    serializer_class = CreatorSerializer
 
     def get_queryset(self):
         result = self.model.objects.all()
+        product = self.request.QUERY_PARAMS.get('product')
+        if product:
+            result = Product.objects.get(id=product).creators.all()
         return result
+
+    def post(self, request, *args, **kwargs):
+        product_id = request.DATA['product']
+        serializer = self.serializer_class(data=request.DATA, files=request.FILES)
+        if serializer.is_valid():
+            p = serializer.save()
+            Product.objects.get(id=product_id).creators.add(p)
+            # print(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        print(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class HeroView(generics.ListCreateAPIView):
+    model = Hero
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    serializer_class = HeroSerializer
+
+    def get_queryset(self):
+        result = self.model.objects.all()
+        product = self.request.QUERY_PARAMS.get('product')
+        if product:
+            result = result.filter(id=product)
+        return result
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.DATA)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EmployView(generics.ListAPIView):
+    model = Employ
+    serializer_class = EmploySerializer
+    permission_classes = (AllowAny,)
