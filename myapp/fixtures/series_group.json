@@ -1,0 +1,1 @@
+[{"fields": {"product": 11, "number": 1, "frozen": false, "name": ""}, "model": "myapp.seriesgroup", "pk": 1}, {"fields": {"product": 4, "number": 1, "frozen": false, "name": null}, "model": "myapp.seriesgroup", "pk": 29}]

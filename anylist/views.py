@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-import logging
+import logging.config
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -10,10 +10,11 @@ from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.views.generic.detail import DetailView
 
-from myapp.forms import *
+from myapp.models import Product
 
-logger = logging.getLogger(__name__)
+from .dicLog import LOGGING
 
+logger = logging.config.dictConfig(LOGGING)
 
 get_category = lambda self: ''.join(
     [self.kwargs['category'][0].upper(), self.kwargs['category'][1:]])

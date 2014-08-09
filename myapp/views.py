@@ -15,8 +15,6 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticate
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .forms import AddProductForm
-
 from .models import *
 
 from .serializers import *

@@ -13,6 +13,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', main_page),
+    (r'^grappelli/', include('grappelli.urls')), # grappelli URLS
     url(r'^admin/', include(admin.site.urls)),
     url(r'^(?P<url>.*)register/$', register),
 
