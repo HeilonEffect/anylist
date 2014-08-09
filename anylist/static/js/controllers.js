@@ -62,7 +62,18 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
 		$scope.visibility_user = false;
         $scope.username = $window.localStorage.username;
         $scope.token = $window.localStorage.token;
-				
+
+        var url = $window.location.pathname.split('/');
+        $scope.headers = [{'name': 'A', 'url': '/'}];
+        if (url[1])
+            $scope.headers.push({'name': ' > ' + url[1], 'url': '/' + url[1]});
+        if (url.indexOf('filter') == -1) {
+            if (url[2] && url[2] != 'list')
+                $scope.headers.push({'name': ' > Product', 'url': '/' + [url[1], url[2]].join('/')});
+            if (url[3])
+                $scope.headers.push({'name': ' > ' + url[3], 'url': window.location.pathname});
+        }
+
 		$scope.show_menu = function () {
 			$scope.hidden_menu = !$scope.hidden_menu;
 		};
@@ -76,7 +87,7 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
 		};
 
 		$http.get('/api/categories').success(function (data) {
-			$scope.category_group = data;
+			$scope.category_group = data.results;
 		});
 
         $scope.logout = function () {
@@ -110,7 +121,7 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
 		$scope.searcher = function () {
             if ($scope.search_data.length > 1)
                 $http.get('/api/search?product=' + $scope.search_data).success(function (data) {
-                    $scope.search_result = data;
+                    $scope.search_result = data.results;
                 });
             else
                 $scope.search_result = [];
@@ -143,7 +154,7 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
             if (!$scope.product || !$scope.product.title) {
                 alert('Enter ')
             }else if (!$scope.product.description) {
-                console.log('description');
+                alert('description')
             } else if (!$scope.product.old_limit)
                 alert('Enter Old Limit, please');
             else if (!$scope.uploader.queue[0])
@@ -191,20 +202,18 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 
         var url = '/api/genres/category:' + category;
         var g = Object($scope.active_genres).keys;
-        console.log(genres);
         if (genres)
             url += '?genres=' + genres;
-        console.log(url);
 
 		$http.get(url).success(function (data) {
-			$scope.genre_groups = data;
+			$scope.genre_groups = data.results;
 			$scope.all_genres = [];
             $scope.dict_genres = {};
-			for (var i in data)
-				for (var j in data[i].genres) {
-					$scope.all_genres.push(data[i].genres[j]);
-                    $scope.dict_genres['' + data[i].genres[j].id] = data[i].genres[j].name;
-					if (genres.indexOf(data[i].genres[j].name) != -1)
+			for (var i in data.results)
+				for (var j in data.results[i].genres) {
+					$scope.all_genres.push(data.results[i].genres[j]);
+                    $scope.dict_genres['' + data.results[i].genres[j].id] = data.results[i].genres[j].name;
+					if (genres.indexOf(data.results[i].genres[j].name) != -1)
 						$scope.genre_groups[i].genres[j].checked = true;
 					else
 						$scope.genre_groups[i].genres[j].checked = false;
@@ -212,9 +221,9 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 		});
 
 		$http.get('/api/raitings').success(function (data) {
-			$scope.raiting = data;
-			for (var i in data) {
-				if (lims.indexOf(data[i].name) != -1)
+			$scope.raiting = data.results;
+			for (var i in data.results) {
+				if (lims.indexOf(data.results[i].name) != -1)
 					$scope.raiting[i].checked = true;
 				else
 					$scope.raiting[i].checked = false;
@@ -262,9 +271,9 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 		};
 
 		$http.get('/api/products/category:' + url).success(function (data) {
-			$scope.products = data;
-			for (var i in data) {
-				$scope.products[i].avatar = "/media/" + data[i].avatar.split('/').pop();
+			$scope.products = data.results;
+			for (var i in data.results) {
+				$scope.products[i].avatar = "/media/" + data.results[i].avatar.split('/').pop();
 				$scope.products[i].edit_btn = false;
 			}
 		});
@@ -279,10 +288,10 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 
 
 		$http.get('/api/categories').success(function (data) {
-			for (var i in data)
-				for (var key in data[i]['categories'])
-					if (data[i]['categories'][key].url == category)
-						$scope.category_id = data[i]['categories'][key].id;
+			for (var i in data.results)
+				for (var key in data.results[i]['categories'])
+					if (data.results[i]['categories'][key].url == category)
+						$scope.category_id = data.results[i]['categories'][key].id;
 		});
 
 		$scope.add_to_list = function (elem, $event, user_list) {
@@ -302,17 +311,19 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			$event.preventDefault();
 		};
 
-		$http.get('/api/userlist?category=' + category, {
-            headers: {'Authorization': 'Token ' + localStorage.token}
-        }).success(function (data) {
-			var statuses = ["", "Planned", "Watch", "ReWatching", "Watched", "Deffered", "Dropped"];
-			$scope.user_list = {};
-			for (var i in data) {
-				var key = '' + data[i].product;
-				data[i].status = statuses[data[i].status];
-				$scope.user_list[key] = data[i];
-			}
-		});
+        if ($scope.token) {
+            $http.get('/api/userlist?category=' + category, {
+                headers: {'Authorization': 'Token ' + localStorage.token}
+            }).success(function (data) {
+                var statuses = ["", "Planned", "Watch", "ReWatching", "Watched", "Deffered", "Dropped"];
+                $scope.user_list = {};
+                for (var i in data.results) {
+                    var key = '' + data.results[i].product;
+                    data.results[i].status = statuses[data.results[i].status];
+                    $scope.user_list[key] = data.results[i];
+                }
+            });
+        }
 
 
 		$scope.add_product = function () {
@@ -371,7 +382,6 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
 
         var product_url = window.location.pathname.split('/');
         var p_url = product_url.slice(0, product_url.length - 2).join('/');
-        console.log(product_url);
         if (product_url[product_url.length - 2] != 'series')
             p_url = product_url.slice(0, product_url.length - 1).join('/');
         $scope.contents = [
@@ -407,15 +417,15 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
         $http.get('/api/seasons?product=' + id, { headers: {
             'Authorization': 'Token ' + $scope.token
         }}).success(function (data) {
-			$scope.seasons = data;
+			$scope.seasons = data.results;
 			var count = 0;
-			for (var i in data)
-				for (var j in data[i].series) {
+			for (var i in data.results)
+				for (var j in data.results[i].series) {
 					count++;
-					if (!data[i].series[j]['length'])
+					if (!data.results[i].series[j]['length'])
 						$scope.seasons[i].series[j]['length']= " ";
-					if (data[i].series[j].start_date) {
-						var tmp = data[i].series[j].start_date.slice(0, 10)
+					if (data.results[i].series[j].start_date) {
+						var tmp = data.results[i].series[j].start_date.slice(0, 10)
 						$scope.seasons[i].series[j].start_date = tmp;
 					}
 				}
@@ -490,7 +500,6 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
         };
 
         $scope.del_from_list_serie = function (serie, serielist) {
-            console.log(serie);
             $http({
                 method: "DELETE",
                 url: "/api/serielist/serie:" + serie.id,
@@ -516,8 +525,8 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
             $scope.readed_series = data.length;
             $scope.readed_series_old = data.length;
             var tmp = {};
-            for (var i in data)
-                tmp['' + data[i]['serie']] = data;
+            for (var i in data.results)
+                tmp['' + data.results[i]['serie']] = data;
             $scope.serielist = tmp;
         });
 
@@ -608,7 +617,6 @@ defaultApp.controller('ProfileController', ['$scope', '$http', '$window',
         $http.get('/api/profile', {headers: {
             'Authorization': 'Token ' + $window.localStorage.token
         }}).success(function (data) {
-            console.log(data);
             $scope.user_list = data;
         });
     }]);
@@ -625,8 +633,7 @@ defaultApp.controller('UserCtrl', ['$scope', '$http',
             'Content-Type': 'application/json',
             'Authorization': 'Token ' + localStorage.token
         }}).success(function (data) {
-            console.log(data);
-            $scope.user_list = data;
+            $scope.user_list = data.results;
         });
 
         $scope.status_move = function (product, status) {};
@@ -648,12 +655,12 @@ defaultApp.controller('CreatorController', ['$scope', 'FileUploader', '$http',
         };
 
         $http.get('/api/creators?product=' + id).success(function (data) {
-            $scope.creators = data;
+            $scope.creators = data.results;
         });
 
         $http.get('/api/employs').success(function (data) {
-            $scope.employers = data;
-            $scope.employs = data.slice(5);
+            $scope.employers = data.results;
+            $scope.employs = data.results.slice(5);
         });
 
         $scope.filter_employs = function (employ) {
@@ -695,7 +702,6 @@ defaultApp.controller('CreatorController', ['$scope', 'FileUploader', '$http',
                 $scope.uploader.queue[0].headers = {'Authorization': 'Token ' + window.localStorage.token};
                 $scope.uploader.queue[0].formData.push($scope.creator);
                 $scope.uploader.queue[0].url = "/api/creators";
-                console.log($scope.uploader.queue[0]);
                 $scope.uploader.uploadAll();
             }
         };

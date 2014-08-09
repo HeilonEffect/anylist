@@ -1,6 +1,4 @@
 {% extends "base.html" %}
-{% block header %}List of heroes{% endblock %}
-{% block title %}List of heroes{% endblock %}
 {% block body %}
 <main class="list" ng-controller="HeroController">
     <form class="add_product_form_parent" ng-click="add_form()" ng-show="add_form_visible" ng-submit="add_creator()">

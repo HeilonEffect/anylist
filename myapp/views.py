@@ -218,9 +218,11 @@ class UserListView(generics.ListCreateAPIView):
         result = self.model.objects.all()
         if category:
             for item in Category.objects.all():
-                if item.get_absolute_url()[1:-1] ==\
-                        self.request.QUERY_PARAMS['category']:
+                print(item.get_absolute_url()[1:-1])
+                print(category)
+                if item.get_absolute_url()[1:-1] == category:
                     category = item
+                    print(category)
             result = result.filter(user=self.request.user,
                                              product__category=category)
         if product:
@@ -365,7 +367,7 @@ class UserStatistic(APIView):
                 tmp['count'] = p.filter(product__category=category,
                                         status=status).count()
                 tmp['url'] = r'/profile/list/%s/%s' % (
-                    category.name.lower().replace(' ', '_'),
+                    category.name.lower().replace(' ', ''),
                     status.name.lower())
                 result[category.name]['items'].append(tmp)
                 result[category.name]['count'] += tmp['count']

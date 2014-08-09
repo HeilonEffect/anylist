@@ -1,9 +1,8 @@
 {% extends "base.html" %}
 {% block title %}{{ header }}{% endblock %}
-{% block header %}{{ header }}{% endblock %}
 {% block body %}
 <main ng-controller="DetailCtrl" class="description">
-	<img src="/static/img/edit.png" class="edit_product" ng-click="add_form()">
+	<img src="/static/img/edit.png" class="edit_product" ng-click="add_form()" ng-if="token">
 
     <div class="add_product_form_parent" ng-show="add_form_visible" ng-click="add_form()">
 		<form class="add_product_form" ng-click="add_form()" ng-submit="add_product()">
@@ -40,7 +39,8 @@
 		</form>
 	</div>
 	<article>
-		<img src="{{ object.avatar_path }}">
+        <h1>{[{product.title}]}</h1>
+		<img src="{[{product.avatar_path}]}">
 		Genres: <a href="/{[{category}]}/filter/genres/{[{genre.name}]}" ng-repeat="genre in product.genres_list">{[{genre.name}]}, </a>
 		<p>Old raiting: <a href="/{[{category}]}/filter/old_limit/{[{raiting[product.old_limit - 1]}]}">{[{raiting[product.old_limit - 1]}]}</a></p>
 		<p>

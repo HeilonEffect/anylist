@@ -36,13 +36,17 @@ class CategoryGroup(TemplateModel):
     categories = property(_categories)
 
     def categories_json(self):
-        p = Category.objects.filter(group=self.id).values(
-            'id', 'name', 'avatar', 'icon',)
+        p = Category.objects.filter(group=self.id)
+        result = []
         for item in p:
-            item['avatar'] = '/media/%s' % item['avatar'].split('/')[-1]
-            item['icon'] = '/media/%s' % item['icon'].split('/')[-1]
-            item['url'] = ''.join(item['name'].lower().split(' '))
-        return p
+            tmp = {}
+            tmp['id'] = item.id
+            tmp['name'] = item.name
+            tmp['avatar'] = item.avatar_path()
+            tmp['icon'] = item.icon_path()
+            tmp['url'] = item.get_absolute_url()[1:]
+            result.append(tmp)
+        return result
 
     class Meta:
         ordering = ('name',)
@@ -58,7 +62,9 @@ class Category(TemplateModel):
     group = models.ForeignKey(CategoryGroup)
 
     def avatar_path(self):
-        return 'media/%s' % self.avatar.url.split('/')[-1]
+        options = {'size': (320, 480), 'crop': True}
+        thumb_url = get_thumbnailer(self.avatar).get_thumbnail(options).url
+        return '/media/' + thumb_url.split('/')[-1]
 
     def icon_path(self):
         options = {'size': (75, 75), 'crop': True}

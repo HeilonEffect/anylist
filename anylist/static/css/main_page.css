@@ -6,7 +6,7 @@ main {
 main > div {
 	float: left;
 	background-color: white;
-	margin: .5em;
+	margin:-0.2em;
 }
 h2 {
 	text-align: center;
@@ -22,11 +22,11 @@ main ul li {
 	display: inline-block;
 }
 main ul li figure {
-	margin: .3em;
+	margin: .1em;
 }
 main img {
-	width: 11em;
-	height: 15em;
+	width: 12em;
+	height: 17em;
 }
 /* Список со страницы пользователей */
 .user_product_list {

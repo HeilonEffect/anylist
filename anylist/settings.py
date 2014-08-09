@@ -30,7 +30,6 @@ DEBUG = True
 # Application definition
 
 INSTALLED_APPS = (
-    'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,27 +38,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'myapp',
     'south',
-    'django_wysiwyg',
-    'debug_toolbar',
     'easy_thumbnails',
     'rest_framework',
     'rest_framework.authtoken',
 )
-
-DEBUG_TOOLBAR_PANELS = [
-    'debug_toolbar.panels.versions.VersionsPanel',
-    'debug_toolbar.panels.timer.TimerPanel',
-    'debug_toolbar.panels.settings.SettingsPanel',
-    'debug_toolbar.panels.headers.HeadersPanel',
-    'debug_toolbar.panels.request.RequestPanel',
-    'debug_toolbar.panels.sql.SQLPanel',
-    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-    'debug_toolbar.panels.templates.TemplatesPanel',
-    'debug_toolbar.panels.cache.CachePanel',
-    'debug_toolbar.panels.signals.SignalsPanel',
-    'debug_toolbar.panels.logging.LoggingPanel',
-    'debug_toolbar.panels.redirects.RedirectsPanel',
-]
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -134,7 +116,6 @@ MEDIA_URL = '/media/'
 #        }
 #    }
 #}
-DJANGO_WYSIWYG_FLAVOR = "ckeditor"
 
 #SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 #SESSION_CACHE_ALIAS = 'default'
@@ -157,6 +138,9 @@ DJANGO_LIVE_TEST_SERVER_ADDRESS = 'localhost:8082'
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.
     # Only used if the `serializer_class` attribute is not set on a view.
+    'PAGINATE_BY': 20,
+    'PAGINATE_BY_PARAM': 'page_size',
+    'MAX_PAGINATE_BY': 100,
     'DEFAULT_MODEL_SERIALIZER_CLASS':
         'rest_framework.serializers.HyperlinkedModelSerializer',
 

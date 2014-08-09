@@ -29,12 +29,13 @@ class ProductSerializer(serializers.ModelSerializer):
     genres_list = GenreSerializer(
         source='genres.values', required=False, read_only=True)
     series_count = serializers.Field(source='series_count')
+    avatar_path = serializers.Field(source='avatar_path')
 
     class Meta:
         model = Product
         fields = ('id', 'title', 'description', 'avatar', 'url',
                   'old_limit', 'category', 'genres', 'genres_list',
-                  'series_count', 'limit',)
+                  'series_count', 'limit', 'avatar_path',)
 
 
 class GenreGroupSerializer(serializers.ModelSerializer):
