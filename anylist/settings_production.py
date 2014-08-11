@@ -1,30 +1,11 @@
-"""
-Django settings for anylist project.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.6/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.6/ref/settings/
-"""
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
 
 BASE_DIR = os.path.dirname(__file__)
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'j!p49a*j4e+!7&s&cx(&orq=s@u-pd&)i3u#p=$h$@)9-p!qo!'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-# Application definition
+DEBUG = False
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -54,20 +35,14 @@ ROOT_URLCONF = 'anylist.urls'
 WSGI_APPLICATION = 'anylist.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'product_db',
-        'USER': 'ctulhu',
-        'PASSWORD': ''
+        'USER': 'postgres',
+        'PASSWORD': 'ShockiNg'
     }
 }
-
-# Internationalization
-# https://docs.djangoproject.com/en/1.6/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -103,7 +78,6 @@ TEMPLATE_DIRS = (
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
-
 THUMBNAIL_ALIASES = {
     '': {
         'avatar': {'size': (50,50), 'crop': True},
@@ -120,6 +94,8 @@ DJANGO_LIVE_TEST_SERVER_ADDRESS = 'localhost:8082'
 
 
 REST_FRAMEWORK = {
+    # Use hyperlinked styles by default.
+    # Only used if the `serializer_class` attribute is not set on a view.
     'PAGINATE_BY': 20,
     'PAGINATE_BY_PARAM': 'page_size',
     'MAX_PAGINATE_BY': 100,
@@ -136,16 +112,4 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
-}
-
-CACHEOPS_REDIS = {
-    'host': 'localhost',
-    'port': 6379,
-    'db': 1,
-    'socket_timeout': 3
-}
-
-CACHEOPS = {
-    'myapp': (),
-    'myapp.Product': ('filter', 60 * 2)
 }

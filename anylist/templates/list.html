@@ -36,13 +36,14 @@
                     <div ng-repeat-end></div>
 				</div>
                 <h2 ng-click="main_checked()" class="choicer">Prev</h2>
+			    <input type="submit" value="Create">
 			</div>
-			<input type="submit" value="Create">
 		</form>
 	</div>
-	<img src="/static/img/expand.png" class="expand" ng-click="show_panel()">
+	<img src="/static/img/expand.svg" class="expand" ng-click="show_panel()">
 	<!-- Список продуктов -->
-    <p></p>
+    <p></p><br>
+    <ul class="pagination"><li ng-repeat="page in pages"><a href="{[{page.url}]}">{[{page.number}]}</a></li></ul>
 	<ul>
 		<li ng-repeat="product in products">
 			<a href="{[{product.url}]}" ng-mouseenter="mouse_over(this)" ng-mouseleave="mouse_leave(this)">

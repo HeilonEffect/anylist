@@ -86,15 +86,24 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
 			$scope.visibility_user = false;
 		};
 
-		$http.get('/api/categories').success(function (data) {
-			$scope.category_group = data.results;
-		});
+        // Это очень редко меняющийся контент, поэтому храним в localStorage
+        if (!$window.localStorage.category_groups) {
+            $http.get('/api/categories').success(function (data) {
+                $scope.category_group = data.results;
+                var result = [];
+                for (var i in data.results)
+                    for (var j in data.results[i].categories)
+                        result.push(data.results[i].categories[j]);
+                $window.localStorage['category_groups'] = JSON.stringify($scope.category_group);
+                $window.localStorage['categories'] = JSON.stringify(result);
+            });
+        } else {
+            $scope.category_group = JSON.parse($window.localStorage['category_groups']);
+        }
 
         $scope.logout = function () {
             $window.localStorage.removeItem('token');
             $window.localStorage.removeItem('username');
-//            $scope.token = undefined;
-//            $scope.username = undefined;
             $window.location.pathname = $window.location.pathname;
         };
 
@@ -150,11 +159,15 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 
         $scope.token = localStorage.token;
 
+//        $scope.myPagingFunction = function () {
+//            console.log('Scroll!!');
+//        }
+
         $scope.main_checked = function () {
             if (!$scope.product || !$scope.product.title) {
-                alert('Enter ')
+                alert('Enter title')
             }else if (!$scope.product.description) {
-                alert('description')
+                alert('Enter description')
             } else if (!$scope.product.old_limit)
                 alert('Enter Old Limit, please');
             else if (!$scope.uploader.queue[0])
@@ -184,7 +197,14 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			$scope.active_genres[genres[i]] = true;
 
 		var category = $location.absUrl().split('/');
-		category = category[3];
+		category = category[3] + '/';
+        var categories = JSON.parse(localStorage['categories']);
+        for (var i in categories)
+            if (categories[i].url == category) {
+                $scope.category_id = categories[i].id;
+                category = categories[i].id;
+                break;
+            }
 
 		$scope.mouse_over = function (elem) {
 			elem.product.edit_btn = true;
@@ -200,10 +220,10 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			$event.preventDefault();
 		};
 
-        var url = '/api/genres/category:' + category;
+        var url = '/api/genres?category=' + category;
         var g = Object($scope.active_genres).keys;
         if (genres)
-            url += '?genres=' + genres;
+            url += '&genres=' + genres;
 
 		$http.get(url).success(function (data) {
 			$scope.genre_groups = data.results;
@@ -230,6 +250,7 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			}
 		});
 
+        /* DANGEROUS!!!: НЕ ВЛЕЗАЙ, УБЬЁТ */
 		$scope.start_filter = function (elem) {
 			// По нажатию на флажок - фиксируем активный элемент
 			if (elem.genre)
@@ -272,6 +293,7 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 
 		$http.get('/api/products/category:' + url).success(function (data) {
 			$scope.products = data.results;
+            $scope.pages = [];
 			for (var i in data.results) {
 				$scope.products[i].avatar = "/media/" + data.results[i].avatar.split('/').pop();
 				$scope.products[i].edit_btn = false;
@@ -285,14 +307,6 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 		$scope.add_form = function () {
 			$scope.add_form_visible = !$scope.add_form_visible;
 		};
-
-
-		$http.get('/api/categories').success(function (data) {
-			for (var i in data.results)
-				for (var key in data.results[i]['categories'])
-					if (data.results[i]['categories'][key].url == category)
-						$scope.category_id = data.results[i]['categories'][key].id;
-		});
 
 		$scope.add_to_list = function (elem, $event, user_list) {
             // Добавление продукта со страницы списка
@@ -359,12 +373,6 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
             $scope.main_check = !$scope.main_check;
         };
 
-		$http.get('/api/products/id:' + id + '/status', {headers: {
-            'Authorization': 'Token ' + $scope.token
-        }}).success(function (data) {
-			$scope.active_status = data['status'];
-		});
-
 		$http.get('/api/products/id:' + id).success(function (data) {
 			$scope.product = data;
 		});
@@ -372,8 +380,8 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
         $http.get('/api/userlist?product=' + id, {
             headers: {'Authorization': 'Token ' + $scope.token}
         }).success(function(data) {
-            if (data[0])
-                $scope.active_status = $scope.statuses[data[0].status];
+            if (data.results[0])
+                $scope.active_status = $scope.statuses[data.results[0].status];
         });
 
         $scope.add_form = function () {

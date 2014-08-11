@@ -60,7 +60,6 @@ class ProductList(generics.ListCreateAPIView):
                     p = Product.objects.filter(category__name=item.name)
 
                     if 'args' in self.kwargs:
-                        print('args in self.kwargs')
                         qs = {}
                         tmp = self.kwargs['args'].split('/')
                         tmp = list(filter(lambda item: item, tmp))
@@ -73,10 +72,8 @@ class ProductList(generics.ListCreateAPIView):
                         tmp = qs.get('old_limit')
                         if tmp:
                             q = functools.reduce(operator.or_, map(f, tmp))
-                        print(q)
                         if not isinstance(q, list):
                             p = p.filter(q)
-                            print(p)
 
                         tmp = qs.get('genres')
                         if tmp:
@@ -101,12 +98,9 @@ class GenreGroupList(generics.ListAPIView):
 
     def get_queryset(self):
         result = GenreGroup.objects.all()
-        category = None
-        if 'name' in self.kwargs:
-            for item in Category.objects.all():
-                if item.get_absolute_url()[1:-1] == self.kwargs['name']:
-                    result = result.filter(category=item.group)
-                    category = item
+        category = self.request.QUERY_PARAMS.get('category')
+        if category:
+            result = result.filter(category=category)
         genres = self.request.QUERY_PARAMS.get('genres', None)
         res = {}
         if genres:
@@ -125,7 +119,6 @@ class GenreGroupList(generics.ListAPIView):
         for group in result:
             for genre in group.genres.all():
                 genre.count = res.get(genre.name, 0)
-            print(group.genres.values())
         return result
 
 
@@ -144,21 +137,6 @@ class User(APIView):
             'auth': str(request.auth)
         }
         return Response(content)
-
-
-class StatusView(generics.GenericAPIView):
-    authentication_classes = (BasicAuthentication,)
-    permission_classes = (IsAuthenticated,)
-    serializer_class = (UsersSerializer,)
-
-    def get(self, request, pk):
-        p = UserList.objects.filter(user=request.user,
-                                    product__id=pk).first()
-        if p:
-            content = {'status': p.status.name}
-            return Response(content)
-        else:
-            return Response('', status=status.HTTP_400_BAD_REQUEST)
 
 
 class GenreView(generics.ListAPIView):
@@ -182,7 +160,6 @@ class SeasonsView(generics.ListCreateAPIView):
         serializer = self.serializer_class(data=d)
         if serializer.is_valid():
             return Response(serializer.data, status.HTTP_201_CREATED)
-        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
@@ -218,11 +195,8 @@ class UserListView(generics.ListCreateAPIView):
         result = self.model.objects.all()
         if category:
             for item in Category.objects.all():
-                print(item.get_absolute_url()[1:-1])
-                print(category)
                 if item.get_absolute_url()[1:-1] == category:
                     category = item
-                    print(category)
             result = result.filter(user=self.request.user,
                                              product__category=category)
         if product:
@@ -243,10 +217,8 @@ class UserListView(generics.ListCreateAPIView):
         # serializer = UsersSerializer(data=data)
         serializer = UsersSerializer(data=request.DATA)
         if serializer.is_valid():
-            print(serializer.DATA)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -306,7 +278,6 @@ class SerieListView(generics.ListCreateAPIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        print(serializer.errors)
         return Response('', status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -338,7 +309,6 @@ class SingleSerieView(generics.RetrieveUpdateAPIView):
 
     def put(self, request, *args, **kwargs):
         ''' Обновление содержимого серии '''
-        print(request.DATA)
         serializer = self.serializer_class(data=request.DATA)
         if serializer.is_valid():
             del serializer.data['id']
@@ -392,9 +362,7 @@ class CreatorView(generics.ListCreateAPIView):
         if serializer.is_valid():
             p = serializer.save()
             Product.objects.get(id=product_id).creators.add(p)
-            # print(serializer.data)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

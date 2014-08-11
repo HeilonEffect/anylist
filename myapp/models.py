@@ -179,7 +179,7 @@ class Product(models.Model):
     def get_absolute_url(self):
         title = ''.join(re.split('[ :()-.!?]', self.title))
         return '%s%d-%s/' % (self.category.get_absolute_url(), self.id,
-                             title)
+                            title)
 
     def avatar_path(self):
         return '/media/%s' % str(self.avatar).split('/')[-1]
