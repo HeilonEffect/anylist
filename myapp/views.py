@@ -126,6 +126,28 @@ class ProductDetail(generics.RetrieveUpdateAPIView):
     model = Product
     serializer_class = ProductSerializer
 
+    def put(self, request, *args, **kwargs):
+        ''' Обновляет информацию о продукте '''
+        data = json.loads(request.DATA['data'])
+        id = data['id']
+        if request.FILES:
+            data['avatar'] = request.FILES['avatar']
+        p = Product.objects.get(id=data['id'])
+        p.avatar = request.FILES['avatar']
+        if p.title != data['title']:
+            p.title = data['title']
+        if p.description != data['description']:
+            p.description = data['description']
+        if p.old_limit.id != data['old_limit']:
+            p.old_limit = Raiting.objects.get(id=data['old_limit'])
+        genres = p.genres.all()
+        p.genres.clear()
+        for genre in data['genres']:
+            g = Genre.objects.get(id=genre)
+            p.genres.add(g)
+        p.save()
+        return Response('', status=status.HTTP_200_OK)
+
 
 class User(APIView):
     authentication_classes = (BasicAuthentication,)
@@ -390,3 +412,10 @@ class EmployView(generics.ListAPIView):
     model = Employ
     serializer_class = EmploySerializer
     permission_classes = (AllowAny,)
+
+
+class UpdateNumSeriveView(APIView):
+    ''' Если мы указываем, что мы просмотрли N серий, то данные об этом
+     шлются сюда'''
+    def post(self, request, *args, **kwargs):
+        pass

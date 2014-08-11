@@ -1,14 +1,14 @@
 # -*- encoding: utf-8 -*-
 import logging.config
 
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.cache import cache
 from django.http import *
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from django.views.generic.detail import DetailView
+
+from rest_framework.authtoken.models import Token
 
 from myapp.models import Product
 

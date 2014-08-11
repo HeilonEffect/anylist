@@ -38,6 +38,14 @@ class ProductSerializer(serializers.ModelSerializer):
                   'series_count', 'limit', 'avatar_path',)
 
 
+class UpdateProductSerializer(serializers.ModelSerializer):
+    avatar = serializers.ImageField()
+    class Meta:
+        model = Product
+        fields = ('id', 'title', 'description', 'avatar', 'old_limit',
+                    'category', 'genres',)
+
+
 class GenreGroupSerializer(serializers.ModelSerializer):
     genres = serializers.Field(source='_genres')
 

@@ -27,7 +27,7 @@
 			</div>
 			<div ng-hide="main_check">
 				<div class="under_choicer1">
-                    <ul ng-repeat-start="group in genre_groups">
+                    <ul ng-repeat-start="group in genre_groups1">
                         <li ng-repeat="genre in group.genres">
                             <input type="checkbox" id="{[{genre}]}_1" ng-model="genre.checked" ng-change="select_genre(genre)">
                             <label for="{[{genre}]}_1">{[{genre.name}]}</label>

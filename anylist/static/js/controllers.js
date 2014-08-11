@@ -87,6 +87,12 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
 		};
 
         // Это очень редко меняющийся контент, поэтому храним в localStorage
+        if (!$window.localStorage.raiting) {
+            $http.get('/api/raitings').success(function (data) {
+                $scope.raiting = data;
+                $window.localStorage['raiting'] = JSON.stringify(data.results);
+            });
+        }
         if (!$window.localStorage.category_groups) {
             $http.get('/api/categories').success(function (data) {
                 $scope.category_group = data.results;
@@ -159,10 +165,7 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 
         $scope.token = localStorage.token;
 
-//        $scope.myPagingFunction = function () {
-//            console.log('Scroll!!');
-//        }
-
+        // Переход на вторую страницу формы
         $scope.main_checked = function () {
             if (!$scope.product || !$scope.product.title) {
                 alert('Enter title')
@@ -217,6 +220,7 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 		$scope.show_edit_form = function (elem, $event) {
 			$scope.add_form_visible = true;
 			$scope.product = elem.product;
+            $scope.editing_product = true;
 			$event.preventDefault();
 		};
 
@@ -227,6 +231,7 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 
 		$http.get(url).success(function (data) {
 			$scope.genre_groups = data.results;
+            $scope.genre_groups1 = data.results;
 			$scope.all_genres = [];
             $scope.dict_genres = {};
 			for (var i in data.results)
@@ -346,12 +351,18 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
                 return Number.parseInt(item);
             });
             $scope.uploader.onSuccessItem = function (item, response, status, headers) {
+                $scope.editing_product = false;
                 window.location.pathname = window.location.pathname;
+            }
+            if ($scope.editing_product) {
+                $scope.uploader.queue[0].method = "PUT";
+                $scope.uploader.queue[0].url = '/api/products/id:' + $scope.product.id;
+            } else {
+			    $scope.uploader.queue[0].url = "/api/products";
             }
 			$scope.uploader.queue[0].alias = "avatar";
             $scope.uploader.queue[0].headers = {'Authorization': 'Token ' + $scope.token};
 			$scope.uploader.queue[0].formData.push({'data': JSON.stringify($scope.product)});
-			$scope.uploader.queue[0].url = "/api/products";
 			$scope.uploader.uploadAll();
 		};
 	}
@@ -360,10 +371,12 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 /*
 	Отображает описание продукта
 */
-defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
-	function ($scope, $http, $location, $window) {
+defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 'FileUploader',
+	function ($scope, $http, $location, $window, FileUploader) {
 		$scope.statuses = ['Add To List', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
         $scope.token = $window.localStorage['token'];
+        $scope.uploader = new FileUploader();
+        $scope.product_genres = {};
 
 		var id = window.location.pathname.split('/')[2].split('-')[0];
 
@@ -403,7 +416,7 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
 		});
 
 		$scope.category = window.location.pathname.split('/')[1];
-		$scope.raiting = ['G', 'PG', 'PG-13', 'R', 'NC-17'];
+        $scope.raiting = JSON.parse($window.localStorage['raiting']);
 
         // Смена статуса продукта
         $scope.status_move = function (elem, active_status) {
@@ -422,6 +435,35 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
                 });
         };
 
+		var category = $location.absUrl().split('/');
+		category = category[3] + '/';
+        var categories = JSON.parse(localStorage['categories']);
+        for (var i in categories)
+            if (categories[i].url == category) {
+                $scope.category_id = categories[i].id;
+                category = categories[i].id;
+                break;
+            }
+
+        $scope.select_genre = function (genre, product) {
+            $scope.product_genres['' + genre.id] = genre.name;
+        };
+
+		$http.get('/api/genres?category=' + category).success(function (data) {
+			$scope.genre_groups = data.results;
+			$scope.all_genres = [];
+            $scope.dict_genres = {};
+			for (var i in data.results)
+				for (var j in data.results[i].genres) {
+					$scope.all_genres.push(data.results[i].genres[j]);
+                    $scope.dict_genres['' + data.results[i].genres[j].id] = data.results[i].genres[j].name;
+                    if ($scope.product.genres.indexOf(data.results[i].genres[j].id) != -1)
+                        $scope.genre_groups[i].genres[j].checked = true;
+                    else
+                        $scope.genre_groups[i].genres[j].checked = false;
+				}
+		});
+
         $http.get('/api/seasons?product=' + id, { headers: {
             'Authorization': 'Token ' + $scope.token
         }}).success(function (data) {
@@ -439,6 +481,22 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window',
 				}
 			$scope.count_series = count;
 		});
+
+		$scope.edit_product = function () {
+			$scope.product['category'] = $scope.category_id;
+            $scope.product['genres'] = Object.keys($scope.product_genres).map(function (item) {
+                return Number.parseInt(item);
+            });
+            $scope.uploader.onSuccessItem = function (item, response, status, headers) {
+                window.location.pathname = window.location.pathname;
+            }
+            $scope.uploader.queue[0].method = "PUT";
+			$scope.uploader.queue[0].alias = "avatar";
+            $scope.uploader.queue[0].headers = {'Authorization': 'Token ' + $scope.token};
+			$scope.uploader.queue[0].formData.push({'data': JSON.stringify($scope.product)});
+			$scope.uploader.queue[0].url = "/api/products/id:" + $scope.product.id;
+			$scope.uploader.uploadAll();
+		};
 
         // Создание нового сезона
         $scope.create_season = function () {
