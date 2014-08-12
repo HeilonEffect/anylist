@@ -802,10 +802,12 @@ defaultApp.controller('CreatorController', ['$scope', 'FileUploader', '$http',
     }]
 );
 
-defaultApp.controller('HeroController', ['$scope', 'FileUploader',
-    function ($scope, FileUploader) {
+defaultApp.controller('HeroController', ['$scope', 'FileUploader', '$http',
+    function ($scope, FileUploader, $http) {
         var product_url = window.location.pathname.split('/');
         var p_url = product_url.slice(0, product_url.length - 2).join('/');
+        $scope.uploader = new FileUploader();
+        var id = window.location.pathname.split('/')[2].split('-')[0];
         $scope.contents = [
 			{'name': 'Description', 'url': p_url},
 			{'name': 'Series', 'url': p_url + '/series'},
@@ -824,4 +826,48 @@ defaultApp.controller('HeroController', ['$scope', 'FileUploader',
         $scope.remove_image = function () {
             $scope.uploader.removeFromQueue(0);
         };
+
+        $scope.select_actor = function (h) {
+            $scope.hero.actor = h.id;
+            $scope.actors = [];
+            $scope.hero.actor_name = h.name;
+        };
+
+        $scope.change_hero = function (hero_name) {
+//            if (hero_name.length > 1) {
+//                $http.get('/api/search_hero?hero=' + hero_name).success(function (data) {
+//                    $scope.heroes = data.results;
+//                });
+//            } else {
+//                $scope.heroes = [];
+//            }
+        };
+
+        $scope.change_actor = function (actor_name) {
+            if (actor_name.length > 1) {
+                $http.get('/api/search_creator?creator=' + actor_name).success(function (data) {
+                    $scope.actors = data.results;
+                });
+            } else {
+                $scope.actors = [];
+            }
+        };
+
+        $http.get('/api/heroes?product=' + id).success(function (data) {
+            $scope.heroes = data.results;
+        });
+
+        $scope.submit_hero = function () {
+            $scope.hero.product = id;
+            $scope.hero.actors = $scope.hero.actor;
+            console.log($scope.hero);
+            $scope.uploader.queue[0].alias = "avatar";
+            $scope.uploader.onSuccessItem = function (item, response, status, headers) {
+                window.location.pathname = window.location.pathname;
+            }
+            $scope.uploader.queue[0].headers = {'Authorization': 'Token ' + window.localStorage.token};
+            $scope.uploader.queue[0].formData.push($scope.hero);
+            $scope.uploader.queue[0].url = "/api/heroes";
+            $scope.uploader.uploadAll();
+        }
     }]);

@@ -321,6 +321,16 @@ class SearchCreatorView(generics.ListAPIView):
             Q(name__icontains=self.request.QUERY_PARAMS['creator']))[:10]
 
 
+class SearchHeroView(generics.ListAPIView):
+    model = Hero
+    serializer_class = SearchHeroSerializer
+    permission_classes = (AllowAny,)
+
+    def get_queryset(self):
+        return self.model.objects.filter(
+            Q(name__icontains=self.request.QUERY_PARAMS['hero']))[:10]
+
+
 class SingleSerieListView(generics.RetrieveUpdateDestroyAPIView):
     ''' Действия над единичным объектом из списка серий, отмеченных юзером '''
     model = SerieList
@@ -422,14 +432,19 @@ class HeroView(generics.ListCreateAPIView):
         result = self.model.objects.all()
         product = self.request.QUERY_PARAMS.get('product')
         if product:
-            result = result.filter(id=product)
+            result = Product.objects.get(id=product).heroes.all()
+            # result = result.filter(id=product)
         return result
 
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.DATA)
+        serializer = self.serializer_class(data=request.DATA,
+                                           files=request.FILES)
         if serializer.is_valid():
-            serializer.save()
+            p = serializer.save()
+            print(p)
+            Product.objects.get(id=request.DATA['product']).heroes.add(p)
             return Response(serializer.data, status=status.HTTP_200_OK)
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -444,6 +459,14 @@ class UpdateNumSeriveView(APIView):
      шлются сюда'''
     def post(self, request, *args, **kwargs):
         pass
+
+
+class SearchHeroView(generics.ListAPIView):
+    model = Hero
+    serializer_class = HeroSerializer
+
+    def get_queryset(self):
+        return []
 
 
 class ProductCreator(APIView):

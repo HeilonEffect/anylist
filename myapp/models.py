@@ -133,8 +133,8 @@ class Hero(models.Model):
     Null - Эпизодический '''
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
-    actor = models.ForeignKey(Creator)
-    avatar = models.ImageField(upload_to=MEDIA_ROOT)
+    actor = models.ForeignKey(Creator, blank=True, null=True)
+    avatar = models.ImageField(upload_to=MEDIA_ROOT, blank=True, null=True)
     is_main_hero = models.NullBooleanField()
 
     def __str__(self):
