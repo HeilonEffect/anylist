@@ -1,11 +1,9 @@
 import functools
-import itertools
 import json
 import operator
 
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseNotAllowed
 
 from rest_framework import generics, permissions, status
 from rest_framework.authtoken.models import Token
@@ -313,6 +311,16 @@ class SearchView(generics.ListAPIView):
             Q(title__icontains=self.request.QUERY_PARAMS['product']))[:10]
 
 
+class SearchCreatorView(generics.ListAPIView):
+    model = Creator
+    serializer_class = SearchCreatorSerializer
+    permission_classes = (AllowAny,)
+
+    def get_queryset(self):
+        return Creator.objects.filter(
+            Q(name__icontains=self.request.QUERY_PARAMS['creator']))[:10]
+
+
 class SingleSerieListView(generics.RetrieveUpdateDestroyAPIView):
     ''' Действия над единичным объектом из списка серий, отмеченных юзером '''
     model = SerieList
@@ -338,7 +346,6 @@ class SingleSerieView(generics.RetrieveUpdateAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response('', status=status.HTTP_200_OK)
 
 
 class UserStatistic(APIView):
@@ -367,9 +374,9 @@ class UserStatistic(APIView):
 
 
 class CreatorView(generics.ListCreateAPIView):
-    model = Creator
+    model = CreatorEmploys
     permission_classes = (IsAuthenticatedOrReadOnly,)
-    serializer_class = CreatorSerializer
+    serializer_class = CreatorEmploysSerializer
 
     def get_queryset(self):
         result = self.model.objects.all()
@@ -379,13 +386,31 @@ class CreatorView(generics.ListCreateAPIView):
         return result
 
     def post(self, request, *args, **kwargs):
-        product_id = request.DATA['product']
-        serializer = self.serializer_class(data=request.DATA, files=request.FILES)
-        if serializer.is_valid():
-            p = serializer.save()
-            Product.objects.get(id=product_id).creators.add(p)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        '''
+        Если есть имя нового персонажа и аватар - то сохраняем
+        персонажа и добавляем его в список причастных к продукту.
+        Если передаём id персонажа, id продукта и id специальности, то
+        ищем, либо создаём запись в таблице и добавляем запись
+        в список причастных
+        '''
+        print(request.DATA)
+        avatar = request.FILES.get('avatar')
+        if avatar and request.DATA['name']:
+            serializer = CreatorSerializer(data=request.DATA,
+                                           files=request.FILES)
+            if serializer.is_valid():
+                try:
+                    p = serializer.save()
+                    e = Employ.objects.get(id=request.DATA['employ'])
+                    c = CreatorEmploys.objects.get_or_create(employ=e, creator=p)
+                    Product.objects.get(id=request.DATA['product']).creators.add(c[0])
+                    return Response('', status=status.HTTP_201_CREATED)
+                except Exception as e:
+                    print(e)
+                    return Response('', status=status.HTTP_200_OK)
+            else:
+                return Response('', status=status.HTTP_400_BAD_REQUEST)
+        return Response('', status=status.HTTP_200_OK)
 
 
 class HeroView(generics.ListCreateAPIView):
@@ -419,3 +444,19 @@ class UpdateNumSeriveView(APIView):
      шлются сюда'''
     def post(self, request, *args, **kwargs):
         pass
+
+
+class ProductCreator(APIView):
+    '''
+    Привязывает/отвязывает лиц, связанных с созданием продукта
+    к продукту. Предназначен для уже созданных персонажей. Если
+    персонажи ещё не созданы, то следует воспользоваться CreatorView
+    '''
+    model = Product
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        c = CreatorEmploys.objects.get(creator=request.DATA['id'],
+                                       employ=request.DATA['employ'])
+        Product.objects.get(id=kwargs['pk']).creators.add(c)
+        return Response('', status=status.HTTP_200_OK)

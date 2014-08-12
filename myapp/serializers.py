@@ -123,12 +123,21 @@ class UserStatisticSerializer(serializers.Serializer):
 
 
 class CreatorSerializer(serializers.ModelSerializer):
-    employ = serializers.PrimaryKeyRelatedField()
     url = serializers.Field(source='get_absolute_url')
     avatar_path = serializers.Field(source='avatar_path')
     class Meta:
         model = Creator
-        fields = ('name', 'employ', 'avatar', 'url', 'avatar_path',)
+        fields = ('name', 'avatar', 'url', 'avatar_path',)
+
+
+class CreatorEmploysSerializer(serializers.ModelSerializer):
+    name = serializers.Field(source='creator.name')
+    avatar_path = serializers.Field(source='creator.avatar_path')
+    employ = serializers.Field(source='employ.name')
+    url = serializers.Field(source='creator.get_absolute_url')
+    class Meta:
+        model = CreatorEmploys
+        fields = ('name', 'avatar_path', 'employ', 'url',)
 
 
 class HeroSerializer(serializers.ModelSerializer):
@@ -142,4 +151,10 @@ class HeroSerializer(serializers.ModelSerializer):
 class EmploySerializer(serializers.ModelSerializer):
     class Meta:
         model = Employ
+        fields = ('id', 'name',)
+
+
+class SearchCreatorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Creator
         fields = ('id', 'name',)

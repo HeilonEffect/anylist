@@ -104,7 +104,6 @@ class Employ(TemplateModel):
 
 class Creator(models.Model):
     name = models.CharField(max_length=255)
-    employ = models.ForeignKey(Employ)
     avatar = models.ImageField(upload_to=MEDIA_ROOT, blank=True, null=True)
 
     def get_absolute_url(self):
@@ -116,6 +115,14 @@ class Creator(models.Model):
 
     def avatar_path(self):
         return '/media/%s' % str(self.avatar).split('/')[-1]
+
+
+class CreatorEmploys(models.Model):
+    employ = models.ForeignKey(Employ)
+    creator = models.ForeignKey(Creator)
+
+    def __str__(self):
+        return '%s:%s' % (self.creator, self.employ)
 
 
 class Hero(models.Model):
@@ -151,7 +158,7 @@ class Product(models.Model):
     genres = models.ManyToManyField(Genre)
     old_limit = models.ForeignKey(Raiting, null=True, blank=True)
 
-    creators = models.ManyToManyField(Creator)
+    creators = models.ManyToManyField(CreatorEmploys)
     heroes = models.ManyToManyField(Hero)
 
     def series_count(self):

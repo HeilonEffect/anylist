@@ -726,8 +726,24 @@ defaultApp.controller('CreatorController', ['$scope', 'FileUploader', '$http',
 
         $http.get('/api/employs').success(function (data) {
             $scope.employers = data.results;
-            $scope.employs = data.results.slice(5);
+            $scope.employs = [];
         });
+
+        $scope.select_creator = function (creator) {
+            $scope.searched_creator = creator;
+            $scope.search_creator.name = creator.name;
+            $scope.search_creators = [];
+        };
+
+        $scope.enter_creator_name = function () {
+            if ($scope.search_creator.name.length > 1)
+                $http.get('/api/search_creator?creator=' + $scope.search_creator.name).success(function (data) {
+                    $scope.search_creators = data.results;
+                });
+            else {
+                $scope.search_creators = [];
+            }
+        }
 
         $scope.filter_employs = function (employ) {
             $scope.employs = $scope.employers.filter(function (data) {
@@ -750,17 +766,13 @@ defaultApp.controller('CreatorController', ['$scope', 'FileUploader', '$http',
 		];
 
         $scope.add_creator = function () {
-            if (!$scope.creator || !$scope.creator.name) {
-                alert('Enter name');
-            } else if (!$scope.creator.employ) {
-                alert('Enter employ please');
-            } else if (!$scope.uploader.queue[0]) {
-                alert('Load image');
-            } else {
+            // если мы заполнили нового персонажа
+            if ($scope.creator.name) {
                 $scope.creator.product = id;
                 for (var i in $scope.employers)
                     if ($scope.employers[i].name == $scope.creator.employ)
                         $scope.creator.employ = $scope.employers[i].id;
+                console.log($scope.creator.employ);
                 $scope.uploader.queue[0].alias = "avatar";
                 $scope.uploader.onSuccessItem = function (item, response, status, headers) {
                     window.location.pathname = window.location.pathname;
@@ -769,6 +781,22 @@ defaultApp.controller('CreatorController', ['$scope', 'FileUploader', '$http',
                 $scope.uploader.queue[0].formData.push($scope.creator);
                 $scope.uploader.queue[0].url = "/api/creators";
                 $scope.uploader.uploadAll();
+                window.location.pathname = window.location.pathname;
+            } else {
+                for (var i in  $scope.employers)
+                    if ($scope.employers[i].name == $scope.creator.employ)
+                        $scope.creator.employ = $scope.employers[i].id;
+                $http({
+                    method: "POST",
+                    url: '/api/products/id:' + id + '/creators',
+                    data: 'id=' + $scope.searched_creator.id + "&employ=" + $scope.creator.employ,
+                    headers: {
+                        'Authorization': 'Token ' + window.localStorage.token,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }).success(function (data) {
+                    window.location.pathname = window.location.pathname;
+                });
             }
         };
     }]

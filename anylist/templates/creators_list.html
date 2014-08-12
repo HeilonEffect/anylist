@@ -6,11 +6,18 @@
         <div class="add_product_form creator_form" ng-click="add_form()">
             <div class="creator_group">
                 <input type="text" ng-model="creator.name" placeholder="Name">
+                    <h2>OR select from list:</h2>
+                    <input type="search" placeholder="Start enter name here" ng-change="enter_creator_name()" ng-model="search_creator.name">
+                    <ul>
+                        <li ng-repeat="crea in search_creators" ng-click="select_creator(crea)">{[{crea.name}]}</li>
+                    </ul>
                 <div>
-                    <input type="text" placeholder="Employ" id="employs" ng-change="filter_employs(creator.employ)" ng-model="creator.employ">
+                    <input ng-model="creator.employ" type="search" placeholder="Employ" id="employs" ng-change="filter_employs(creator.employ)">
                     <ul class="employers">
                         <li ng-repeat="employ in employs" ng-click="select_employ(employ)">{[{employ.name}]}</li>
                     </ul>
+                </div>
+                <div class="creator_search">
                 </div>
              </div>
             <span ng-repeat="item in uploader.queue" class="img_preview">
@@ -21,13 +28,13 @@
             <input type="submit" value="Create">
         </div>
     </form>
-    <img src="/static/img/add.svg" class="add_season" ng-click="add_form()" ng-if="token">
+    <img src="/static/img/add.svg" class="add_season" ng-click="add_form()" ng-if="token" ng-hide="add_form_visible">
     <ul id="creator_list">
         <li ng-repeat="creator in creators">
             <a href="{[{creator.url}]}">
                 <figure>
                     <img src="{[{creator.avatar_path}]}">
-                    <figcaption>{[{creator.name}]}, {[{employers[creator.employ - 1].name}]}</figcaption>
+                    <figcaption>{[{creator.name}]}, {[{creator.employ}]}</figcaption>
                 </figure>
             </a>
         </li>
