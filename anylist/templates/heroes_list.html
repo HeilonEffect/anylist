@@ -19,18 +19,7 @@
             <input type="submit" value="Create">
         </div>
     </form>
-    <ul id="creator_list">
-        <li ng-repeat="hero in heroes">
-            <a href="{[{hero.url}]}">
-                <figure>
-                    <img src="{[{hero.avatar_path}]}">
-                    <figcaption>{[{hero.name}]}</figcaption>
-                </figure>
-            </a>
-        </li>
-    </ul>
-    <img src="/static/img/add.svg" class="add_season" ng-click="add_form()" ng-if="token" ng-hide="add_form_visible">
-	<nav class="detail">
+	<nav id="detail">
 		<div>
 			<p>About</p>
 			<a ng-repeat="content in contents" href="{[{content.url}]}">
@@ -44,5 +33,16 @@
 			</select>
 		</div>
 	</nav>
+    <ul id="creator_list">
+        <li ng-repeat="hero in heroes">
+            <a href="{[{hero.url}]}">
+                <figure>
+                    <img src="{[{hero.avatar_path}]}">
+                    <figcaption>{[{hero.name}]}</figcaption>
+                </figure>
+            </a>
+        </li>
+    </ul>
+    <img src="/static/img/add.svg" class="add_season" ng-click="add_form()" ng-if="token" ng-hide="add_form_visible">
 </main>
 {% endblock %}

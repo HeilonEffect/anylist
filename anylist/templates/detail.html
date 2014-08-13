@@ -38,6 +38,20 @@
 			<input type="submit" value="Create">
 		</form>
 	</div>
+	<nav id="detail">
+		<div>
+			<p>About</p>
+			<a ng-repeat="content in contents" href="{[{content.url}]}">
+				<p>{[{content.name}]}</p>
+			</a>
+		</div>
+		<div>
+			<input type="number" ng-model="readed_series" ng-change="change_num_series()"><span>/{[{product.series_count}]}</span>
+			<select>
+				<option ng-click="status_move(this, active_status)" ng-repeat="status in statuses" ng-selected="status==active_status">{[{status}]}</option>
+			</select>
+		</div>
+	</nav>
 	<article>
         <h1>{[{product.title}]}</h1>
 		<img src="{[{product.avatar_path}]}">
@@ -47,19 +61,5 @@
 		{[{product.description}]}
 		</p>
 	</article>
-	<nav class="detail">
-		<div>
-			<p>About</p>
-			<a ng-repeat="content in contents" href="{[{content.url}]}">
-				<p>{[{content.name}]}</p>
-			</a>
-		</div>
-		<div>
-			<input type="number"><span>/{[{product.series_count}]}</span>
-			<select>
-				<option ng-click="status_move(this, active_status)" ng-repeat="status in statuses" ng-selected="status==active_status">{[{status}]}</option>
-			</select>
-		</div>
-	</nav>
 	</main>
 {% endblock %}

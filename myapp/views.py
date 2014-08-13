@@ -3,12 +3,10 @@ import json
 import operator
 
 from django.contrib.auth.models import User
-from django.db.models import Q
+from django.db.models import Q, F
 
 from rest_framework import generics, permissions, status
-from rest_framework.authtoken.models import Token
 from rest_framework.authentication import BasicAuthentication
-from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -276,9 +274,13 @@ class SerieListView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
+        result = self.model.objects.all()
         if self.request.user:
-            return self.model.objects.filter(user_list__user=self.request.user)
-        return self.model.objects.all()
+            result = result.filter(user_list__user=self.request.user)
+        product = self.request.QUERY_PARAMS.get('product')
+        if product:
+            result = result.filter(user_list__product__id=product)
+        return result
 
     def post(self, request, *args, **kwargs):
         ''' Добавление серии в список просмотренных '''
@@ -461,14 +463,6 @@ class UpdateNumSeriveView(APIView):
         pass
 
 
-class SearchHeroView(generics.ListAPIView):
-    model = Hero
-    serializer_class = HeroSerializer
-
-    def get_queryset(self):
-        return []
-
-
 class ProductCreator(APIView):
     '''
     Привязывает/отвязывает лиц, связанных с созданием продукта
@@ -483,3 +477,46 @@ class ProductCreator(APIView):
                                        employ=request.DATA['employ'])
         Product.objects.get(id=kwargs['pk']).creators.add(c)
         return Response('', status=status.HTTP_200_OK)
+
+
+class SeriesCount(generics.UpdateAPIView):
+    model = SerieList
+    permission_classes = (IsAuthenticated,)
+
+    def put(self, request, *args, **kwargs):
+        number = int(request.DATA['series'])
+        product = Product.objects.get(id=kwargs['pk'])
+        watch_series = list(map(lambda item: item['serie'],
+                                SerieList.objects.filter(
+                                    user_list__user=request.user,
+                                    user_list__product=product
+                                    ).values('serie')))
+        # Если продукта ещё нет в списке - то создаём, если есть:
+        # присваиваем статус "Смотрю"
+        user_list = None
+        st = Status.objects.get(name='Watch')
+        try:
+            user_list = UserList.objects.get(user=request.user,
+                                             product=product)
+            user_list.status = st
+            user_list.save()
+        except Exception as e:
+            user_list = UserList.objects.create(user=request.user,
+                                                product=product,
+                                                status=st)
+        if number > len(watch_series):
+            # Если мы просмотрели новые серии
+            # получаем список серий к просмотру
+            series = Serie.objects.filter(season__product=kwargs['pk']
+                ).exclude(id__in=watch_series).order_by('number')[:number-len(
+                watch_series)]
+            # отмечаем, как просмотренные
+            for serie in series:
+                SerieList.objects.create(serie=serie, user_list=user_list)
+        else:
+            # Если мы удаляем старые серии, то получаем список серий к удалению
+            ids_del = len(watch_series) - number
+            series = Serie.objects.filter(season__product=kwargs['pk'],
+                                          id__in=watch_series)[:ids_del]
+            SerieList.objects.filter(serie__in=series).delete()
+        return Response(number, status=status.HTTP_200_OK)

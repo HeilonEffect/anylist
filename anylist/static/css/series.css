@@ -104,6 +104,6 @@ input[type="submit"], .submit_button {
 	width: 2em;
 	height: 2em;
 }
-.detail select {
+#detail select {
 	margin-top: 1em;
 }

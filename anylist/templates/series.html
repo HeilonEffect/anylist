@@ -43,7 +43,7 @@
 			</li>
 		</ul>
 	</div>
-	<nav class="detail">
+	<nav id="detail">
 		<div>
 			<p>About</p>
 			<a ng-repeat="content in contents" href="{[{content.url}]}">
@@ -51,11 +51,8 @@
 			</a>
 		</div>
 		<div>
-            <span>{[{readed_series}]}</span>
-			<!--<input type="number" id="series_form" ng-model="readed_series" ng-change="add_series()">--><span> / {[{count_series}]}</span>
-            <img id="plus_one_serie" src="/static/img/add-1.png" ng-click="plus_one()">
+			<input type="number" ng-model="readed_series"><span>/{[{product.series_count}]}</span>
 			<select>
-				<option>--> Add To List</option>
 				<option ng-click="status_move(this, active_status)" ng-repeat="status in statuses" ng-selected="status==active_status">{[{status}]}</option>
 			</select>
 		</div>

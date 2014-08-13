@@ -29,17 +29,7 @@
         </div>
     </form>
     <img src="/static/img/add.svg" class="add_season" ng-click="add_form()" ng-if="token" ng-hide="add_form_visible">
-    <ul id="creator_list">
-        <li ng-repeat="creator in creators">
-            <a href="{[{creator.url}]}">
-                <figure>
-                    <img src="{[{creator.avatar_path}]}">
-                    <figcaption>{[{creator.name}]}, {[{creator.employ}]}</figcaption>
-                </figure>
-            </a>
-        </li>
-    </ul>
-	<nav class="detail">
+	<nav id="detail">
 		<div>
 			<p>About</p>
 			<a ng-repeat="content in contents" href="{[{content.url}]}">
@@ -53,5 +43,15 @@
 			</select>
 		</div>
 	</nav>
+    <ul id="creator_list">
+        <li ng-repeat="creator in creators">
+            <a href="{[{creator.url}]}">
+                <figure>
+                    <img src="{[{creator.avatar_path}]}">
+                    <figcaption>{[{creator.name}]}, {[{creator.employ}]}</figcaption>
+                </figure>
+            </a>
+        </li>
+    </ul>
 </main>
 {% endblock %}

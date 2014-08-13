@@ -5,7 +5,7 @@ main article {
 	margin-left: 3em;
 	margin-right: 15em;
 }
-.detail div img {
+#detail div img {
 	width: 2em;
 	float: right;
 	height: 2em;
@@ -13,23 +13,33 @@ main article {
 article h1 {
     margin-top: 1em;
 }
-.detail div {
+#detail div {
 	margin-bottom: 2em;
 }
-.detail div p {
-	border: 1px solid rgba(0, 0, 0, .3);
+#detail div p {
+	border: 1px solid #E3E3E3;
 	padding: .75em;
 	margin: 0;
 	text-indent: 1em;
 }
-.detail div > p {
+#detail div p:hover {
+    background-color: #ffeb3b;
+    border: 1px solid #ffeb3b;
+}
+#detail div > p:hover {
+    background-color: #E3E3E3;
+    border: 1px solid #E3E3E3;
+}
+#detail div > p {
 	font-size: 24px;
 	font-weight: bold;
-	background-color: #BDC3C7;
+	background-color: #E3E3E3;
 }
-.detail {
+#detail {
+    position: relative;
+    float: right;
 	margin-right: 2em;
-	margin-top: 1em;
+	margin-top: -3em;
 	padding: 0;
 }
 .edit_product {

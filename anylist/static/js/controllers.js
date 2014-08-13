@@ -435,6 +435,19 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 
                 });
         };
 
+        $scope.change_num_series = function () {
+            $http({
+                method: 'PUT',
+                url:'/api/serielist/product:' + id + '/count',
+                data: 'series=' + $scope.readed_series,
+                headers: {
+                    'Authorization': 'Token ' + window.localStorage.token,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }).success(function (data) {
+            });
+        };
+
 		var category = $location.absUrl().split('/');
 		category = category[3] + '/';
         var categories = JSON.parse(localStorage['categories']);
@@ -585,17 +598,19 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 
             serie.editing = !serie.editing;
         };
 
-        $http.get('/api/serielist?user=' + localStorage.username, {headers: {
+        $http.get('/api/serielist?user=' + localStorage.username + '&product=' + id, {headers: {
             'Authorization': 'Token ' + $scope.token
         }}).success(function (data) {
-            $scope.readed_series = data.length;
-            $scope.readed_series_old = data.length;
+            console.log(data);
+            $scope.readed_series = data.count;
+            $scope.readed_series_old = data.count;
             var tmp = {};
             for (var i in data.results)
                 tmp['' + data.results[i]['serie']] = data;
             $scope.serielist = tmp;
         });
 
+        // Редактирование серии
         $scope.submit_serie = function (serie) {
             var start_date = serie.new_version.start_date.toLocaleString().split(' ').join(' 0') || "";
             var data = "number=" + serie.new_version.number + "&name=" + serie.new_version.name + "&start_date=" +
@@ -610,70 +625,13 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 
                 }
             }).success(function (data) {
                 serie.editing = false;
-                serie.number = serie.new_version.number;
-                serie.name = serie.new_version.name;
-                serie.start_date = serie.new_version.start_date;
+                serie.number = data.number;
+                serie.name = data.name;
+                serie.start_date = data.start_date.slice(0, 10);
                 serie['length'] = serie.new_version['length'];
                 serie.new_version = None;
             });
         };
-
-        // Указывает произвольное число серий
-        $scope.add_series = function () {
-            console.log($scope.readed_series);
-            if ($scope.readed_series > $scope.readed_series_old) {
-                console.log('Просмотренных серий увеличилось');
-                var series = [];
-            } else {
-                console.log('Просмотренных серий уменьшилось');
-            }
-        };
-
-        // Добавление следующей серии в список просмотренных
-        $scope.plus_one = function () {
-            var series = [];
-            var maximum = 0;
-            var next_serie = {};
-            for (var i in $scope.seasons)
-                for (var j = $scope.seasons[i].series.length - 1; j >= 0; j--)
-                    if (!$scope.serielist[$scope.seasons[i].series[j].id])
-                        series.push($scope.seasons[i].series[j]);
-                    else {
-                        maximum = $scope.seasons[i].series[j].number;
-                        if (j > 0)
-                            next_serie = $scope.seasons[i].series[j - 1];
-                    }
-            if (series[series.length - 1].number > maximum) {
-                $http({
-                    method: "POST",
-                    url: "/api/serielist",
-                    data: "serie=" + next_serie.id + "&product=" + id,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Authorization': 'Token ' + $scope.token
-                    }
-                }).success(function (data) {
-                    $scope.readed_series++;
-                    $scope.serielist['' + data.serie] = data;
-                });
-            } else {
-                var max_serie = series.reduce(function (previousValue, currentValue, index, array) {
-                    return previousValue.id > currentValue.id ? previousValue : currentValue;
-                });
-                $http({
-                    method: "POST",
-                    url: "/api/serielist",
-                    data: "serie=" + max_serie.id + "&product=" + id,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Authorization': 'Token ' + $scope.token
-                    }
-                }).success(function (data) {
-                    $scope.readed_series++;
-                    $scope.serielist['' + data.serie] = data;
-                });
-            }
-        }
 	}
 ]);
 
@@ -715,6 +673,18 @@ defaultApp.controller('CreatorController', ['$scope', 'FileUploader', '$http',
         $scope.add_form = function () {
             $scope.add_form_visible = !$scope.add_form_visible;
         };
+
+        $http.get('/api/serielist?user=' + localStorage.username + '&product=' + id, {headers: {
+            'Authorization': 'Token ' + $scope.token
+        }}).success(function (data) {
+            console.log(data);
+            $scope.readed_series = data.count;
+            $scope.readed_series_old = data.count;
+            var tmp = {};
+            for (var i in data.results)
+                tmp['' + data.results[i]['serie']] = data;
+            $scope.serielist = tmp;
+        });
 
         $scope.remove_image = function () {
             $scope.uploader.removeFromQueue(0);
@@ -764,6 +734,7 @@ defaultApp.controller('CreatorController', ['$scope', 'FileUploader', '$http',
 			{'name': 'Heroes', 'url': product_url + '/heroes'},
 			{'name': 'Creators', 'url': product_url + '/creators'}
 		];
+        $scope.statuses = ['Add To List', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
 
         $scope.add_creator = function () {
             // если мы заполнили нового персонажа
@@ -827,6 +798,18 @@ defaultApp.controller('HeroController', ['$scope', 'FileUploader', '$http',
             $scope.uploader.removeFromQueue(0);
         };
 
+        $http.get('/api/serielist?user=' + localStorage.username + '&product=' + id, {headers: {
+            'Authorization': 'Token ' + $scope.token
+        }}).success(function (data) {
+            console.log(data);
+            $scope.readed_series = data.count;
+            $scope.readed_series_old = data.count;
+            var tmp = {};
+            for (var i in data.results)
+                tmp['' + data.results[i]['serie']] = data;
+            $scope.serielist = tmp;
+        });
+
         $scope.select_actor = function (h) {
             $scope.hero.actor = h.id;
             $scope.actors = [];
@@ -834,6 +817,7 @@ defaultApp.controller('HeroController', ['$scope', 'FileUploader', '$http',
         };
 
         $scope.change_hero = function (hero_name) {
+            // поиск имени "героя"
 //            if (hero_name.length > 1) {
 //                $http.get('/api/search_hero?hero=' + hero_name).success(function (data) {
 //                    $scope.heroes = data.results;
@@ -856,6 +840,7 @@ defaultApp.controller('HeroController', ['$scope', 'FileUploader', '$http',
         $http.get('/api/heroes?product=' + id).success(function (data) {
             $scope.heroes = data.results;
         });
+        $scope.statuses = ['Add To List', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
 
         $scope.submit_hero = function () {
             $scope.hero.product = id;

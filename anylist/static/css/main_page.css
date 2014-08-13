@@ -89,7 +89,7 @@ main img {
     width: 15em;
 }
 #creator_list {
-    position: absolute;
+    /*position: absolute;*/
     width: 80%;
 }
 .creator_search {
