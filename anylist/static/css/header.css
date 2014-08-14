@@ -82,6 +82,7 @@ header > menu > img:hover {
 	bottom: 0;
 	left: 0;
 	z-index: 20;
+    right: 0;
 }
 .details nav {
 	background-color: white;
@@ -92,12 +93,9 @@ header > menu > img:hover {
 	display: inline-block;
 }
 .details li {
-	padding: 0;
-	margin: 0;
 	display: inline-block;
 }
 .details figure {
-	padding: 0;
 	margin: 0;
 }
 .details figcaption {
@@ -107,7 +105,8 @@ header > menu > img:hover {
 	margin: 0;
 	font-size: 18px;
     margin-left: -1em;
-    width: 8em;
+    width: 145px;
+    overflow: hidden;
 }
 .details div {
 	background-color: rgba(50, 50, 50, .3);
@@ -169,13 +168,14 @@ header menu nav p:hover {
 }
 .user_menu {
 	position: fixed;
-	right: 1em;
+	right: .5em;
 	font-size: 26px;
-	top: 2.5em;
+	top: 1.8em;
 	padding: 0;
 	width: 5em;
 	border: 1px solid rgba(0, 0, 0, .3);
 	background-color: white;
+    z-index: 75;
 }
 .user_menu a {
 	margin: 0;

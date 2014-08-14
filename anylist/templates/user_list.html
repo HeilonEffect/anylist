@@ -1,6 +1,4 @@
-{% extends "base.html" %}
-{% block body %}
-<main ng-controller="UserCtrl">
+<main>
     <ul class="user_product_list">
         <li ng-repeat="item in user_list">
             <span class="title"><a href="{[{item.production.url}]}">{[{item.production.title}]}</a></span>
@@ -18,4 +16,3 @@
         </li>
     </ul>
 </main>
-{% endblock %}

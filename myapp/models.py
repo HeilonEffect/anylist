@@ -72,7 +72,7 @@ class Category(TemplateModel):
         return '/media/' + thumb_url.split('/')[-1]
 
     def get_absolute_url(self):
-        return '/%s/' % ''.join(self.name.lower().split(' '))
+        return '/%s' % ''.join(self.name.lower().split(' '))
 
     class Meta:
         ordering = ('name',)
@@ -150,7 +150,7 @@ class Hero(models.Model):
 
 class Product(models.Model):
     title = models.CharField(max_length=255, unique=True)
-    alt_names = models.ManyToManyField(AltName)
+    # alt_names = models.ManyToManyField(AltName)
     description = models.TextField(blank=True, null=True)
     avatar = models.ImageField(upload_to=MEDIA_ROOT)
 
@@ -185,8 +185,7 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         title = ''.join(re.split('[ :()-.!?]', self.title))
-        return '%s%d-%s/' % (self.category.get_absolute_url(), self.id,
-                            title)
+        return '/product/%d-%s/' % (self.id, title)
 
     def avatar_path(self):
         return '/media/%s' % str(self.avatar).split('/')[-1]

@@ -1,12 +1,5 @@
-{% extends "base.html" %}
-{% block body %}
-<main ng-controller="DetailCtrl" class="series"><!--
-	<form ng-submit="create_season()">
-		<input type="number" placeholder="Number" ng-model="season.number">
-		<input type="text" placeholder="Name" ng-model="season.name" class="text_field">
-		<input type="submit" value="Create New Season">
-	</form> -->
-	<img src="/static/img/add.png" class="add_season" ng-click="create_season(seasons)">
+<main class="series">
+	<img src="/static/img/add.svg" class="add_season" ng-click="create_season(seasons)">
 	<div ng-repeat="season in seasons" class="series_block">
 		<p>{[{season.number}]} Season</p>
 		<form ng-submit="create_serie(season)" ng-if="token">
@@ -43,7 +36,7 @@
 			</li>
 		</ul>
 	</div>
-	<nav id="detail">
+	<nav id="detail" ng-controller="DetailParagraphController">
 		<div>
 			<p>About</p>
 			<a ng-repeat="content in contents" href="{[{content.url}]}">
@@ -58,4 +51,3 @@
 		</div>
 	</nav>
 </main>
-{% endblock %}

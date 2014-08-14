@@ -1,27 +1,5 @@
-{% extends "base.html" %}
-{% block title %}{{ object.name }}{% endblock %}
-{% block header %}{{ object.name }}{% endblock %}
-{% block body %}
 <main>
-	<img src="{{ object.avatar_path }}">
-	{% autoescape off %}
-		<p>{{ object.description }}</p>
-	{% endautoescape %}
-	<p>Actor:</p>
-	<a href="{{ object.actor.get_absolute_url }}" style="width:10em;">
-	<figure style="width:10em;">
-		<img src="{{ object.actor.avatar_path }}">
-		<figcaption>{{ object.actor.name }}</figcaption>
-	</figure>
-	</a>
-	<p>Bibliography:</p>
-	{% for item in object.product_set.all %}
-		<a href="{{ item.get_absolute_url }}">
-			<figure>
-				<img src="{{ item.avatar_path }}">
-				<figcaption>{{ item.name }}</figcaption>
-			</figure>
-		</a>
-	{% endfor %}
+    <h1>{[{hero.name}]}</h1>
+    <img src="{[{hero.avatar_path}]}">
+    <p>{[{hero.description}]}</p>
 </main>
-{% endblock %}

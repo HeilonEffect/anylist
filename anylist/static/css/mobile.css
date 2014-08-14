@@ -1,0 +1,55 @@
+@media all and (max-device-width: 480px) {
+    .details {
+        position: absolute;
+    }
+    .details ul {
+        display: block;
+    }
+    .details li {
+        display: block;
+        border-bottom: 0.5px solid #E3E3E3;
+        width: 100%;
+    }
+    .details img {
+        margin-left: .3em;
+        border-radius: 38px;
+    }
+    .details figcaption {
+        margin-top: 1em;
+        float: right;
+    }
+    .index_cards {
+        visibility: hidden;
+        height: 0;
+    }
+    .search_block {
+        background-color: rgba(0,0,0,0);
+        border-bottom: none;
+        float: left;
+        width: 1em;
+        min-width: 0;
+    }
+    .search_block input[type='search'] {
+        visibility: hidden;
+        width: 0;
+    }
+    .search_block nav {
+        visibility: hidden;
+        width: 0;
+    }
+    header menu span {
+        position: relative;
+        float: right;
+        margin-top: .5em;
+    }
+    header > menu > img {
+        margin: 0;
+    }
+    header menu {
+        margin-right: 0;
+        width: 70%;
+    }
+    .user_menu {
+        top: 1.5em;
+    }
+}

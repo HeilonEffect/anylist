@@ -14,8 +14,7 @@ h2 {
 }
 main ul {
 	padding: 0;
-	margin: .1em;
-	display: inline;
+    margin-left: 0;
 	list-style: none outside none;
 }
 main ul li {

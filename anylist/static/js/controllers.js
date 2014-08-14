@@ -1,8 +1,4 @@
-var defaultApp = angular.module('defaultApp', [
-	'ngCookies',
-    'angularFileUpload',
-    'ngQuickDate'
-]);
+var defaultApp = angular.module('defaultApp', []);
 
 defaultApp.directive('ngThumb', ['$window', function($window) {
         var helper = {
@@ -49,11 +45,11 @@ defaultApp.directive('ngThumb', ['$window', function($window) {
         };
 }]);
 
-
 defaultApp.config(function ($interpolateProvider) {
 	$interpolateProvider.startSymbol('{[{');
 	$interpolateProvider.endSymbol('}]}');
 });
+
 
 defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
 	function ($scope, $http, $location, $window) {
@@ -63,6 +59,7 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
         $scope.username = $window.localStorage.username;
         $scope.token = $window.localStorage.token;
 
+        // вычисление содержимого заголовка
         var url = $window.location.pathname.split('/');
         $scope.headers = [{'name': 'A', 'url': '/'}];
         if (url[1])
@@ -93,18 +90,17 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
                 $window.localStorage['raiting'] = JSON.stringify(data.results);
             });
         }
-        if (!$window.localStorage.category_groups) {
+        if (!$window.localStorage['categories']) {
             $http.get('/api/categories').success(function (data) {
-                $scope.category_group = data.results;
                 var result = [];
                 for (var i in data.results)
                     for (var j in data.results[i].categories)
                         result.push(data.results[i].categories[j]);
-                $window.localStorage['category_groups'] = JSON.stringify($scope.category_group);
+                $scope.categories = result;
                 $window.localStorage['categories'] = JSON.stringify(result);
             });
         } else {
-            $scope.category_group = JSON.parse($window.localStorage['category_groups']);
+            $scope.categories = JSON.parse($window.localStorage['categories']);
         }
 
         $scope.logout = function () {
@@ -200,15 +196,16 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			$scope.active_genres[genres[i]] = true;
 
 		var category = $location.absUrl().split('/');
-		category = category[3] + '/';
+        var cat = category[3];
+		category = category[3];
         var categories = JSON.parse(localStorage['categories']);
-        for (var i in categories)
+        for (var i in categories) {
             if (categories[i].url == category) {
                 $scope.category_id = categories[i].id;
                 category = categories[i].id;
                 break;
             }
-
+        }
 		$scope.mouse_over = function (elem) {
 			elem.product.edit_btn = true;
 		};
@@ -296,7 +293,7 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			$scope.uploader.removeFromQueue(0);
 		};
 
-		$http.get('/api/products/category:' + url).success(function (data) {
+		$http.get('/api/products?category=' + category).success(function (data) {
 			$scope.products = data.results;
             $scope.pages = [];
 			for (var i in data.results) {
@@ -373,12 +370,12 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 */
 defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 'FileUploader',
 	function ($scope, $http, $location, $window, FileUploader) {
-		$scope.statuses = ['Add To List', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
+        $scope.statuses = ['Add To List', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
         $scope.token = $window.localStorage['token'];
         $scope.uploader = new FileUploader();
         $scope.product_genres = {};
 
-		var id = window.location.pathname.split('/')[2].split('-')[0];
+        var id = window.location.pathname.split('/')[2].split('-')[0];
 
         $scope.main_check = true;
 
@@ -386,41 +383,57 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 
             $scope.main_check = !$scope.main_check;
         };
 
-		$http.get('/api/products/id:' + id).success(function (data) {
-			$scope.product = data;
-		});
+        $http.get('/api/products/id:' + id).success(function (data) {
+            $scope.product = data;
+        });
 
         $http.get('/api/userlist?product=' + id, {
             headers: {'Authorization': 'Token ' + $scope.token}
-        }).success(function(data) {
-            if (data.results[0])
+        }).success(function (data) {
+            if (data.results[0]) {
                 $scope.active_status = $scope.statuses[data.results[0].status];
+                $scope.readed_series = data.results[0].series;
+            }
         });
 
         $scope.add_form = function () {
             $scope.add_form_visible = !$scope.add_form_visible;
+
+            // Список жанров для формы
+            $http.get('/api/genres?category=' + category).success(function (data) {
+                $scope.genre_groups = data.results;
+                $scope.all_genres = [];
+                $scope.dict_genres = {};
+                for (var i in data.results)
+                    for (var j in data.results[i].genres) {
+                        $scope.all_genres.push(data.results[i].genres[j]);
+                        $scope.dict_genres['' + data.results[i].genres[j].id] = data.results[i].genres[j].name;
+                        if ($scope.product.genres.indexOf(data.results[i].genres[j].id) != -1)
+                            $scope.genre_groups[i].genres[j].checked = true;
+                        else
+                            $scope.genre_groups[i].genres[j].checked = false;
+                    }
+            });
+
+            $http.get('/api/genres').success(function (data) {
+                $scope.genres = data;
+            });
         };
 
-        var product_url = window.location.pathname.split('/');
-        var p_url = product_url.slice(0, product_url.length - 2).join('/');
-        if (product_url[product_url.length - 2] != 'series')
-            p_url = product_url.slice(0, product_url.length - 1).join('/');
+        var p_url = window.location.pathname;
         $scope.contents = [
-			{'name': 'Description', 'url': p_url},
-			{'name': 'Series', 'url': p_url + '/series'},
-			{'name': 'Heroes', 'url': p_url + '/heroes'},
-			{'name': 'Creators', 'url': p_url + '/creators'}
-		];
-		$http.get('/api/genres').success(function (data) {
-			$scope.genres = data;
-		});
+            {'name': 'Description', 'url': p_url},
+            {'name': 'Series', 'url': p_url + '/series'},
+            {'name': 'Heroes', 'url': p_url + '/heroes'},
+            {'name': 'Creators', 'url': p_url + '/creators'}
+        ];
 
-		$scope.category = window.location.pathname.split('/')[1];
+        $scope.category = window.location.pathname.split('/')[1];
         $scope.raiting = JSON.parse($window.localStorage['raiting']);
 
         // Смена статуса продукта
         $scope.status_move = function (elem, active_status) {
-            var metod = 'POST'
+            var metod = 'POST';
             if (active_status)
                 metod = "PUT";
             if (elem.status != $scope.statuses[0])
@@ -438,18 +451,17 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 
         $scope.change_num_series = function () {
             $http({
                 method: 'PUT',
-                url:'/api/serielist/product:' + id + '/count',
+                url: '/api/serielist/product:' + id + '/count',
                 data: 'series=' + $scope.readed_series,
                 headers: {
                     'Authorization': 'Token ' + window.localStorage.token,
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
-            }).success(function (data) {
             });
         };
 
-		var category = $location.absUrl().split('/');
-		category = category[3] + '/';
+        var category = $location.absUrl().split('/');
+        category = category[3] + '/';
         var categories = JSON.parse(localStorage['categories']);
         for (var i in categories)
             if (categories[i].url == category) {
@@ -462,41 +474,8 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 
             $scope.product_genres['' + genre.id] = genre.name;
         };
 
-		$http.get('/api/genres?category=' + category).success(function (data) {
-			$scope.genre_groups = data.results;
-			$scope.all_genres = [];
-            $scope.dict_genres = {};
-			for (var i in data.results)
-				for (var j in data.results[i].genres) {
-					$scope.all_genres.push(data.results[i].genres[j]);
-                    $scope.dict_genres['' + data.results[i].genres[j].id] = data.results[i].genres[j].name;
-                    if ($scope.product.genres.indexOf(data.results[i].genres[j].id) != -1)
-                        $scope.genre_groups[i].genres[j].checked = true;
-                    else
-                        $scope.genre_groups[i].genres[j].checked = false;
-				}
-		});
-
-        $http.get('/api/seasons?product=' + id, { headers: {
-            'Authorization': 'Token ' + $scope.token
-        }}).success(function (data) {
-			$scope.seasons = data.results;
-			var count = 0;
-			for (var i in data.results)
-				for (var j in data.results[i].series) {
-					count++;
-					if (!data.results[i].series[j]['length'])
-						$scope.seasons[i].series[j]['length']= " ";
-					if (data.results[i].series[j].start_date) {
-						var tmp = data.results[i].series[j].start_date.slice(0, 10)
-						$scope.seasons[i].series[j].start_date = tmp;
-					}
-				}
-			$scope.count_series = count;
-		});
-
-		$scope.edit_product = function () {
-			$scope.product['category'] = $scope.category_id;
+        $scope.edit_product = function () {
+            $scope.product['category'] = $scope.category_id;
             $scope.product['genres'] = Object.keys($scope.product_genres).map(function (item) {
                 return Number.parseInt(item);
             });
@@ -504,13 +483,39 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 
                 window.location.pathname = window.location.pathname;
             }
             $scope.uploader.queue[0].method = "PUT";
-			$scope.uploader.queue[0].alias = "avatar";
+            $scope.uploader.queue[0].alias = "avatar";
             $scope.uploader.queue[0].headers = {'Authorization': 'Token ' + $scope.token};
-			$scope.uploader.queue[0].formData.push({'data': JSON.stringify($scope.product)});
-			$scope.uploader.queue[0].url = "/api/products/id:" + $scope.product.id;
-			$scope.uploader.uploadAll();
-		};
+            $scope.uploader.queue[0].formData.push({'data': JSON.stringify($scope.product)});
+            $scope.uploader.queue[0].url = "/api/products/id:" + $scope.product.id;
+            $scope.uploader.uploadAll();
+        };
+    }
+]);
 
+
+
+
+defaultApp.controller('SeriesController', ['$http', '$scope',
+    function ($http, $scope) {
+        var id = window.location.pathname.split('/')[2].split('-')[0];
+
+        $http.get('/api/seasons?product=' + id, { headers: {
+            'Authorization': 'Token ' + $scope.token
+        }}).success(function (data) {
+            $scope.seasons = data.results;
+            var count = 0;
+            for (var i in data.results)
+                for (var j in data.results[i].series) {
+                    count++;
+                    if (!data.results[i].series[j]['length'])
+                        $scope.seasons[i].series[j]['length'] = " ";
+                    if (data.results[i].series[j].start_date) {
+                        var tmp = data.results[i].series[j].start_date.slice(0, 10)
+                        $scope.seasons[i].series[j].start_date = tmp;
+                    }
+                }
+            $scope.count_series = count;
+        });
         // Создание нового сезона
         $scope.create_season = function () {
 			$http({
@@ -561,7 +566,7 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 
 			});
 		};
 
-        $scope.edit_serie = function (serie) {}
+        $scope.edit_serie = function (serie) {};
 
         $scope.add_to_list_serie = function (serie) {
             $http({
@@ -601,7 +606,6 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 
         $http.get('/api/serielist?user=' + localStorage.username + '&product=' + id, {headers: {
             'Authorization': 'Token ' + $scope.token
         }}).success(function (data) {
-            console.log(data);
             $scope.readed_series = data.count;
             $scope.readed_series_old = data.count;
             var tmp = {};
@@ -635,6 +639,18 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 
 	}
 ]);
 
+defaultApp.controller('DetailParagraphController', ['$scope', '$window',
+    function ($scope, $window) {
+        var p_url = $window.location.pathname.split('/');
+        p_url = p_url.slice(0, p_url.length - 1).join('/');
+        $scope.contents = [
+            {'name': 'Description', 'url': p_url},
+            {'name': 'Series', 'url': p_url + '/series'},
+            {'name': 'Heroes', 'url': p_url + '/heroes'},
+            {'name': 'Creators', 'url': p_url + '/creators'}
+        ];
+    }
+]);
 
 defaultApp.controller('ProfileController', ['$scope', '$http', '$window',
     function ($scope, $http, $window) {
@@ -645,13 +661,18 @@ defaultApp.controller('ProfileController', ['$scope', '$http', '$window',
         });
     }]);
 
-defaultApp.controller('UserCtrl', ['$scope', '$http',
-    function ($scope, $http) {
+defaultApp.controller('UserCtrl', ['$scope', '$http', '$window',
+    function ($scope, $http, $window) {
         $scope.statuses = ['', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
         $scope.statuses_lower = ['', 'planned', 'watch', 'rewatching', 'watched', 'deffered', 'dropped'];
         var arr = window.location.pathname.split('/');
         var category = arr[3];
         var status = $scope.statuses_lower.indexOf(arr[4]);
+
+        var categories = JSON.parse($window.localStorage['categories']);
+        for (var i in categories)
+            if (categories[i].url == category)
+                category = categories[i].id;
 
         $http.get('/api/userlist?status=' + status + '&category=' + category, {headers: {
             'Content-Type': 'application/json',
@@ -847,12 +868,32 @@ defaultApp.controller('HeroController', ['$scope', 'FileUploader', '$http',
             $scope.hero.actors = $scope.hero.actor;
             console.log($scope.hero);
             $scope.uploader.queue[0].alias = "avatar";
-            $scope.uploader.onSuccessItem = function (item, response, status, headers) {
+            $scope.uploader.onSuccessItem = function () {
                 window.location.pathname = window.location.pathname;
-            }
+            };
             $scope.uploader.queue[0].headers = {'Authorization': 'Token ' + window.localStorage.token};
             $scope.uploader.queue[0].formData.push($scope.hero);
             $scope.uploader.queue[0].url = "/api/heroes";
             $scope.uploader.uploadAll();
         }
     }]);
+
+
+defaultApp.controller('SingleCreatorController', ['$scope', '$http', '$window',
+    function ($scope, $http, $window) {
+        var id = $window.location.pathname.split('/')[2].split('-')[0];
+        $http.get('/api/creators/id:' + id).success(function (data) {
+            $scope.creator = data;
+        });
+    }
+]);
+
+
+defaultApp.controller('SingleHeroController', ['$scope', '$http', '$window',
+    function ($scope, $http, $window) {
+        var id = $window.location.pathname.split('/')[2].split('-')[0];
+        $http.get('/api/heroes/id:' + id).success(function (data) {
+            $scope.hero = data;
+        });
+    }
+]);

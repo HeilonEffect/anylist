@@ -1,6 +1,4 @@
-{% extends "base.html" %}
-{% block body %}
-<main class="list" ng-controller="HeroController">
+<main class="list">
     <form class="add_product_form_parent" ng-click="add_form()" ng-show="add_form_visible" ng-submit="submit_hero()">
         <div class="add_product_form creator_form" ng-click="add_form()">
             <input type="text" ng-model="hero.name" placeholder="Enter new Name or select from exists" ng-change="change_hero(hero.name)">
@@ -19,7 +17,7 @@
             <input type="submit" value="Create">
         </div>
     </form>
-	<nav id="detail">
+	<nav id="detail" ng-controller="DetailParagraphController">
 		<div>
 			<p>About</p>
 			<a ng-repeat="content in contents" href="{[{content.url}]}">
@@ -45,4 +43,3 @@
     </ul>
     <img src="/static/img/add.svg" class="add_season" ng-click="add_form()" ng-if="token" ng-hide="add_form_visible">
 </main>
-{% endblock %}

@@ -1,19 +1,12 @@
-{% extends "base.html" %}
-{% block title %}Main Page{% endblock %}
-{% block body %}
-<main>
-	<div ng-repeat="group in category_group">
-		<h2>{[{ group.name }]}</h2>
-		<ul ng-repeat="value in group.categories">
-			<li>
-				<a href="{[{ value.url }]}">
-					<figure>
-						<img src="{[{ value.avatar }]}">
-						<figcaption>{[{ value.name }]}</figcaption>
-					</figure>
-				</a>
-			</li>
-		</ul>
-	</div>
+<main class="index_cards">
+     <ul>
+         <li ng-repeat="category in categories">
+             <a href="{[{category.url}]}">
+                 <figure>
+                     <img src="{[{category.avatar}]}">
+                     <figcaption>{[{category.name}]}</figcaption>
+                 </figure>
+             </a>
+         </li>
+     </ul>
 </main>
-{% endblock %}

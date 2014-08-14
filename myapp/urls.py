@@ -30,6 +30,10 @@ urlpatterns = patterns('myapp.views',
     url(r'search_hero$', SearchHeroView.as_view()),
 
     url(r'creators$', CreatorView.as_view()),
+    url(r'creators/id:(?P<pk>\d+)$', CreatorDetailView.as_view()),
+
     url(r'heroes$', HeroView.as_view()),
+    url(r'heroes/id:(?P<pk>\d+)$', HeroDetailView.as_view()),
+
     url(r'employs$', EmployView.as_view()),
 )

@@ -36,10 +36,9 @@ article h1 {
 	background-color: #E3E3E3;
 }
 #detail {
-    position: relative;
     float: right;
 	margin-right: 2em;
-	margin-top: -3em;
+	margin-top: 3em;
 	padding: 0;
 }
 .edit_product {
@@ -48,5 +47,7 @@ article h1 {
 	position: fixed;
 	top: 3em;
 	right: 4em;
-	background-color: green;
+	background-color: #FFC107;
+    border-radius: 1em;
+    z-index: 25;
 }

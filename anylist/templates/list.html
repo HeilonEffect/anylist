@@ -1,7 +1,4 @@
-{% extends "base.html" %}
-{% block title %}{{ header }}{% endblock %}
-{% block body %}
-<main ng-controller="ListCtrl" class="cards">
+<main class="cards">
 	<img src="/static/img/add.svg" class="add_season" ng-click="add_form()" ng-if="token">
 	
 
@@ -42,7 +39,7 @@
 	</div>
 	<img src="/static/img/expand.svg" class="expand" ng-click="show_panel()">
 	<!-- Список продуктов -->
-    <p></p><br>
+    <p></p>
     <ul class="pagination"><li ng-repeat="page in pages"><a href="{[{page.url}]}">{[{page.number}]}</a></li></ul>
 	<ul>
 		<li ng-repeat="product in products">
@@ -88,4 +85,3 @@
 		<div ng-repeat-end></div>
 	</nav>
 </main>
-{% endblock %}

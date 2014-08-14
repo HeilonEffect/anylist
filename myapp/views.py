@@ -50,6 +50,8 @@ class ProductList(generics.ListCreateAPIView):
         Формат url'a при <args>:
         filter/old_limit/<limit1>,<limit2>/genres/<genre1>,<genre2>/
         '''
+        result = Product.objects.all()
+        category = self.request.QUERY_PARAMS['category']
         if 'name' in self.kwargs:
             for item in Category.objects.all():
                 if item.get_absolute_url()[1:-1] == self.kwargs['name']:
@@ -76,9 +78,9 @@ class ProductList(generics.ListCreateAPIView):
                             for item in tmp:
                                 p = p.filter(genres__name=item)
                     return p
-            return Product.objects.all()
-        else:
-            return Product.objects.all()
+        if category:
+            result = result.filter(category=category)
+        return result
 
 
 class RaitingList(generics.ListAPIView):
@@ -520,3 +522,15 @@ class SeriesCount(generics.UpdateAPIView):
                                           id__in=watch_series)[:ids_del]
             SerieList.objects.filter(serie__in=series).delete()
         return Response(number, status=status.HTTP_200_OK)
+
+
+class CreatorDetailView(generics.RetrieveUpdateAPIView):
+    model = Creator
+    serializer_class = CreatorSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+
+class HeroDetailView(generics.RetrieveUpdateAPIView):
+    model = Hero
+    serializer_class = HeroSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
