@@ -26,6 +26,9 @@ article h1 {
     background-color: #ffeb3b;
     border: 1px solid #ffeb3b;
 }
+#detail div span {
+    display: none;
+}
 #detail div > p:hover {
     background-color: #E3E3E3;
     border: 1px solid #E3E3E3;

@@ -1,6 +1,5 @@
 <main class="cards">
-	<img src="/static/img/add.svg" class="add_season" ng-click="add_form()" ng-if="token">
-	
+	<img src="/static/img/add.svg" class="add_season" ng-click="add_form()" ng-if="token" ng-hide="add_form_visible">
 
 	<!-- Форма создания продукта -->
 	<div class="add_product_form_parent" ng-show="add_form_visible" ng-click="add_form()">
@@ -38,12 +37,13 @@
 		</form>
 	</div>
 	<img src="/static/img/expand.svg" class="expand" ng-click="show_panel()">
-	<!-- Список продуктов -->
+
+
+    <!-- Список продуктов -->
     <p></p>
-    <ul class="pagination"><li ng-repeat="page in pages"><a href="{[{page.url}]}">{[{page.number}]}</a></li></ul>
 	<ul>
 		<li ng-repeat="product in products">
-			<a href="{[{product.url}]}" ng-mouseenter="mouse_over(this)" ng-mouseleave="mouse_leave(this)">
+			<a ng-href="{[{product.url}]}" ng-mouseenter="mouse_over(this)" ng-mouseleave="mouse_leave(this)">
 				<div class="product_status" ng-if="user_list[product.id]">
 					<p>{[{user_list[product.id].status}]}</p>
 				</div>
@@ -62,7 +62,7 @@
                     </div>
 				</div>
 				<figure>
-					<img src="{[{product.avatar}]}">
+					<img ng-src="{[{product.avatar_path}]}">
 					<figcaption>{[{product.title}]}</figcaption>
 				</figure>
 			</a>
@@ -72,13 +72,13 @@
 	<nav ng-show="panel_visibility">
 		<p>Raiting</p>
 		<div ng-repeat="old_limit in raiting">
-			<input type="checkbox" id="{[{old_limit.name}]}" ng-model="old_limit.checked" ng-change="start_filter(this)">
+			<input type="checkbox" id="{[{old_limit.name}]}" ng-model="old_limit.checked" ng-change="start_filter(old_limit, genre)">
 			<label for="{[{old_limit.name}]}">{[{old_limit.name}]}</label>
 		</div>
 		<p>Genres</p>
 		<p ng-repeat-start="group in genre_groups">
 			<div ng-repeat="genre in group.genres">
-				<input type="checkbox" id="{[{genre}]}" ng-model="genre.checked" ng-change="start_filter(this)">
+				<input type="checkbox" id="{[{genre}]}" ng-model="genre.checked" ng-change="start_filter(old_limit, genre)">
 				<label for="{[{genre}]}">{[{genre.name}]}</label>
 			</div>
 		</p>

@@ -42,44 +42,30 @@ class ProductList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         '''
-        Если передавался параметр <name> - произойдет фильтрация по указанной
-        в <name> категории.
-        Если передавался параметр <args> - произойдет сложная выборка по
-        куче параметров, определенных пользователем
-        Во всех остальных случаях - вернёт все объекты
-        Формат url'a при <args>:
-        filter/old_limit/<limit1>,<limit2>/genres/<genre1>,<genre2>/
+        Выборка "продуктов" по указанным пользователем параметрам в том числе
+        Параметры: жанры - если укзать несколько, то выборка будет тех жанров,
+        что удовлетворяют всем условиям
+        возрастное ограничение - если указать несколько, то будут выбраны все
+        продукты, которые удовлетворяют хотя-бы одному условию
         '''
         result = Product.objects.all()
-        category = self.request.QUERY_PARAMS['category']
-        if 'name' in self.kwargs:
-            for item in Category.objects.all():
-                if item.get_absolute_url()[1:-1] == self.kwargs['name']:
-                    p = Product.objects.filter(category__name=item.name)
-
-                    if 'args' in self.kwargs:
-                        qs = {}
-                        tmp = self.kwargs['args'].split('/')
-                        tmp = list(filter(lambda item: item, tmp))
-
-                        qs = dict(zip(
-                            tmp[::2], [item.split(',') for item in tmp[1::2]]))
-
-                        q = []
-                        f = lambda item: Q(old_limit__name=item)
-                        tmp = qs.get('old_limit')
-                        if tmp:
-                            q = functools.reduce(operator.or_, map(f, tmp))
-                        if not isinstance(q, list):
-                            p = p.filter(q)
-
-                        tmp = qs.get('genres')
-                        if tmp:
-                            for item in tmp:
-                                p = p.filter(genres__name=item)
-                    return p
+        category = self.request.QUERY_PARAMS.get('category')
+        genres = self.request.QUERY_PARAMS.get('genres')
+        if genres and ',' in genres:
+            genres = genres.split(',')
+        raitings = self.request.QUERY_PARAMS.get('old_limit')
+        if raitings and ',' in raitings:
+            raitings = raitings.split(',')
         if category:
             result = result.filter(category=category)
+        if raitings:
+            query_set = functools.reduce(operator.or_,
+                                         map(lambda item: Q(
+                                             old_limit__id=item),raitings))
+            result = result.filter(query_set)
+        if genres:
+            for genre in genres:
+                result = result.filter(genres__id=genre)
         return result
 
 

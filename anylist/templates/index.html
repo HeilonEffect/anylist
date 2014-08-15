@@ -1,9 +1,9 @@
 <main class="index_cards">
      <ul>
          <li ng-repeat="category in categories">
-             <a href="{[{category.url}]}">
+             <a ng-href="{[{category.url}]}">
                  <figure>
-                     <img src="{[{category.avatar}]}">
+                     <img ng-src="{[{category.avatar}]}">
                      <figcaption>{[{category.name}]}</figcaption>
                  </figure>
              </a>

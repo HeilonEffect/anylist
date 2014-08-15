@@ -38,9 +38,10 @@
 	<nav id="detail">
 		<div>
 			<p>About</p>
-			<a ng-repeat="content in contents" href="{[{content.url}]}">
-				<p>{[{content.name}]}</p>
-			</a>
+			    <a ng-repeat="content in contents" ng-href="{[{content.url}]}">
+                    <p>{[{content.name}]}</p>
+                    <span>{[{content.name}]}</span>
+            </a>
 		</div>
 		<div>
 			<input type="number" ng-model="readed_series" ng-change="change_num_series()"><span>/{[{product.series_count}]}</span>

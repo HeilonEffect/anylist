@@ -76,7 +76,7 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
 		};
 
 		$scope.show_user_menu = function () {
-			$scope.visibility_user = true;
+			$scope.visibility_user = !$scope.visibility_user;
 		};
 
 		$scope.hide_user_menu = function () {
@@ -143,8 +143,8 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
 /*
 	Список продуктов конкретной категории
 */
-defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader',
-	function ($scope, $http, $location, FileUploader) {
+defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader', '$window',
+	function ($scope, $http, $location, FileUploader, $window) {
 		$scope.panel_visibility = false;
 		$scope.edit_visibility = false;
 		$scope.add_form_visible = false;
@@ -252,40 +252,29 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			}
 		});
 
-        /* DANGEROUS!!!: НЕ ВЛЕЗАЙ, УБЬЁТ */
-		$scope.start_filter = function (elem) {
-			// По нажатию на флажок - фиксируем активный элемент
-			if (elem.genre)
-				$scope.active_genres[elem.genre.name] = !$scope.active_genres[elem.genre.name];
-
-			if (elem.old_limit)
-				$scope.active_limits[elem.old_limit.name] = !$scope.active_limits[elem.old_limit.name];
-			var next_url = '/filter';
-
-			// Удаляем элемнты, равные false
-			var tmp = Object.keys($scope.active_limits).filter(function (elem) {
-				return $scope.active_limits[elem];
-			});
-			// Если елементы ещё остались - заносим их в схему url'a
-			if (tmp.length > 0) {
-				next_url += '/old_limit/';
-				for (var i in tmp)
-					next_url += tmp[i] + ',';
-				next_url = next_url.slice(0, next_url.length - 1);
-			}
-			tmp = Object.keys($scope.active_genres).filter(function (elem) {
-				return $scope.active_genres[elem];
-			});
-			if (tmp.length > 0) {
-				next_url += '/genres/';
-				for (var i in tmp)
-					next_url += tmp[i] + ',';
-				next_url = next_url.slice(0, next_url.length - 1);
-			}
-			if (next_url == '/filter')
-				next_url = '';
-			window.location.href = $location.absUrl().split('/').slice(0, 4).join('/') + next_url + '/';
-		};
+        // Храним параметры сложных выборок в localStorage в ввиде словаря с параметрами запросов
+        // ключ "old_limit" - возрастные ограничения
+        // ключ "genres" - жанры
+        $scope.start_filter = function (old_limit, genre) {
+            var historyFilter = {'old_limit': [], 'genres': []};
+            if ($window.localStorage['historyFilter'])
+                historyFilter = JSON.parse($window.localStorage['historyFilter']);
+            if (old_limit)
+                if (old_limit.checked)
+                    historyFilter['old_limit'].push(old_limit.id);
+                else
+                    historyFilter['old_limit'] = historyFilter['old_limit'].filter(function (limit) {
+                        return limit != old_limit.id;
+                    });
+            if (genre)
+                if (genre.checked)
+                    historyFilter['genres'].push(genre.id);
+                else
+                    historyFilter['genres'] = historyFilter['genres'].filter(function (item) {
+                        return item != genre.id;
+                    });
+            console.log(historyFilter);
+        };
 
 		var url = $location.absUrl().split('/').slice(3).join('/');
 
@@ -293,13 +282,8 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			$scope.uploader.removeFromQueue(0);
 		};
 
-		$http.get('/api/products?category=' + category).success(function (data) {
+		$http.get('/api/products?category=' + category + "&genres=" + "&old_limit=").success(function (data) {
 			$scope.products = data.results;
-            $scope.pages = [];
-			for (var i in data.results) {
-				$scope.products[i].avatar = "/media/" + data.results[i].avatar.split('/').pop();
-				$scope.products[i].edit_btn = false;
-			}
 		});
 
 		$scope.show_panel = function () {
@@ -491,8 +475,6 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 
         };
     }
 ]);
-
-
 
 
 defaultApp.controller('SeriesController', ['$http', '$scope',
@@ -764,11 +746,10 @@ defaultApp.controller('CreatorController', ['$scope', 'FileUploader', '$http',
                 for (var i in $scope.employers)
                     if ($scope.employers[i].name == $scope.creator.employ)
                         $scope.creator.employ = $scope.employers[i].id;
-                console.log($scope.creator.employ);
                 $scope.uploader.queue[0].alias = "avatar";
-                $scope.uploader.onSuccessItem = function (item, response, status, headers) {
+                $scope.uploader.onSuccessItem = function () {
                     window.location.pathname = window.location.pathname;
-                }
+                };
                 $scope.uploader.queue[0].headers = {'Authorization': 'Token ' + window.localStorage.token};
                 $scope.uploader.queue[0].formData.push($scope.creator);
                 $scope.uploader.queue[0].url = "/api/creators";

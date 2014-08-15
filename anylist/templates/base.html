@@ -14,7 +14,7 @@
 	<link rel="stylesheet" href="/static/css/forms.css">
 	<link rel="stylesheet" href="/static/css/series.css">
 	<link rel="stylesheet" href="/static/css/header.css">
-    <link rel="stylesheet" media="only screen and (max-width: 480px), only screen and (max-device-width: 480px)" href="/static/css/mobile.css" />
+    <link rel="stylesheet" media="only screen and (max-width: 480px), only screen and (max-device-width: 480px), only (handheld)" href="/static/css/mobile.css" />
     <!--<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">-->
 
 	<link rel="stylesheet" href="/static/lib/ng-quick-date.css">
@@ -26,14 +26,15 @@
 	<header>
 		<menu>
 			<div class="search_block">
-				<img src="/static/img/search.jpg">
 				<input type="search" placeholder="Search" ng-change="searcher()" ng-model="search_data">
 				<nav>
 					<a ng-repeat="item in search_result" href="{[{item.link}]}"><p>{[{item.name}]}</p></a>
 				</nav>
+				<img src="/static/img/search.jpg">
 			</div>
 			<img src="/static/img/main_menu.svg" ng-click="show_menu()">
 			<span ng-mouseover="show_user_menu()" ng-mouseleave="hide_user_menu()" ng-if="token">{[{username}]}</span>
+            <img src="/static/img/usr_menu.svg" ng-click="show_user_menu()" class="isr_menu">
 			<div class="user_menu" ng-show="visibility_user" ng-mouseleave="hide_user_menu()" ng-mouseover="show_user_menu()">
 				<a href="/user/profile/"><p>Profile</p></a>
 				<a href=""><p>Settings</p></a>
@@ -56,9 +57,9 @@
 		<nav>
             <ul>
                 <li ng-repeat="category in categories">
-                    <a href="/{[{category.url}]}">
+                    <a ng-href="/{[{category.url}]}">
                         <figure>
-                            <img src="{[{category.icon}]}">
+                            <img ng-src="{[{category.icon}]}">
                             <figcaption>{[{category.name}]}</figcaption>
                         </figure>
                     </a>

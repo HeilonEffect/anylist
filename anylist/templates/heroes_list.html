@@ -20,8 +20,9 @@
 	<nav id="detail" ng-controller="DetailParagraphController">
 		<div>
 			<p>About</p>
-			<a ng-repeat="content in contents" href="{[{content.url}]}">
+			<a ng-repeat="content in contents" ng-href="{[{content.url}]}">
 				<p>{[{content.name}]}</p>
+                <span>{[{content.name}]}</span>
 			</a>
 		</div>
 		<div>

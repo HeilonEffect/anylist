@@ -1,55 +1,140 @@
-@media all and (max-device-width: 480px) {
+@media all and (max-device-width: 480px), handheld {
     .details {
         position: absolute;
     }
-    .details ul {
+    header {
+        z-index: 25;
+        height: 3em;
+    }
+    header > menu > img {
+        position: fixed;
+        right: 1.5em;
+    }
+    .details ul, main ul {
         display: block;
     }
-    .details li {
+    .details li, main li {
         display: block;
         border-bottom: 0.5px solid #E3E3E3;
         width: 100%;
     }
-    .details img {
+    .details img, main img {
         margin-left: .3em;
+        width: 75px;
+        height: 75px;
         border-radius: 38px;
     }
-    .details figcaption {
+    .details figcaption, main figcaption {
         margin-top: 1em;
         float: right;
-    }
-    .index_cards {
-        visibility: hidden;
-        height: 0;
+        position: relative;
+        width: 8em;
+        background-color: #ffffff;
+        color: #444;
     }
     .search_block {
+        position: fixed;
         background-color: rgba(0,0,0,0);
         border-bottom: none;
-        float: left;
-        width: 1em;
-        min-width: 0;
+        right: 4.5em;
+        min-width: 2em;
     }
     .search_block input[type='search'] {
+        width: 5em;
         visibility: hidden;
-        width: 0;
     }
-    .search_block nav {
-        visibility: hidden;
-        width: 0;
+    .search_block img {
+        float: right;
     }
     header menu span {
-        position: relative;
-        float: right;
-        margin-top: .5em;
+        position: absolute;
+        height: 0;
+        width: 0;
+        visibility: hidden;
     }
     header > menu > img {
         margin: 0;
     }
     header menu {
-        margin-right: 0;
-        width: 70%;
+        position: fixed;
+        right: 0;
     }
     .user_menu {
         top: 1.5em;
+    }
+    .isr_menu {
+        visibility: visible;
+        width: 10px;
+        position: fixed;
+        top: 0;
+        right: 0;
+    }
+    .tooltip {
+        visibility: hidden;
+    }
+    .add_to_list {
+        visibility: hidden;
+    }
+    .edit_in_list {
+        visibility: hidden;
+    }
+    #detail {
+        top: 3em;
+        left: 0;
+        right: 0;
+        margin-top: 0;
+        width: 100%;
+        height: 2em;
+    }
+    #detail div > p {
+        display: none;
+        visibility: hidden;
+    }
+    #detail div a {
+        text-indent: 0;
+        width: 25%
+    }
+    #detail div p {
+        display: none;
+    }
+    #detail div a {
+        margin-right: -5px;
+        padding: 0;
+        width: 25%;
+    }
+    #detail div a span {
+        display: inline-block;
+        padding: 10px;;
+        text-indent: 0;
+        margin: 0;
+        padding-right: 0;
+    }
+    #detail div a span {
+	    border: 1px solid #E3E3E3;
+	    padding: .5em;
+        text-indent: -.5em;
+    }
+    #detail div span:hover {
+        background-color: #ffeb3b;
+        border: 1px solid #ffeb3b;
+    }
+    #detail div:nth-child(2) {
+        display: none;
+    }
+    #creator_list {
+        margin-top: 6em;
+    }
+    #creator_list figcaption {
+        margin-top: .5em;
+        margin-right: -2em;
+    }
+    main article {
+        margin-top: 5em;
+    }
+    main article img {
+        border-radius: 0;
+        width: 12em;
+        height: 17em;
+        margin-right: -10em;
     }
 }

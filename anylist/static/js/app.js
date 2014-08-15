@@ -22,10 +22,6 @@ anylistApp.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'user_list.html',
                 controller: 'UserCtrl'
             }).
-            when('/:paragraph/filter/:filter*/', {
-                templateUrl: 'list.html',
-                controller: 'ListCtrl'
-            }).
             when('/:paragraph', {
                 templateUrl: 'list.html',
                 controller: 'ListCtrl'
