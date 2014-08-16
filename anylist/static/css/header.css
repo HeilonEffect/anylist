@@ -51,7 +51,7 @@ header > img {
 input[type="search"] {
 	font-size: 24px;
 	border: none;
-	width: 10em;
+	/*max-width: 15em;*/
 	position: inherit;
 }
 .search_block {

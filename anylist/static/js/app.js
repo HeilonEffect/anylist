@@ -26,6 +26,10 @@ anylistApp.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'list.html',
                 controller: 'ListCtrl'
             }).
+            when('/:paragraph/filter/:filter*', {
+                templateUrl: 'list.html',
+                controller: 'ListCtrl'
+            }).
             when('/product/:product', {
                 templateUrl: 'detail.html',
                 controller: 'DetailCtrl'

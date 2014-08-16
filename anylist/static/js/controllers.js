@@ -143,8 +143,8 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
 /*
 	Список продуктов конкретной категории
 */
-defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader', '$window',
-	function ($scope, $http, $location, FileUploader, $window) {
+defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader', '$window', '$route', '$browser',
+	function ($scope, $http, $location, FileUploader, $window, $route, $browser) {
 		$scope.panel_visibility = false;
 		$scope.edit_visibility = false;
 		$scope.add_form_visible = false;
@@ -197,6 +197,7 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 
 		var category = $location.absUrl().split('/');
         var cat = category[3];
+        var category_name = category[3];
 		category = category[3];
         var categories = JSON.parse(localStorage['categories']);
         for (var i in categories) {
@@ -252,28 +253,47 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			}
 		});
 
-        // Храним параметры сложных выборок в localStorage в ввиде словаря с параметрами запросов
-        // ключ "old_limit" - возрастные ограничения
-        // ключ "genres" - жанры
         $scope.start_filter = function (old_limit, genre) {
-            var historyFilter = {'old_limit': [], 'genres': []};
-            if ($window.localStorage['historyFilter'])
-                historyFilter = JSON.parse($window.localStorage['historyFilter']);
-            if (old_limit)
-                if (old_limit.checked)
-                    historyFilter['old_limit'].push(old_limit.id);
-                else
-                    historyFilter['old_limit'] = historyFilter['old_limit'].filter(function (limit) {
-                        return limit != old_limit.id;
-                    });
+            var filters = $window.location.pathname.split('/');
+            var genres = [];
+            var genres_position = filters.indexOf('genres');
+            var old_limit_position = filters.indexOf('old_limit');
+            var limits = [];
+
+            // Извлекаем фильтры из url
+            if (genres_position != -1)
+                genres = filters[genres_position + 1].split(',');
+            if (old_limit_position != -1)
+                limits = filters[old_limit_position + 1].split(',');
+
+            // Добавляем/удаляем новые фильтры
             if (genre)
                 if (genre.checked)
-                    historyFilter['genres'].push(genre.id);
+                    genres.push(genre.name);
                 else
-                    historyFilter['genres'] = historyFilter['genres'].filter(function (item) {
-                        return item != genre.id;
+                    genres = genres.filter(function (data) {
+                        return data != genre.name;
                     });
-            console.log(historyFilter);
+            if (old_limit)
+                if (old_limit.checked)
+                    limits.push(old_limit.name);
+                else
+                    limits = limits.filter(function (data) {
+                        return data != old_limit.name;
+                    });
+
+            // Преобразуем всё в url
+            var result = '';
+            if (genres.length > 0)
+                result += '/genres/' + genres.join(',');
+            if (limits.length > 0)
+                result += '/old_limit/' + limits.join(',');
+            if (result.length > 0)
+                result = '/filter' + result;
+            result = '/' + category_name + result;
+            console.log(result);
+            $location.path(result);
+//            $browser.url(result);
         };
 
 		var url = $location.absUrl().split('/').slice(3).join('/');

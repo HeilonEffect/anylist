@@ -27,10 +27,10 @@
 		<menu>
 			<div class="search_block">
 				<input type="search" placeholder="Search" ng-change="searcher()" ng-model="search_data">
+				<img src="/static/img/search.jpg">
 				<nav>
 					<a ng-repeat="item in search_result" href="{[{item.link}]}"><p>{[{item.name}]}</p></a>
 				</nav>
-				<img src="/static/img/search.jpg">
 			</div>
 			<img src="/static/img/main_menu.svg" ng-click="show_menu()">
 			<span ng-mouseover="show_user_menu()" ng-mouseleave="hide_user_menu()" ng-if="token">{[{username}]}</span>
