@@ -20,6 +20,8 @@
 	<link rel="stylesheet" href="/static/lib/ng-quick-date.css">
 	<script src="/static/lib/ng-quick-date.min.js"></script>
     <script src="/static/js/app.js"></script>
+    <script src="/static/js/services.js"></script>
+    <script src="/static/js/directive.js"></script>
 	<script src="/static/js/controllers.js"></script>
 </head>
 <body ng-controller="DefaultCtrl">
@@ -29,20 +31,20 @@
 				<input type="search" placeholder="Search" ng-change="searcher()" ng-model="search_data">
 				<img src="/static/img/search.jpg">
 				<nav>
-					<a ng-repeat="item in search_result" href="{[{item.link}]}"><p>{[{item.name}]}</p></a>
+					<a ng-repeat="item in search_result" ng-href="{[{item.link}]}"><p>{[{item.name}]}</p></a>
 				</nav>
 			</div>
 			<img src="/static/img/main_menu.svg" ng-click="show_menu()">
-			<span ng-mouseover="show_user_menu()" ng-mouseleave="hide_user_menu()" ng-if="token">{[{username}]}</span>
+			<span ng-click="show_user_menu()"ng-if="token">{[{username}]}</span>
             <img src="/static/img/usr_menu.svg" ng-click="show_user_menu()" class="isr_menu">
-			<div class="user_menu" ng-show="visibility_user" ng-mouseleave="hide_user_menu()" ng-mouseover="show_user_menu()">
+			<div class="user_menu" ng-show="visibility_user">
 				<a href="/user/profile/"><p>Profile</p></a>
 				<a href=""><p>Settings</p></a>
 				<a href="" ng-click="logout()"><p>Log Out</p></a>
 			</div>
 			<button ng-click="login()" ng-if="!token">Log In</button>
 		</menu>
-		<h1><span ng-repeat="header in headers"><a href="{[{header.url}]}">{[{header.name}]}</a></span></h1>
+		<h1><a href="/">A</a></h1>
 			<form ng-submit="auth_me()" ng-show="visibility_form" ng-click="login()">
 				<div ng-click="login()">
 					<input ng-model="auth.username" placeholder="Username" type="text"><br>

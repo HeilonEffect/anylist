@@ -4,7 +4,6 @@ from .views import *
 
 
 urlpatterns = patterns('myapp.views',
-    url(r'user$', User.as_view()),
     url(r'profile$', UserStatistic.as_view()),
     url(r'categories/$', CategoriesList.as_view()),
 

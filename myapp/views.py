@@ -53,19 +53,23 @@ class ProductList(generics.ListCreateAPIView):
         genres = self.request.QUERY_PARAMS.get('genres')
         if genres and ',' in genres:
             genres = genres.split(',')
+        elif genres:
+            genres = [genres]
         raitings = self.request.QUERY_PARAMS.get('old_limit')
         if raitings and ',' in raitings:
             raitings = raitings.split(',')
+        elif raitings:
+            raitings = [raitings]
         if category:
             result = result.filter(category=category)
         if raitings:
             query_set = functools.reduce(operator.or_,
                                          map(lambda item: Q(
-                                             old_limit__id=item),raitings))
+                                             old_limit__name=item),raitings))
             result = result.filter(query_set)
         if genres:
             for genre in genres:
-                result = result.filter(genres__id=genre)
+                result = result.filter(genres__name=genre)
         return result
 
 
@@ -82,27 +86,10 @@ class GenreGroupList(generics.ListAPIView):
 
     def get_queryset(self):
         result = GenreGroup.objects.all()
-        category = self.request.QUERY_PARAMS.get('category')
-        if category:
-            result = result.filter(category=category)
-        genres = self.request.QUERY_PARAMS.get('genres', None)
-        res = {}
-        if genres:
-            p = Product.objects.all()
-            for genre in genres.split(','):
-                p = p.filter(genres__name=genre)
-            if category:
-                p = p.filter(category=category)
-            counter = [genre['name'] for item in p for genre in item.genres.values('name')]
-            for genre in counter:
-                if genre in res:
-                    res[genre] += 1
-                else:
-                    res[genre] = 1
-        # Добавить в вывод
-        for group in result:
-            for genre in group.genres.all():
-                genre.count = res.get(genre.name, 0)
+        category_id = self.request.QUERY_PARAMS.get('category')
+        category_name = Category.objects.get(id=category_id)
+        if category_id:
+            result = result.filter(category=category_name.group)
         return result
 
 
@@ -131,18 +118,6 @@ class ProductDetail(generics.RetrieveUpdateAPIView):
             p.genres.add(g)
         p.save()
         return Response('', status=status.HTTP_200_OK)
-
-
-class User(APIView):
-    authentication_classes = (BasicAuthentication,)
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request, format=None):
-        content = {
-            'user': str(request.user),
-            'auth': str(request.auth)
-        }
-        return Response(content)
 
 
 class GenreView(generics.ListAPIView):

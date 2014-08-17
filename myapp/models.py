@@ -79,7 +79,6 @@ class Category(TemplateModel):
 
 
 class Genre(TemplateModel):
-    count = 0
     class Meta:
         ordering = ('name',)
 
@@ -87,6 +86,7 @@ class Genre(TemplateModel):
 class GenreGroup(TemplateModel):
     category = models.ForeignKey(CategoryGroup)
     genres = models.ManyToManyField(Genre)
+
 
     def _genres(self):
         return self.genres.values('id', 'name')
