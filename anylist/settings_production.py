@@ -39,6 +39,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'product_db',
+        'HOST': 'localhost',
         'USER': 'postgres',
         'PASSWORD': 'ShockiNg'
     }

@@ -1,0 +1,1 @@
+[{"pk": 1, "fields": {"name": "Japanese"}, "model": "myapp.categorygroup"}, {"pk": 2, "fields": {"name": "Detectives"}, "model": "myapp.categorygroup"}, {"pk": 3, "fields": {"name": "Fantstic"}, "model": "myapp.categorygroup"}, {"pk": 4, "fields": {"name": "Games"}, "model": "myapp.categorygroup"}]

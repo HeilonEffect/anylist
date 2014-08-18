@@ -45,7 +45,7 @@ anylistApp.factory('workCategories', ['$http', '$window', function ($http, $wind
     var categories_url = {};
 
     function getCategories() {
-        if (!$window.localStorage.categories) {
+        if (!$window.localStorage.categories && $window.localStorage['categories'] != 'undefined') {
             $http.get('/api/categories').success(function (data) {
                 for (var i in data.results)
                     for (var j in data.results[i].categories) {

@@ -29,7 +29,7 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
                 $window.localStorage['raiting'] = JSON.stringify(data.results);
             });
         }
-        if (!$window.localStorage['categories']) {
+        if (!$window.localStorage['categories'] && $window.localStorage['categories'] != 'undefined') {
             $http.get('/api/categories').success(function (data) {
                 var result = [];
                 for (var i in data.results)

@@ -1,7 +1,6 @@
 var anylistApp = angular.module('anylistApp', [
     'ngRoute',
     'defaultApp',
-	'ngCookies',
     'angularFileUpload',
     'ngQuickDate'
 ]);
