@@ -42,3 +42,13 @@ anylistApp.directive('ngThumb', ['$window', function($window) {
             }
         };
 }]);
+
+anylistApp.directive('productForm', [
+    function () {
+        return {
+            restrict: 'E',
+            templateUrl: 'product_form.html',
+            controller: function ($scope) {}
+        }
+    }
+]);

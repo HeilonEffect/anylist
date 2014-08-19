@@ -30,24 +30,6 @@ class TemplateModel(models.Model):
 
 
 class CategoryGroup(TemplateModel):
-
-    def _categories(self):
-        return Category.objects.filter(group=self.id)
-    categories = property(_categories)
-
-    def categories_json(self):
-        p = Category.objects.filter(group=self.id)
-        result = []
-        for item in p:
-            tmp = {}
-            tmp['id'] = item.id
-            tmp['name'] = item.name
-            tmp['avatar'] = item.avatar_path()
-            tmp['icon'] = item.icon_path()
-            tmp['url'] = item.get_absolute_url()[1:]
-            result.append(tmp)
-        return result
-
     class Meta:
         ordering = ('name',)
 
@@ -87,6 +69,9 @@ class GenreGroup(TemplateModel):
     category = models.ForeignKey(CategoryGroup)
     genres = models.ManyToManyField(Genre)
 
+    def category_group(self):
+        return map(lambda item: item['id'],
+                   self.category.category_set.values('id'))
 
     def _genres(self):
         return self.genres.values('id', 'name')
@@ -168,7 +153,7 @@ class Product(models.Model):
     def _values(self):
         return {'title': self.title, 'id': self.id, 'description': self.description,
                 'avatar': self.avatar_path(), 'url': self.get_absolute_url(),
-                'series_count': self.series_count()}
+                'series_count': self.series_count(), 'category': self.category.id}
 
     def _series(self):
         return Serie.objects.filter(season__product=self.id).order_by(

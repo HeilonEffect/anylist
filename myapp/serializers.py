@@ -6,11 +6,13 @@ from .models import *
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    categories = serializers.Field(source='categories_json')
+    url = serializers.Field('get_absolute_url')
+    avatar = serializers.Field('avatar_path')
+    icon = serializers.Field('icon_path')
 
     class Meta:
-        model = CategoryGroup
-        fields = ('name', 'categories',)
+        model = Category
+        fields = ('id', 'name', 'avatar', 'icon', 'url',)
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -48,10 +50,11 @@ class UpdateProductSerializer(serializers.ModelSerializer):
 
 class GenreGroupSerializer(serializers.ModelSerializer):
     genres = serializers.Field(source='_genres')
+    categories = serializers.Field(source='category_group')
 
     class Meta:
         model = GenreGroup
-        fields = ('name', 'genres',)
+        fields = ('name', 'genres', 'categories',)
 
 
 class RaitingSerializer(serializers.ModelSerializer):
@@ -94,11 +97,12 @@ class SeasonsSerializer(serializers.ModelSerializer):
 
 
 class UserListSerializer(serializers.ModelSerializer):
-    production = serializers.RelatedField(source='product._values', read_only=True)
-    series = serializers.IntegerField(source='serielist_set.count', read_only=True)
+    ''' user не выдаётся, т.к. каждый может получить только свой список '''
+    product = serializers.Field(source='product._values')
+    series = serializers.Field(source='serielist_set.count')
     class Meta:
         model = UserList
-        fields = ('user', 'product', 'score', 'status', 'production', 'series',)
+        fields = ('id', 'product', 'score', 'status', 'series',)
 
 
 class SerieListSerializer(serializers.ModelSerializer):

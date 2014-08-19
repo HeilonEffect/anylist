@@ -6,13 +6,13 @@ defaultApp.config(function ($interpolateProvider) {
 });
 
 
-defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window', 'workCategories',
-	function ($scope, $http, $location, $window, workCategories) {
+defaultApp.controller('DefaultCtrl', ['$scope', '$http', 'authProvider', 'workCategories',
+	function ($scope, $http, authProvider, workCategories) {
 		$scope.hidden_menu = false;
 		$scope.visibility_form = false;
 		$scope.visibility_user = false;
-        $scope.username = $window.localStorage.username;
-        $scope.token = $window.localStorage.token;
+        $scope.username = authProvider.getUsername();
+        $scope.token = authProvider.getTokenValue();
 
 		$scope.show_menu = function () {
 			$scope.hidden_menu = !$scope.hidden_menu;
@@ -22,47 +22,14 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
 			$scope.visibility_user = true;
 		};
 
-        // Это очень редко меняющийся контент, поэтому храним в localStorage
-        if (!$window.localStorage.raiting) {
-            $http.get('/api/raitings').success(function (data) {
-                $scope.raiting = data;
-                $window.localStorage['raiting'] = JSON.stringify(data.results);
-            });
-        }
-        if (!$window.localStorage['categories'] && $window.localStorage['categories'] != 'undefined') {
-            $http.get('/api/categories').success(function (data) {
-                var result = [];
-                for (var i in data.results)
-                    for (var j in data.results[i].categories)
-                        result.push(data.results[i].categories[j]);
-                $scope.categories = result;
-                $window.localStorage['categories'] = JSON.stringify(result);
-            });
-        } else {
-            $scope.categories = JSON.parse($window.localStorage['categories']);
-        }
+        $scope.categories = workCategories.getCategories();
 
         $scope.logout = function () {
-            $window.localStorage.removeItem('token');
-            $window.localStorage.removeItem('username');
-            $window.location.pathname = $window.location.pathname;
+            authProvider.logout();
         };
 
 		$scope.auth_me = function () {
-            var url = $location.absUrl();
-            var data = "username=" + $scope.auth['username'] + "&password=" + $scope.auth['password'];
-            $http.post('/api-token-auth/', {
-                username: $scope.auth['username'],
-                password: $scope.auth['password']
-            }, {
-                headers:{
-                    'Content-Type': 'application/json'
-                }
-            }).success(function (data) {
-                $window.localStorage['token'] = data['token'];
-                $window.localStorage['username'] = $scope.auth['username'];
-                $window.location.pathname = $window.location.pathname;
-            });
+            authProvider.login($scope.auth);
 		};
 
 		$scope.login = function () {
@@ -82,8 +49,9 @@ defaultApp.controller('DefaultCtrl', ['$scope', '$http', '$location', '$window',
 /*
 	Список продуктов конкретной категории
 */
-defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader', '$window', 'urlFilters', 'workCategories',
-	function ($scope, $http, $location, FileUploader, $window, urlFilters, workCategories) {
+defaultApp.controller('ListCtrl', ['$scope', '$http', 'FileUploader', 'urlFilters',
+    'workCategories', 'authProvider', 'oldLimits', 'userList', 'workGenres',
+	function ($scope, $http, FileUploader, urlFilters, workCategories, authProvider, oldLimits, userList, workGenres) {
         var filters = urlFilters.getFilters();
 
         $scope.panel_visibility = false;
@@ -100,8 +68,6 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 
         $scope.product_genres = {};
 
-        $scope.token = $window.localStorage.token;
-
         // Переход на вторую страницу формы
         $scope.main_checked = function () {
             if (!$scope.product || !$scope.product.title) {
@@ -116,7 +82,7 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
                 $scope.main_check = !$scope.main_check;
         };
 
-        $scope.select_genre = function (genre, product) {
+        $scope.select_genre = function (genre) {
             $scope.product_genres['' + genre.id] = genre.name;
         };
         var category_name = workCategories.getCategoryNameByUrl();
@@ -137,23 +103,19 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			$event.preventDefault();
 		};
 
-		$http.get('/api/genres?category=' + category).success(function (data) {
-            $scope.genre_groups = data.results.map(function (group) {
+        workGenres.get_genres_by_category(1).then(function (data) {
+            $scope.genre_groups = data.map(function (group) {
                 return {'genres': group.genres.map(function (genre) {
                     if (filters.genres.indexOf(genre.name) != -1)
                         genre.checked = true;
                     return genre;
                 })};
             });
-		});
+        });
 
-		$http.get('/api/raitings').success(function (data) {
-            $scope.raiting = data.results.map(function (limit) {
-                if (filters.old_limit.indexOf(limit.name) != -1)
-                    limit.checked = true;
-            });
-			$scope.raiting = data.results;
-		});
+        oldLimits.getRaiting().success(function (data) {
+            $scope.raiting = data.results;
+        });
 
         // По нажатию на флажок с фильтрами совершаем переход
         $scope.start_filter = function (old_limit, genre) {
@@ -190,36 +152,18 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			$scope.add_form_visible = !$scope.add_form_visible;
 		};
 
-		$scope.add_to_list = function (elem, $event, user_list) {
-            // Добавление продукта со страницы списка
-			$http({
-				method: "POST",
-				url: "/api/userlist/product:" + elem.product.id,
-				data: "name=Planned",
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded",
-                    "Authorization": 'Token ' + localStorage.token
-				}
-			}).success(function (data) {
+        $scope.add_to_list = function (elem, $event, user_list) {
+            userList.add_to_list(elem).then(function (data) {
                 data['status'] = 'Planned';
-                user_list[data['product']] = data;
+                user_list[data['product'].id] = data;
             });
-			$event.preventDefault();
-		};
+            $event.preventDefault();
+        };
 
-        if ($scope.token) {
-            $http.get('/api/userlist?category=' + category, {
-                headers: {'Authorization': 'Token ' + $window.localStorage.token}
-            }).success(function (data) {
-                var statuses = ["", "Planned", "Watch", "ReWatching", "Watched", "Deffered", "Dropped"];
-                $scope.user_list = {};
-                for (var i in data.results) {
-                    var key = '' + data.results[i].product;
-                    data.results[i].status = statuses[data.results[i].status];
-                    $scope.user_list[key] = data.results[i];
-                }
-            });
-        }
+        // Получение списка просмотренного
+        userList.get_dict_by_category(category).then(function (data) {
+            $scope.user_list = data;
+        });
 
 
 		$scope.add_product = function () {
@@ -227,10 +171,9 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
             $scope.product['genres'] = Object.keys($scope.product_genres).map(function (item) {
                 return Number.parseInt(item);
             });
-            $scope.uploader.onSuccessItem = function (item, response, status, headers) {
+            $scope.uploader.onSuccessItem = function () {
                 $scope.editing_product = false;
-                window.location.pathname = window.location.pathname;
-            }
+            };
             if ($scope.editing_product) {
                 $scope.uploader.queue[0].method = "PUT";
                 $scope.uploader.queue[0].url = '/api/products/id:' + $scope.product.id;
@@ -238,7 +181,7 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 			    $scope.uploader.queue[0].url = "/api/products";
             }
 			$scope.uploader.queue[0].alias = "avatar";
-            $scope.uploader.queue[0].headers = {'Authorization': 'Token ' + $scope.token};
+            $scope.uploader.queue[0].headers = {'Authorization': authProvider.getToken()};
 			$scope.uploader.queue[0].formData.push({'data': JSON.stringify($scope.product)});
 			$scope.uploader.uploadAll();
 		};
@@ -248,8 +191,8 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', '$location', 'FileUploader
 /*
 	Отображает описание продукта
 */
-defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 'FileUploader',
-	function ($scope, $http, $location, $window, FileUploader) {
+defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 'FileUploader', 'oldLimits', 'authProvider',
+	function ($scope, $http, $location, $window, FileUploader, oldLimits, authProvider) {
         $scope.statuses = ['Add To List', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
         $scope.token = $window.localStorage['token'];
         $scope.uploader = new FileUploader();
@@ -268,7 +211,7 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 
         });
 
         $http.get('/api/userlist?product=' + id, {
-            headers: {'Authorization': 'Token ' + $scope.token}
+            headers: {'Authorization': authProvider.getToken()}
         }).success(function (data) {
             if (data.results[0]) {
                 $scope.active_status = $scope.statuses[data.results[0].status];
@@ -295,9 +238,9 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 
                     }
             });
 
-            $http.get('/api/genres').success(function (data) {
+            /*$http.get('/api/genres').success(function (data) {
                 $scope.genres = data;
-            });
+            });*/
         };
 
         var p_url = window.location.pathname;
@@ -323,7 +266,7 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 
                     data: "name=" + elem.status,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        'Authorization': 'Token ' + $scope.token
+                        'Authorization': authProvider.getToken()
                     }
                 });
         };
@@ -644,7 +587,7 @@ defaultApp.controller('CreatorController', ['$scope', 'FileUploader', '$http',
                         $scope.creator.employ = $scope.employers[i].id;
                 $scope.uploader.queue[0].alias = "avatar";
                 $scope.uploader.onSuccessItem = function () {
-                    window.location.pathname = window.location.pathname;
+                    $scope.add_form_visible = false;
                 };
                 $scope.uploader.queue[0].headers = {'Authorization': 'Token ' + window.localStorage.token};
                 $scope.uploader.queue[0].formData.push($scope.creator);

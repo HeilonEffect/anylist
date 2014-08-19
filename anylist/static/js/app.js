@@ -29,19 +29,19 @@ anylistApp.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'list.html',
                 controller: 'ListCtrl'
             }).
-            when('/product/:product', {
+            when('/:paragraph/:product', {
                 templateUrl: 'detail.html',
                 controller: 'DetailCtrl'
             }).
-            when('/product/:product/series', {
+            when('/:paragraph/:product/series', {
                 templateUrl: 'series.html',
                 controller: 'SeriesController'
             }).
-            when('/product/:product/heroes', {
+            when('/:paragraph/:product/heroes', {
                 templateUrl: 'heroes_list.html',
                 controller: 'HeroController'
             }).
-            when('/product/:product/creators', {
+            when('/:paragraph/:product/creators', {
                 templateUrl: 'creators_list.html',
                 controller: 'CreatorController'
             }).

@@ -18,7 +18,7 @@ from .serializers import *
 
 class CategoriesList(generics.ListAPIView):
     ''' Список разделов сайта '''
-    model = CategoryGroup
+    model = Category
     serializer_class = CategorySerializer
     permission_classes = (AllowAny,)
 
@@ -87,9 +87,9 @@ class GenreGroupList(generics.ListAPIView):
     def get_queryset(self):
         result = GenreGroup.objects.all()
         category_id = self.request.QUERY_PARAMS.get('category')
-        category_name = Category.objects.get(id=category_id)
+        category_name = Category.objects.filter(id=category_id)
         if category_id:
-            result = result.filter(category=category_name.group)
+            result = result.filter(category=category_name.first().group)
         return result
 
 

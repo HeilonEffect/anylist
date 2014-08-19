@@ -19,7 +19,12 @@
 	<link rel="stylesheet" href="/static/lib/ng-quick-date.css">
 	<script src="/static/lib/ng-quick-date.min.js"></script>
     <script src="/static/js/app.js"></script>
-    <script src="/static/js/services.js"></script>
+    <script src="/static/js/services/authProvider.js"></script>
+    <script src="/static/js/services/oldLimits.js"></script>
+    <script src="/static/js/services/urlFilters.js"></script>
+    <script src="/static/js/services/workCategories.js"></script>
+    <script src="/static/js/services/userList.js"></script>
+    <script src="/static/js/services/workGenres.js"></script>
     <script src="/static/js/directive.js"></script>
 	<script src="/static/js/controllers.js"></script>
 </head>
@@ -58,7 +63,7 @@
 		<nav>
             <ul>
                 <li ng-repeat="category in categories">
-                    <a ng-href="/{[{category.url}]}">
+                    <a ng-href="{[{category.url}]}">
                         <figure>
                             <img ng-src="{[{category.icon}]}">
                             <figcaption>{[{category.name}]}</figcaption>
