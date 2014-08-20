@@ -55,32 +55,12 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', 'FileUploader', 'urlFilter
         var filters = urlFilters.getFilters();
 
         $scope.panel_visibility = false;
-		$scope.edit_visibility = false;
 		$scope.add_form_visible = false;
-
-		$scope.uploader = new FileUploader();
-		$scope.uploader.queueLimit = 1;
-		$scope.uploader.removeAfterUpload = true;
-        $scope.main_check = true;
 
 		$scope.active_genres = {};
 		$scope.active_limits = {};
 
         $scope.product_genres = {};
-
-        // Переход на вторую страницу формы
-        $scope.main_checked = function () {
-            if (!$scope.product || !$scope.product.title) {
-                alert('Enter title')
-            }else if (!$scope.product.description) {
-                alert('Enter description')
-            } else if (!$scope.product.old_limit)
-                alert('Enter Old Limit, please');
-            else if (!$scope.uploader.queue[0])
-                alert('Load image, please');
-            else
-                $scope.main_check = !$scope.main_check;
-        };
 
         $scope.select_genre = function (genre) {
             $scope.product_genres['' + genre.id] = genre.name;
@@ -96,14 +76,11 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', 'FileUploader', 'urlFilter
 			elem.product.edit_btn = false;
 		};
 
-		$scope.show_edit_form = function (elem, $event) {
-			$scope.add_form_visible = true;
-			$scope.product = elem.product;
-            $scope.editing_product = true;
-			$event.preventDefault();
-		};
+        $scope.click_form = function (event) {
+            event.preventDefault();
+        };
 
-        workGenres.get_genres_by_category(1).then(function (data) {
+        workGenres.get_genres_by_category(category).then(function (data) {
             $scope.genre_groups = data.map(function (group) {
                 return {'genres': group.genres.map(function (genre) {
                     if (filters.genres.indexOf(genre.name) != -1)
@@ -136,10 +113,6 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', 'FileUploader', 'urlFilter
             urlFilters.forward_by_filters(filters, workCategories.getCategoryUrlByName(category_name));
         };
 
-		$scope.remove_image = function () {
-			$scope.uploader.removeFromQueue(0);
-		};
-
 		$http.get('/api/products?category=' + category + "&genres=" + filters.genres.join(',') + "&old_limit=" + filters.old_limit.join(',')).success(function (data) {
 			$scope.products = data.results;
 		});
@@ -166,25 +139,25 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', 'FileUploader', 'urlFilter
         });
 
 
-		$scope.add_product = function () {
-			$scope.product['category'] = $scope.category_id;
-            $scope.product['genres'] = Object.keys($scope.product_genres).map(function (item) {
-                return Number.parseInt(item);
-            });
-            $scope.uploader.onSuccessItem = function () {
-                $scope.editing_product = false;
-            };
-            if ($scope.editing_product) {
-                $scope.uploader.queue[0].method = "PUT";
-                $scope.uploader.queue[0].url = '/api/products/id:' + $scope.product.id;
-            } else {
-			    $scope.uploader.queue[0].url = "/api/products";
-            }
-			$scope.uploader.queue[0].alias = "avatar";
-            $scope.uploader.queue[0].headers = {'Authorization': authProvider.getToken()};
-			$scope.uploader.queue[0].formData.push({'data': JSON.stringify($scope.product)});
-			$scope.uploader.uploadAll();
-		};
+//		$scope.add_product = function () {
+//			$scope.product['category'] = $scope.category_id;
+//            $scope.product['genres'] = Object.keys($scope.product_genres).map(function (item) {
+//                return Number.parseInt(item);
+//            });
+//            $scope.uploader.onSuccessItem = function () {
+//                $scope.editing_product = false;
+//            };
+//            if ($scope.editing_product) {
+//                $scope.uploader.queue[0].method = "PUT";
+//                $scope.uploader.queue[0].url = '/api/products/id:' + $scope.product.id;
+//            } else {
+//			    $scope.uploader.queue[0].url = "/api/products";
+//            }
+//			$scope.uploader.queue[0].alias = "avatar";
+//            $scope.uploader.queue[0].headers = {'Authorization': authProvider.getToken()};
+//			$scope.uploader.queue[0].formData.push({'data': JSON.stringify($scope.product)});
+//			$scope.uploader.uploadAll();
+//		};
 	}
 ]);
 
@@ -207,7 +180,10 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 
         };
 
         $http.get('/api/products/id:' + id).success(function (data) {
-            $scope.product = data;
+            oldLimits.getRaiting_name_by_id(data.old_limit).then(function (limit) {
+                data.old_limit = limit;
+                $scope.product = data;
+            });
         });
 
         $http.get('/api/userlist?product=' + id, {
@@ -642,7 +618,7 @@ defaultApp.controller('HeroController', ['$scope', 'FileUploader', '$http',
         $http.get('/api/serielist?user=' + localStorage.username + '&product=' + id, {headers: {
             'Authorization': 'Token ' + $scope.token
         }}).success(function (data) {
-            console.log(data);
+//            console.log(data);
             $scope.readed_series = data.count;
             $scope.readed_series_old = data.count;
             var tmp = {};
@@ -715,5 +691,70 @@ defaultApp.controller('SingleHeroController', ['$scope', '$http', '$window',
         $http.get('/api/heroes/id:' + id).success(function (data) {
             $scope.hero = data;
         });
+    }
+]);
+
+defaultApp.controller('addProductCtrl', ['$scope', 'oldLimits', 'FileUploader', 'workGenres', 'workCategories', 'authProvider',
+    function ($scope, oldLimits, FileUploader, workGenres, workCategories, authProvider) {
+        $scope.uploader = new FileUploader();
+        $scope.uploader.queueLimit = 1;
+
+        oldLimits.getRaiting().success(function (data) {
+            $scope.raiting = data.results;
+        });
+
+        var category = workCategories.getCategoryId(workCategories.getCategoryNameByUrl());
+        workGenres.get_genre_list_by_category(category).then(function (data) {
+            $scope.genres = data;
+        });
+
+        $scope.remove_image = function () {
+			$scope.uploader.removeFromQueue(0);
+		};
+
+        $scope.select_genres = function (genre) {
+            if (genre.length > 1) {
+                $scope.search_genres = $scope.genres.filter(function (item) {
+                    return item.name.indexOf(genre) != -1;
+                });
+            } else {
+                $scope.search_genres = [];
+            }
+        };
+
+        $scope.click_genre = function (genre) {
+            if (!$scope.product)
+                $scope.product = {};
+            if (!$scope.product.genres)
+                $scope.product.genres = [];
+            $scope.genres.every(function (element) {
+                if (element.name != genre.name)
+                    return true;
+                $scope.product.genres.push(element);
+                $scope.search_genres = [];
+                $scope.s_genre = '';
+                return false;
+            });
+        };
+
+        $scope.add_product = function () {
+			$scope.product['category'] = category;
+            $scope.product.genres = $scope.product.genres.map(function (elem) {
+                return elem.id;
+            });
+            $scope.uploader.onSuccessItem = function () {
+                alert('succes');
+            };
+            if ($scope.editing_product) {
+                $scope.uploader.queue[0].method = "PUT";
+                $scope.uploader.queue[0].url = '/api/products/id:' + $scope.product.id;
+            } else {
+			    $scope.uploader.queue[0].url = "/api/products";
+            }
+			$scope.uploader.queue[0].alias = "avatar";
+            $scope.uploader.queue[0].headers = {'Authorization': authProvider.getToken()};
+			$scope.uploader.queue[0].formData.push({'data': JSON.stringify($scope.product)});
+			$scope.uploader.uploadAll();
+		};
     }
 ]);

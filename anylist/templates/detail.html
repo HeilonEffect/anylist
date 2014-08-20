@@ -55,7 +55,7 @@
 		<img ng-src="{[{product.avatar_path}]}">
             <span>
 		    Genres: <a ng-href="/{[{category}]}/filter/genres/{[{genre.name}]}" ng-repeat="genre in product.genres_list">{[{genre.name}]}, </a>
-		    <p>Old raiting: <a ng-href="/{[{category}]}/filter/old_limit/{[{raiting[product.old_limit - 1].name}]}">{[{raiting[product.old_limit - 1].name}]}</a></p>
+		    <p>Old raiting: <a ng-href="/{[{category}]}/filter/old_limit/{[{raiting[product.old_limit].name}]}">{[{product.old_limit}]}</a></p>
 		    <p class="product_description">
 		        {[{product.description}]}
 		    </p>

@@ -1,10 +1,9 @@
 @media all and (max-device-width: 480px), handheld {
     .details {
         visibility: hidden;
-        /*position: absolute;*/
     }
     header {
-        z-index: 25;
+        z-index: 20;
         height: 2.5em;
     }
     header > menu > img {
@@ -16,7 +15,7 @@
     }
     main li {
         display: block;
-        border-bottom: 0.5px solid #E3E3E3;
+        border-bottom: 1px solid #E3E3E3;
         width: 100%;
     }
     main img {
@@ -157,5 +156,32 @@
     .product_description {
         margin-top: 9em;
         position: inherit;
+    }
+    .add_product_form {
+        bottom: -1em;
+    }
+    .add_product_form input[type="text"] {
+        margin-left: .5em;
+        width: 90%;
+    }
+    .add_product_form input[type="file"] {
+        margin-top: 6em;
+        margin-left: -13em;
+        width: 90%;
+    }
+    .add_product_form select {
+        margin-top: 1em;
+    }
+    .add_product_form input[type='search'] {
+        margin-top: 1em;
+        margin-left: 0;
+        width: 90%;
+        border-bottom: 1px solid #444;
+    }
+    .add_product_form pre {
+        font-size: 18px;
+    }
+    .add_product_form input[type='submit'] {
+        margin-bottom: -4em;
     }
 }
