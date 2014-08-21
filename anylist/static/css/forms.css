@@ -45,8 +45,28 @@ form div ul li {
 	height: 0;
 	width: 0;
 }
+.add_product_form input[type="text"]:first-of-type {
+    width: 90%;
+}
+.add_product_form input[type="text"]:nth-of-type(2) {
+    margin-top: 5em;
+    width: 50%;
+}
+.add_product_form input.ng-valid.ng-dirty {
+    border-bottom: 2px solid #008000;
+}
+.add_product_form input.ng-invalid.ng-dirty {
+    border-bottom: 2px solid red;
+}
+.add_product_form select {
+    margin-top: 5em;
+}
 .add_product_form ul {
     margin-left: .5em;
     margin-top: 3em;
+}
+.add_product_form li {
+    width: 10em;
     border-bottom: 1px solid #444;
+    display: block;
 }

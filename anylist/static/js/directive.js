@@ -43,11 +43,39 @@ anylistApp.directive('ngThumb', ['$window', function($window) {
         };
 }]);
 
-anylistApp.directive('productForm', ['oldLimits',
-    function (oldLimits) {
+// Проверяет, существует ли продукт с полностью совпадающим именем
+// и если да, то выводит сообщение об ошибке
+anylistApp.directive('noUnique', ['appSearch', function (appSearch) {
+    return {
+        require: 'ngModel',
+        link: function (scope, elm, attrs, ctrl) {
+            ctrl.$parsers.unshift(function (noUnique) {
+                appSearch.search_product_by_title(noUnique).then(function (data) {
+                    if (data) {
+                        ctrl.$setValidity('noUnique', false);
+                        noUnique = 'Production with this name already exists';
+                        if (!scope.product)
+                            scope.product = {};
+                        scope.product.title = noUnique;
+                        return noUnique;
+                    } else {
+                        ctrl.$setValidity('noUnique', true);
+                        return undefined;
+                    }
+                });
+            });
+        }
+    }
+}]);
+
+anylistApp.directive('productForm', [
+    function () {
         return {
             restrict: 'E',
-            templateUrl: 'productForm.html'
+            templateUrl: 'productForm.html',
+            replace: true,
+            link: function (scope) {
+            }
         }
     }
 ]);
