@@ -191,6 +191,9 @@ class SeriesGroup(models.Model):
     class Meta:
         ordering = ('-number',)
 
+    def __str__(self):
+        return '%s: season %d' % (self.product, self.number)
+
 
 class Serie(models.Model):
     number = models.PositiveSmallIntegerField(null=True, blank=True)

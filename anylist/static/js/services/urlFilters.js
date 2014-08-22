@@ -38,5 +38,13 @@ anylistApp.factory('urlFilters', ['$location', function ($location) {
         $location.path('/' + category + result);
     };
 
+    service.get_product_pathname = function (url) {
+        return url.split('/').slice(0, 3).join("/")
+    };
+
+    service.get_product_id_by_url = function (url) {
+        return Number.parseInt($location.path().split('/')[2].split('-')[0]);
+    };
+
     return service;
 }]);

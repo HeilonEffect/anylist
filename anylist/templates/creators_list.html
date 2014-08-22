@@ -26,21 +26,7 @@
         </div>
     </form>
     <img src="/static/img/add.svg" class="add_season" ng-click="add_form()" ng-if="token" ng-hide="add_form_visible">
-	<nav id="detail" ng-controller="DetailParagraphController">
-		<div>
-			<p>About</p>
-			<a ng-repeat="content in contents" ng-href="{[{content.url}]}">
-				<p>{[{content.name}]}</p>
-                <span>{[{content.name}]}</span>
-			</a>
-		</div>
-		<div>
-			<input type="number"><span>/{[{product.series_count}]}</span>
-			<select>
-				<option ng-click="status_move(this, active_status)" ng-repeat="status in statuses" ng-selected="status==active_status">{[{status}]}</option>
-			</select>
-		</div>
-	</nav>
+	<panel id="detail"></panel>
     <ul id="creator_list">
         <li ng-repeat="creator in creators">
             <a href="{[{creator.url}]}">

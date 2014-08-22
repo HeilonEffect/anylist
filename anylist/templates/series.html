@@ -36,19 +36,5 @@
 			</li>
 		</ul>
 	</div>
-	<nav id="detail" ng-controller="DetailParagraphController">
-		<div>
-			<p>About</p>
-			<a ng-repeat="content in contents" ng-href="{[{content.url}]}">
-				<p>{[{content.name}]}</p>
-                <span>{[{content.name}]}</span>
-			</a>
-		</div>
-		<div>
-			<input type="number" ng-model="readed_series"><span>/{[{product.series_count}]}</span>
-			<select>
-				<option ng-click="status_move(this, active_status)" ng-repeat="status in statuses" ng-selected="status==active_status">{[{status}]}</option>
-			</select>
-		</div>
-	</nav>
+	<panel id="detail"></panel>
 </main>

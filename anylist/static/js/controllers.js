@@ -93,7 +93,6 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', 'urlFilters', 'workCategor
         });
 
         // По нажатию на флажок с фильтрами совершаем переход
-        // TODO - перенести в фильтры
         $scope.start_filter = function (old_limit, genre) {
             if (genre)
                 if (genre.checked)
@@ -142,16 +141,11 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', 'urlFilters', 'workCategor
 /*
 	Отображает описание продукта
 */
-defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 'oldLimits', 'authProvider', 'workGenres', 'workCategories',
-	function ($scope, $http, $location, $window, oldLimits, authProvider, workGenres, workCategories) {
+defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', 'oldLimits', 'workGenres',
+	function ($scope, $http, $location, oldLimits, workGenres) {
         $scope.statuses = ['Add To List', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
-        $scope.token = $window.localStorage['token'];
-        $scope.product_genres = {};
 
-        var category_name = workCategories.getCategoryNameByUrl();
-        var category = workCategories.getCategoryId(category_name);
-
-        var id = window.location.pathname.split('/')[2].split('-')[0];
+        var id = $location.path().split('/')[2].split('-')[0];
 
         // Получение содержимого страницы
         $http.get('/api/products/id:' + id).success(function (data) {
@@ -161,16 +155,7 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 
             });
         });
 
-        // Выяснение, находится ли продукт в нашем списке
-        $http.get('/api/userlist?product=' + id, {
-            headers: {'Authorization': authProvider.getToken()}
-        }).success(function (data) {
-            if (data.results[0]) {
-                $scope.active_status = $scope.statuses[data.results[0].status];
-                $scope.readed_series = data.results[0].series;
-            }
-        });
-
+        // Показываем/скрываем форму
 		$scope.add_form = function () {
 			$scope.add_form_visible = !$scope.add_form_visible;
 		};
@@ -181,87 +166,53 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', '$window', 
             $scope.editing_product = true;
             workGenres.get_genre_objects_by_ids(product.genres_list.map(function (item) {
                 return item.id;
-            }), category).then(function (data) {
+            }), product.category).then(function (data) {
                 product.genres = data;
             });
             $scope.product = product;
         };
 
-        var p_url = window.location.pathname;
-        $scope.contents = [
-            {'name': 'Description', 'url': p_url},
-            {'name': 'Series', 'url': p_url + '/series'},
-            {'name': 'Heroes', 'url': p_url + '/heroes'},
-            {'name': 'Creators', 'url': p_url + '/creators'}
-        ];
-
-        // Смена статуса продукта
-        $scope.status_move = function (elem, active_status) {
-            var metod = 'POST';
-            if (active_status)
-                metod = "PUT";
-            if (elem.status != $scope.statuses[0])
-                $http({
-                    method: metod,
-                    url: "/api/userlist/product:" + id,
-                    data: "name=" + elem.status,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Authorization': authProvider.getToken()
-                    }
-                });
-        };
-
-        $scope.change_num_series = function () {
-            $http({
-                method: 'PUT',
-                url: '/api/serielist/product:' + id + '/count',
-                data: 'series=' + $scope.readed_series,
-                headers: {
-                    'Authorization': authProvider.getToken(),
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            });
-        };
     }
 ]);
 
 
-defaultApp.controller('SeriesController', ['$http', '$scope',
-    function ($http, $scope) {
+defaultApp.controller('SeriesController', ['$http', '$scope', 'authProvider',
+    function ($http, $scope, authProvider) {
+        $scope.token = authProvider.getTokenValue();
         var id = window.location.pathname.split('/')[2].split('-')[0];
 
-        $http.get('/api/seasons?product=' + id, { headers: {
-            'Authorization': 'Token ' + $scope.token
-        }}).success(function (data) {
+        $http.get('/api/seasons?product=' + id).success(function (data) {
             $scope.seasons = data.results;
             var count = 0;
-            for (var i in data.results)
-                for (var j in data.results[i].series) {
+            data.results.map(function (season) {
+                return season.series.map(function (serie) {
                     count++;
-                    if (!data.results[i].series[j]['length'])
-                        $scope.seasons[i].series[j]['length'] = " ";
-                    if (data.results[i].series[j].start_date) {
-                        var tmp = data.results[i].series[j].start_date.slice(0, 10)
-                        $scope.seasons[i].series[j].start_date = tmp;
-                    }
-                }
+                    if (!serie.length)
+                        serie.length = " ";
+                    if (serie.start_date)
+                        serie.start_date = serie.start_date.slice(0, 10);
+                    return serie;
+                });
+            });
             $scope.count_series = count;
         });
+
         // Создание нового сезона
-        $scope.create_season = function () {
-			$http({
-				method: "POST",
-				url: "/api/seasons",
-				data: "product=" + id,
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': 'Token ' + $scope.token
-				}
-			}).success(function (data) {
-				$scope.seasons.unshift(data);
-			});
-		};
+        if ($scope.token) {
+            $scope.create_season = function () {
+                $http({
+                    method: "POST",
+                    url: "/api/seasons",
+                    data: "product=" + id,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': authProvider.getToken()
+                    }
+                }).success(function (data) {
+                    $scope.seasons.unshift(data);
+                });
+            };
+        }
 
         $scope.serie_mouse_enter = function (serie) {
 			serie.edit = true;
@@ -307,7 +258,7 @@ defaultApp.controller('SeriesController', ['$http', '$scope',
                 data: "serie=" + serie.id + "&product=" + id,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': 'Token ' + $scope.token
+                    'Authorization': authProvider.getToken()
                 }
             }).success(function (data) {
                 $scope.readed_series++;
@@ -322,9 +273,9 @@ defaultApp.controller('SeriesController', ['$http', '$scope',
                 data: "",
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': 'Token ' + $scope.token
+                    'Authorization': authProvider.getToken()
                 }
-            }).success(function (data) {
+            }).success(function () {
                 delete serielist[serie.id];
                 $scope.readed_series--;
             });
@@ -336,7 +287,7 @@ defaultApp.controller('SeriesController', ['$http', '$scope',
         };
 
         $http.get('/api/serielist?user=' + localStorage.username + '&product=' + id, {headers: {
-            'Authorization': 'Token ' + $scope.token
+            'Authorization': authProvider.getToken()
         }}).success(function (data) {
             $scope.readed_series = data.count;
             $scope.readed_series_old = data.count;
@@ -369,19 +320,6 @@ defaultApp.controller('SeriesController', ['$http', '$scope',
             });
         };
 	}
-]);
-
-defaultApp.controller('DetailParagraphController', ['$scope', '$window',
-    function ($scope, $window) {
-        var p_url = $window.location.pathname.split('/');
-        p_url = p_url.slice(0, p_url.length - 1).join('/');
-        $scope.contents = [
-            {'name': 'Description', 'url': p_url},
-            {'name': 'Series', 'url': p_url + '/series'},
-            {'name': 'Heroes', 'url': p_url + '/heroes'},
-            {'name': 'Creators', 'url': p_url + '/creators'}
-        ];
-    }
 ]);
 
 defaultApp.controller('ProfileController', ['$scope', '$http', '$window',
@@ -481,12 +419,7 @@ defaultApp.controller('CreatorController', ['$scope', 'FileUploader', '$http',
 
         var product_url = window.location.pathname.split('/');
         product_url = product_url.slice(0, product_url.length - 2).join('/');
-        $scope.contents = [
-			{'name': 'Description', 'url': product_url},
-			{'name': 'Series', 'url': product_url + '/series'},
-			{'name': 'Heroes', 'url': product_url + '/heroes'},
-			{'name': 'Creators', 'url': product_url + '/creators'}
-		];
+
         $scope.statuses = ['Add To List', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
 
         $scope.add_creator = function () {
@@ -504,7 +437,7 @@ defaultApp.controller('CreatorController', ['$scope', 'FileUploader', '$http',
                 $scope.uploader.queue[0].formData.push($scope.creator);
                 $scope.uploader.queue[0].url = "/api/creators";
                 $scope.uploader.uploadAll();
-                window.location.pathname = window.location.pathname;
+//                window.location.pathname = window.location.pathname;
             } else {
                 for (var i in  $scope.employers)
                     if ($scope.employers[i].name == $scope.creator.employ)
@@ -518,7 +451,7 @@ defaultApp.controller('CreatorController', ['$scope', 'FileUploader', '$http',
                         'Content-Type': 'application/x-www-form-urlencoded'
                     }
                 }).success(function (data) {
-                    window.location.pathname = window.location.pathname;
+//                    window.location.pathname = window.location.pathname;
                 });
             }
         };
@@ -528,15 +461,7 @@ defaultApp.controller('CreatorController', ['$scope', 'FileUploader', '$http',
 defaultApp.controller('HeroController', ['$scope', 'FileUploader', '$http',
     function ($scope, FileUploader, $http) {
         var product_url = window.location.pathname.split('/');
-        var p_url = product_url.slice(0, product_url.length - 2).join('/');
         $scope.uploader = new FileUploader();
-        var id = window.location.pathname.split('/')[2].split('-')[0];
-        $scope.contents = [
-			{'name': 'Description', 'url': p_url},
-			{'name': 'Series', 'url': p_url + '/series'},
-			{'name': 'Heroes', 'url': p_url + '/heroes'},
-			{'name': 'Creators', 'url': p_url + '/creators'}
-		];
 
         $scope.add_form_visible = false;
         $scope.uploader = new FileUploader();
@@ -600,7 +525,7 @@ defaultApp.controller('HeroController', ['$scope', 'FileUploader', '$http',
             console.log($scope.hero);
             $scope.uploader.queue[0].alias = "avatar";
             $scope.uploader.onSuccessItem = function () {
-                window.location.pathname = window.location.pathname;
+//                window.location.pathname = window.location.pathname;
             };
             $scope.uploader.queue[0].headers = {'Authorization': 'Token ' + window.localStorage.token};
             $scope.uploader.queue[0].formData.push($scope.hero);
@@ -696,5 +621,64 @@ defaultApp.controller('addProductCtrl', ['$scope', 'oldLimits', 'FileUploader', 
 			$scope.uploader.queue[0].formData.push({'data': JSON.stringify($scope.product)});
 			$scope.uploader.uploadAll();
 		};
+    }
+]);
+
+anylistApp.controller('OptionsCtrl', ['$scope', '$http', '$location', 'userList', 'urlFilters', 'authProvider',
+    function ($scope, $http, $location, userList, urlFilters, authProvider) {
+        var url = urlFilters.get_product_pathname($location.path());
+        $scope.statuses = ['', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
+
+        userList.get_object_by_product_id(urlFilters.get_product_id_by_url($location.path())).then(function (data) {
+            $scope.readed_series = data.series;
+            $scope.series_count = data.product.series_count;
+            $scope.active_status = $scope.statuses[data.status];
+        });
+        $scope.contents = [
+            {'name': 'Description', 'url': url},
+            {'name': 'Series', 'url': url + '/series'},
+            {'name': 'Heroes', 'url': url + '/heroes'},
+            {'name': 'Creators', 'url': url + '/creators'}
+        ];
+
+        var id = urlFilters.get_product_id_by_url($location.path());
+
+        $scope.status_move = function (status, active_status) {
+            if (authProvider.getTokenValue() && status != active_status && status.length > 0) {
+                var method = 'POST';
+                if (active_status)
+                    method = 'PUT';
+                console.log(method);
+                $http({
+                    method: method,
+                    url: "/api/userlist/product:" + id,
+                    data: "name=" + status,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': authProvider.getToken()
+                    }
+                }).success(function () {
+                    active_status = status;
+                });
+            } else if (status.length == 0) {
+                status = active_status;
+            }
+        };
+
+        $scope.change = function (series) {
+            $scope.readed_series = series;
+        };
+
+        $scope.change_num_series = function (series) {
+            $http({
+                method: 'PUT',
+                url: '/api/serielist/product:' + id + '/count',
+                data: 'series=' + $scope.readed_series,
+                headers: {
+                    'Authorization': authProvider.getToken(),
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            });
+        };
     }
 ]);

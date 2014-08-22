@@ -4,7 +4,8 @@
     <div class="add_product_form_parent" ng-show="add_form_visible" ng-click="add_form()">
         <product-form ng-click="add_form()"></product-form>
     </div>
-	<nav id="detail">
+    <panel id="detail"></panel>
+	<!--<nav id="detail">
 		<div>
 			<p>About</p>
 			    <a ng-repeat="content in contents" ng-href="{[{content.url}]}">
@@ -18,7 +19,7 @@
 				<option ng-click="status_move(this, active_status)" ng-repeat="status in statuses" ng-selected="status==active_status">{[{status}]}</option>
 			</select>
 		</div>
-	</nav>
+	</nav>-->
 	<article>
         <h2>{[{product.title}]}</h2>
 		<img ng-src="{[{product.avatar_path}]}">

@@ -79,3 +79,24 @@ anylistApp.directive('productForm', [
         }
     }
 ]);
+
+anylistApp.directive('panel', [
+    function () {
+        return {
+            restrict: 'E',
+            templateUrl: 'panel.html',
+            replace: true
+        }
+    }
+]);
+
+anylistApp.directive('ngEnter', function () {
+    return function (scope, element, attrs) {
+        element.bind("keypress", function (event) {
+            if (event.which === 13)
+                scope.$apply(function () {
+                    scope.$eval(attrs.ngEnter);
+                });
+        });
+    }
+});

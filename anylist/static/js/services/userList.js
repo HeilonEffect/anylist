@@ -31,7 +31,6 @@ anylistApp.factory('userList', ['$http', '$q', 'authProvider',
                 data.results.filter(function (item) {
                     return item.product.category == category_id;
                 }).forEach(function (item) {
-                    item.status = statuses[item.status];
                     result['' + item.product.id] = item;
                 });
                 deferred.resolve(result);
@@ -48,6 +47,21 @@ anylistApp.factory('userList', ['$http', '$q', 'authProvider',
                 }}).success(function (data) {
                     deferred.resolve(data);
                 });
+            return deferred.promise;
+        };
+
+
+        service.get_object_by_product_id = function (id) {
+            var deferred = $q.defer();
+
+            promise.success(function (data) {
+                data.results.every(function (item) {
+                    if (item.product.id != id)
+                        return true;
+                    deferred.resolve(item);
+                    return false;
+                });
+            });
             return deferred.promise;
         };
 

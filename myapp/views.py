@@ -2,16 +2,12 @@ import functools
 import json
 import operator
 
-from django.contrib.auth.models import User
-from django.db.models import Q, F
+from django.db.models import Q
 
-from rest_framework import generics, permissions, status
-from rest_framework.authentication import BasicAuthentication
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from .models import *
 
 from .serializers import *
 
@@ -237,6 +233,7 @@ class SerieListView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
+        ''' Получаем список серий '''
         result = self.model.objects.all()
         if self.request.user:
             result = result.filter(user_list__user=self.request.user)
@@ -447,41 +444,45 @@ class SeriesCount(generics.UpdateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def put(self, request, *args, **kwargs):
+        ''' Изменяет число просмотренных серий на значение, указанное
+         в запросе
+         TODO: посмотреть с учётом нескольких сезонов
+         '''
         number = int(request.DATA['series'])
         product = Product.objects.get(id=kwargs['pk'])
-        watch_series = list(map(lambda item: item['serie'],
-                                SerieList.objects.filter(
-                                    user_list__user=request.user,
-                                    user_list__product=product
-                                    ).values('serie')))
-        # Если продукта ещё нет в списке - то создаём, если есть:
-        # присваиваем статус "Смотрю"
-        user_list = None
         st = Status.objects.get(name='Watch')
+
+        # Получаем, либо создаём запись статуса произведения,
+        # находяегося в списке у пользователя
         try:
             user_list = UserList.objects.get(user=request.user,
                                              product=product)
-            user_list.status = st
-            user_list.save()
         except Exception as e:
             user_list = UserList.objects.create(user=request.user,
                                                 product=product,
                                                 status=st)
-        if number > len(watch_series):
-            # Если мы просмотрели новые серии
-            # получаем список серий к просмотру
-            series = Serie.objects.filter(season__product=kwargs['pk']
-                ).exclude(id__in=watch_series).order_by('number')[:number-len(
-                watch_series)]
-            # отмечаем, как просмотренные
+        qs = SerieList.objects.filter(user_list__user = request.user,
+                                                user_list=user_list
+        ).order_by('serie__number')
+        watch_series = qs.count()
+        # Если мы ещё ничего не смотрели
+        if watch_series == 0:
+            for serie in Serie.objects.all().order_by('number')[:number]:
+                SerieList.objects.create(serie=serie, like=None,
+                                         user_list=user_list)
+        # Если мы увеличиваем число просмотров
+        elif number > watch_series:
+            serie = qs.last().serie   # Получаем последнюю серию
+            series = Serie.objects.filter(
+                season__product=product).order_by('number'
+            )[serie.number:number]
             for serie in series:
-                SerieList.objects.create(serie=serie, user_list=user_list)
+               SerieList.objects.create(serie=serie, like=None,
+                                        user_list=user_list)
         else:
-            # Если мы удаляем старые серии, то получаем список серий к удалению
-            ids_del = len(watch_series) - number
-            series = Serie.objects.filter(season__product=kwargs['pk'],
-                                          id__in=watch_series)[:ids_del]
-            SerieList.objects.filter(serie__in=series).delete()
+            # Если мы уменьшаем число просмотров
+            SerieList.objects.filter(pk__in=qs.order_by('-serie__number').values_list(
+                'pk')[:watch_series - number]).delete()
         return Response(number, status=status.HTTP_200_OK)
 
 
