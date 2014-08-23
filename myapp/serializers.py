@@ -161,9 +161,10 @@ class EmploySerializer(serializers.ModelSerializer):
 
 
 class SearchCreatorSerializer(serializers.ModelSerializer):
+    avatar = serializers.Field(source='avatar_path')
     class Meta:
         model = Creator
-        fields = ('id', 'name',)
+        fields = ('id', 'name', 'avatar',)
 
 
 class SearchHeroSerializer(serializers.ModelSerializer):

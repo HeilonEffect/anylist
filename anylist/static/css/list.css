@@ -51,7 +51,7 @@ main > nav {
 	overflow: hidden;
     top: 0;
     bottom: 3em;
-    border-bottom: 1px solid #000000;
+    border-bottom: 1px solid #E3E3E3;
  }
 .tooltip .detail {
     position: inherit;
@@ -75,7 +75,7 @@ figure figcaption {
 	border-radius: 1em;
 	background-color: #ffc107;
 }
-.add_product_form {
+.add_product_form, .creator_form {
 	position: fixed;
 	top: 5%;
 	left: 5%;
@@ -120,54 +120,40 @@ figure figcaption {
 	border: none;
 	border-bottom: 1px solid #E3E3E3;
 }
-.add_product_form textarea {
-	border: none;
-	border-bottom: 1px solid #E3E3E3;
-	margin-left: 5em;
-	height: 150px;
-	width: 40%;
-}
 .add_product_form input[type="file"] {
 	margin: 1em;
 }
 .add_product_form option {
 	width: 10em;
 }
-.add_product_form input[type="submit"] {
+.add_product_form input[type="submit"], .creator_form input[type='submit'] {
 	right: 30%;
     position: inherit;
     height: 3em;
     bottom: 5em;
     width: 10em;
 }
-.choicer {
-    background-color: #fff176;
+.creator_form input[type='search'] {
+    position: relative;
+    border-bottom: 1px solid #E3E3E3;
+    margin-left: 1em;
+    width: 90%;
+}
+.creator_form input[type='file'] {
+    margin-left: 5em;
+}
+.creator_form li {
+    display: block;
+    border: 1px solid #E3E3E3;
+}
+.creator_preview {
+    height: 150px;
+    width: 100px;
+}
+.add_product_form li:hover, .creator_form li:hover {
+    background-color: #ffc107;
     cursor: pointer;
-    position: inherit;
-    left: 20%;
-    bottom: 1.4em;
-    width: 10em;
 }
-.choicer:hover {
-    background-color: #ffeb3b;
-}
-.under_choicer {
-    position: inherit;
-    left: 5%;
-    right: 5%;
-    top: 5%;
-}
-.under_choicer1 {
-    position: inherit;
-    left: 5%;
-    right: 5%;
-    top: 5%;
-    column-count: 4;
-    -moz-column-count: 4;
-}
-.pagination {
-    position: fixed;
-    top: 3.5em;
-    right: 3em;
-    width: 5em;
+#creator_list {
+    margin-right: 10em;
 }

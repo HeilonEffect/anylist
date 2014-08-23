@@ -100,3 +100,13 @@ anylistApp.directive('ngEnter', function () {
         });
     }
 });
+
+anylistApp.directive('creatorForm', [
+    function () {
+        return {
+            restrict: 'E',
+            templateUrl: 'creatorForm.html',
+            replace: true
+        }
+    }
+]);

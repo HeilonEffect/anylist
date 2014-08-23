@@ -292,8 +292,9 @@ defaultApp.controller('SeriesController', ['$http', '$scope', 'authProvider',
             $scope.readed_series = data.count;
             $scope.readed_series_old = data.count;
             var tmp = {};
-            for (var i in data.results)
-                tmp['' + data.results[i]['serie']] = data;
+            data.results.forEach(function (item) {
+                tmp['' + item['serie']] = data;
+            });
             $scope.serielist = tmp;
         });
 
@@ -355,112 +356,23 @@ defaultApp.controller('UserCtrl', ['$scope', '$http', '$window',
     }]);
 
 
-defaultApp.controller('CreatorController', ['$scope', 'FileUploader', '$http',
-    function ($scope, FileUploader, $http) {
+defaultApp.controller('CreatorController', ['$scope', '$http', '$location',
+    function ($scope, $http, $location) {
         $scope.add_form_visible = false;
-        $scope.uploader = new FileUploader();
-        var id = window.location.pathname.split('/')[2].split('-')[0];
+        var id = $location.path().split('/')[2].split('-')[0];
 
         $scope.add_form = function () {
             $scope.add_form_visible = !$scope.add_form_visible;
         };
 
-        $http.get('/api/serielist?user=' + localStorage.username + '&product=' + id, {headers: {
-            'Authorization': 'Token ' + $scope.token
-        }}).success(function (data) {
-            console.log(data);
-            $scope.readed_series = data.count;
-            $scope.readed_series_old = data.count;
-            var tmp = {};
-            for (var i in data.results)
-                tmp['' + data.results[i]['serie']] = data;
-            $scope.serielist = tmp;
-        });
-
-        $scope.remove_image = function () {
-            $scope.uploader.removeFromQueue(0);
-        };
-
         $http.get('/api/creators?product=' + id).success(function (data) {
             $scope.creators = data.results;
         });
-
-        $http.get('/api/employs').success(function (data) {
-            $scope.employers = data.results;
-            $scope.employs = [];
-        });
-
-        $scope.select_creator = function (creator) {
-            $scope.searched_creator = creator;
-            $scope.search_creator.name = creator.name;
-            $scope.search_creators = [];
-        };
-
-        $scope.enter_creator_name = function () {
-            if ($scope.search_creator.name.length > 1)
-                $http.get('/api/search_creator?creator=' + $scope.search_creator.name).success(function (data) {
-                    $scope.search_creators = data.results;
-                });
-            else {
-                $scope.search_creators = [];
-            }
-        };
-
-        $scope.filter_employs = function (employ) {
-            $scope.employs = $scope.employers.filter(function (data) {
-                return data.name.search('^.*' + employ + '.*', 'i') != -1;
-            });
-        };
-
-        $scope.select_employ = function (employ) {
-            $scope.creator.employ = employ.name;
-            $scope.employs = [];
-        };
-
-        var product_url = window.location.pathname.split('/');
-        product_url = product_url.slice(0, product_url.length - 2).join('/');
-
-        $scope.statuses = ['Add To List', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
-
-        $scope.add_creator = function () {
-            // если мы заполнили нового персонажа
-            if ($scope.creator.name) {
-                $scope.creator.product = id;
-                for (var i in $scope.employers)
-                    if ($scope.employers[i].name == $scope.creator.employ)
-                        $scope.creator.employ = $scope.employers[i].id;
-                $scope.uploader.queue[0].alias = "avatar";
-                $scope.uploader.onSuccessItem = function () {
-                    $scope.add_form_visible = false;
-                };
-                $scope.uploader.queue[0].headers = {'Authorization': 'Token ' + window.localStorage.token};
-                $scope.uploader.queue[0].formData.push($scope.creator);
-                $scope.uploader.queue[0].url = "/api/creators";
-                $scope.uploader.uploadAll();
-//                window.location.pathname = window.location.pathname;
-            } else {
-                for (var i in  $scope.employers)
-                    if ($scope.employers[i].name == $scope.creator.employ)
-                        $scope.creator.employ = $scope.employers[i].id;
-                $http({
-                    method: "POST",
-                    url: '/api/products/id:' + id + '/creators',
-                    data: 'id=' + $scope.searched_creator.id + "&employ=" + $scope.creator.employ,
-                    headers: {
-                        'Authorization': 'Token ' + window.localStorage.token,
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    }
-                }).success(function (data) {
-//                    window.location.pathname = window.location.pathname;
-                });
-            }
-        };
     }]
 );
 
 defaultApp.controller('HeroController', ['$scope', 'FileUploader', '$http',
     function ($scope, FileUploader, $http) {
-        var product_url = window.location.pathname.split('/');
         $scope.uploader = new FileUploader();
 
         $scope.add_form_visible = false;
@@ -482,8 +394,9 @@ defaultApp.controller('HeroController', ['$scope', 'FileUploader', '$http',
             $scope.readed_series = data.count;
             $scope.readed_series_old = data.count;
             var tmp = {};
-            for (var i in data.results)
-                tmp['' + data.results[i]['serie']] = data;
+            data.results.forEach(function (item) {
+                tmp['' + item['serie']] = data;
+            });
             $scope.serielist = tmp;
         });
 
@@ -648,7 +561,6 @@ anylistApp.controller('OptionsCtrl', ['$scope', '$http', '$location', 'userList'
                 var method = 'POST';
                 if (active_status)
                     method = 'PUT';
-                console.log(method);
                 $http({
                     method: method,
                     url: "/api/userlist/product:" + id,
@@ -679,6 +591,95 @@ anylistApp.controller('OptionsCtrl', ['$scope', '$http', '$location', 'userList'
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             });
+        };
+    }
+]);
+
+defaultApp.controller('CreatorFormCtrl', ['$scope', '$http', 'FileUploader', '$location', 'authProvider',
+    function ($scope, $http, FileUploader, $location, authProvider) {
+        $scope.uploader = new FileUploader();
+        $scope.uploader_visible = true;
+        $scope.uploader_enable = true;
+        $scope.creator = {};
+        $scope.creator.name = '';
+        var id = $location.path().split('/')[2].split('-')[0];
+
+        $scope.select_creator = function (creator) {
+            $scope.creator = creator;
+            $scope.creator.name = creator.name;
+            $scope.search_creators = [];
+            $scope.uploader_visible = false;
+            $scope.uploader_enable = false;
+        };
+
+        $scope.enter_creator_name = function () {
+            if ($scope.creator.name.length > 1)
+                $http.get('/api/search_creator?creator=' + $scope.creator.name).success(function (data) {
+                    $scope.search_creators = data.results;
+                });
+            else {
+                $scope.search_creators = [];
+            }
+        };
+
+        $scope.remove_image = function () {
+            $scope.uploader.removeFromQueue(0);
+        };
+
+        $http.get('/api/employs').success(function (data) {
+            $scope.employers = data.results;
+            $scope.employs = [];
+        });
+
+        $scope.filter_employs = function (employ) {
+            if (employ.length > 1) {
+                $scope.employs = $scope.employers.filter(function (data) {
+                    return data.name.search('^.*' + employ + '.*', 'i') != -1;
+                });
+            } else
+                $scope.employs = [];
+        };
+
+        $scope.select_employ = function (employ) {
+            $scope.creator.employ = employ.name;
+            $scope.employs = [];
+        };
+
+        $scope.add_creator = function () {
+            // если мы заполнили нового персонажа
+            if (authProvider.getTokenValue() && $scope.creator.name) {
+                $scope.creator.product = id;
+                var employ = 0;
+                $scope.employers.every(function (item) {
+                    if (item.name != $scope.creator.employ)
+                        return true;
+                    employ = item.id;
+                    return false;
+                });
+                // Если мы добавляем существующего персонажа
+                if ($scope.creator.id) {
+                    var data = 'id=' + $scope.creator.id + '&employ=' + employ;
+                    $http.post('/api/products/id:' + id + '/creators', data, {headers: {
+                        'Authorization': authProvider.getToken(),
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }}).success(function () {
+                        alert('Success');
+                    });
+                } else {
+                    // Если мы создаём нового персонажа
+                    // TODO: добавить возможность менять аву
+                    $scope.creator.employ = employ;
+                    $scope.uploader.queue[0].alias = "avatar";
+                    $scope.uploader.onSuccessItem = function () {
+                        $scope.add_form_visible = false;
+                        alert('Success');
+                    };
+                    $scope.uploader.queue[0].headers = {'Authorization': 'Token ' + window.localStorage.token};
+                    $scope.uploader.queue[0].formData.push($scope.creator);
+                    $scope.uploader.queue[0].url = "/api/creators";
+                    $scope.uploader.uploadAll();
+                }
+            }
         };
     }
 ]);

@@ -365,7 +365,6 @@ class CreatorView(generics.ListCreateAPIView):
         ищем, либо создаём запись в таблице и добавляем запись
         в список причастных
         '''
-        print(request.DATA)
         avatar = request.FILES.get('avatar')
         if avatar and request.DATA['name']:
             serializer = CreatorSerializer(data=request.DATA,
@@ -373,9 +372,13 @@ class CreatorView(generics.ListCreateAPIView):
             if serializer.is_valid():
                 try:
                     p = serializer.save()
-                    e = Employ.objects.get(id=request.DATA['employ'])
-                    c = CreatorEmploys.objects.get_or_create(employ=e, creator=p)
-                    Product.objects.get(id=request.DATA['product']).creators.add(c[0])
+
+                    employ = Employ.objects.get(id=request.DATA['employ'])
+                    c = CreatorEmploys.objects.get_or_create(
+                        employ=employ, creator=p)
+
+                    Product.objects.get(
+                        id=request.DATA['product']).creators.add(c[0])
                     return Response('', status=status.HTTP_201_CREATED)
                 except Exception as e:
                     print(e)
@@ -431,12 +434,16 @@ class ProductCreator(APIView):
     '''
     model = Product
     permission_classes = (IsAuthenticated,)
+    serializer_class = CreatorSerializer
 
     def post(self, request, *args, **kwargs):
-        c = CreatorEmploys.objects.get(creator=request.DATA['id'],
-                                       employ=request.DATA['employ'])
-        Product.objects.get(id=kwargs['pk']).creators.add(c)
-        return Response('', status=status.HTTP_200_OK)
+        creator = Creator.objects.get(id=int(request.DATA['id']))
+        employ = Employ.objects.get(id=request.DATA['employ'])
+        c = CreatorEmploys.objects.get_or_create(creator=creator,
+                                                 employ=employ)
+        Product.objects.get(id=kwargs['pk']).creators.add(c[0])
+        serialize = CreatorSerializer(data=creator)
+        return Response(serialize.data, status=status.HTTP_200_OK)
 
 
 class SeriesCount(generics.UpdateAPIView):

@@ -5,21 +5,6 @@
         <product-form ng-click="add_form()"></product-form>
     </div>
     <panel id="detail"></panel>
-	<!--<nav id="detail">
-		<div>
-			<p>About</p>
-			    <a ng-repeat="content in contents" ng-href="{[{content.url}]}">
-                    <p>{[{content.name}]}</p>
-                    <span>{[{content.name}]}</span>
-            </a>
-		</div>
-		<div>
-			<input type="number" ng-model="readed_series" ng-change="change_num_series()"><span>/{[{product.series_count}]}</span>
-			<select>
-				<option ng-click="status_move(this, active_status)" ng-repeat="status in statuses" ng-selected="status==active_status">{[{status}]}</option>
-			</select>
-		</div>
-	</nav>-->
 	<article>
         <h2>{[{product.title}]}</h2>
 		<img ng-src="{[{product.avatar_path}]}">

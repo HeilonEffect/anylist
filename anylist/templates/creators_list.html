@@ -1,30 +1,7 @@
 <main class="cards">
-    <form class="add_product_form_parent" ng-click="add_form()" ng-show="add_form_visible" ng-submit="add_creator()">
-        <div class="add_product_form creator_form" ng-click="add_form()">
-            <div class="creator_group">
-                <input type="text" ng-model="creator.name" placeholder="Name">
-                    <h2>OR select from list:</h2>
-                    <input type="search" placeholder="Start enter name here" ng-change="enter_creator_name()" ng-model="search_creator.name">
-                    <ul>
-                        <li ng-repeat="crea in search_creators" ng-click="select_creator(crea)">{[{crea.name}]}</li>
-                    </ul>
-                <div>
-                    <input ng-model="creator.employ" type="search" placeholder="Employ" id="employs" ng-change="filter_employs(creator.employ)">
-                    <ul class="employers">
-                        <li ng-repeat="employ in employs" ng-click="select_employ(employ)">{[{employ.name}]}</li>
-                    </ul>
-                </div>
-                <div class="creator_search">
-                </div>
-             </div>
-            <span ng-repeat="item in uploader.queue" class="img_preview">
-				<span ng-show="uploader.isHTML5" ng-thumb="{file: item._file, height: 150}"></span>
-			</span>
-			<img src="/static/img/cancel.png" style="width: 50px;height: 50px" ng-click="remove_image()" ng-if="uploader.queue.length == 1">
-            <input type="file" ng-model="creator.avatar" nv-file-select uploader="uploader" ng-if="uploader.queue.length == 0">
-            <input type="submit" value="Create">
-        </div>
-    </form>
+    <div class="add_product_form_parent" ng-click="add_form()" ng-show="add_form_visible" >
+        <creator-form ng-click="add_form()"></creator-form>
+    </div>
     <img src="/static/img/add.svg" class="add_season" ng-click="add_form()" ng-if="token" ng-hide="add_form_visible">
 	<panel id="detail"></panel>
     <ul id="creator_list">

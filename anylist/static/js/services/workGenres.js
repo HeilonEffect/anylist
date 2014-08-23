@@ -41,7 +41,6 @@ anylistApp.factory('workGenres', ['$http', '$q', function ($http, $q) {
         var deferred = $q.defer();
         service.get_genre_list_by_category(category).then(function (data) {
             deferred.resolve(data.filter(function (item) {
-                console.log(item);
                 return ids.indexOf(item.id) != -1;
             }));
         });
