@@ -42,7 +42,9 @@ anylistApp.factory('workCategories', ['$http', '$window', function ($http, $wind
         return categories_ids[id];
     };
 
-    service.getCategoryNameByUrl = function () {
+    service.getCategoryNameByUrl = function (url) {
+        if (url)
+            return categories_url['/' + url];
         return categories_url['/' + $window.location.pathname.split('/')[1]];
     };
 

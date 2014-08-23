@@ -1,0 +1,20 @@
+<form ng-submit="add_hero()" ng-controller="HeroFormCtrl" class="creator_form">
+    <input type="search" placeholder="Hero" ng-change="change_hero()" ng-model="hero.name">
+    <ul>
+        <li ng-repeat="hero in heroees" ng-click="select_hero(hero)">{[{hero.name}]}</li>
+    </ul>
+    <input type="text" placeholder="description">
+    <input type="search" placeholder="Actor" ng-model="actor.name" ng-change="change_actor()">
+    <ul>
+        <li ng-repeat="creator in creators" ng-click="select_creator(creator)">{[{creator.name}]}</li>
+    </ul>
+    <span ng-show="uploader_visible">
+        <span ng-repeat="item in uploader.queue" class="img_preview">
+	        <span ng-show="uploader.isHTML5" ng-thumb="{file: item._file, height: 150}"></span>
+	    </span>
+        <img src="/static/img/cancel.png" style="width: 50px;height: 50px" ng-click="remove_image()" ng-if="uploader.queue.length == 1">
+    </span>
+    <input type="file" ng-model="hero.avatar" nv-file-select uploader="uploader" ng-if="uploader.queue.length == 0" id="avatar"
+           ng-show="uploader_enable">
+    <input type="submit" value="Add">
+</form>

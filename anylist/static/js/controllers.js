@@ -249,8 +249,6 @@ defaultApp.controller('SeriesController', ['$http', '$scope', 'authProvider',
 			});
 		};
 
-        $scope.edit_serie = function (serie) {};
-
         $scope.add_to_list_serie = function (serie) {
             $http({
                 method: "POST",
@@ -332,18 +330,13 @@ defaultApp.controller('ProfileController', ['$scope', '$http', '$window',
         });
     }]);
 
-defaultApp.controller('UserCtrl', ['$scope', '$http', '$window',
-    function ($scope, $http, $window) {
+defaultApp.controller('UserCtrl', ['$scope', '$http', '$location', 'workCategories',
+    function ($scope, $http, $location, workCategories) {
         $scope.statuses = ['', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
         $scope.statuses_lower = ['', 'planned', 'watch', 'rewatching', 'watched', 'deffered', 'dropped'];
-        var arr = window.location.pathname.split('/');
-        var category = arr[3];
-        var status = $scope.statuses_lower.indexOf(arr[4]);
+        var status = $scope.statuses_lower.indexOf($location.path().split('/')[4]);
 
-        var categories = JSON.parse($window.localStorage['categories']);
-        for (var i in categories)
-            if (categories[i].url == category)
-                category = categories[i].id;
+        var category = workCategories.getCategoryId(workCategories.getCategoryNameByUrl($location.path().split('/')[3]));
 
         $http.get('/api/userlist?status=' + status + '&category=' + category, {headers: {
             'Content-Type': 'application/json',
@@ -353,7 +346,8 @@ defaultApp.controller('UserCtrl', ['$scope', '$http', '$window',
         });
 
         $scope.status_move = function (product, status) {};
-    }]);
+    }
+]);
 
 
 defaultApp.controller('CreatorController', ['$scope', '$http', '$location',
@@ -371,13 +365,10 @@ defaultApp.controller('CreatorController', ['$scope', '$http', '$location',
     }]
 );
 
-defaultApp.controller('HeroController', ['$scope', 'FileUploader', '$http',
-    function ($scope, FileUploader, $http) {
-        $scope.uploader = new FileUploader();
+defaultApp.controller('HeroController', ['$scope', 'FileUploader', '$http', '$location',
+    function ($scope, FileUploader, $http, $location) {
 
-        $scope.add_form_visible = false;
-        $scope.uploader = new FileUploader();
-        var id = window.location.pathname.split('/')[2].split('-')[0];
+        var id = $location.path().split('/')[2].split('-')[0];
 
         $scope.add_form = function () {
             $scope.add_form_visible = !$scope.add_form_visible;
@@ -387,64 +378,9 @@ defaultApp.controller('HeroController', ['$scope', 'FileUploader', '$http',
             $scope.uploader.removeFromQueue(0);
         };
 
-        $http.get('/api/serielist?user=' + localStorage.username + '&product=' + id, {headers: {
-            'Authorization': 'Token ' + $scope.token
-        }}).success(function (data) {
-//            console.log(data);
-            $scope.readed_series = data.count;
-            $scope.readed_series_old = data.count;
-            var tmp = {};
-            data.results.forEach(function (item) {
-                tmp['' + item['serie']] = data;
-            });
-            $scope.serielist = tmp;
-        });
-
-        $scope.select_actor = function (h) {
-            $scope.hero.actor = h.id;
-            $scope.actors = [];
-            $scope.hero.actor_name = h.name;
-        };
-
-        $scope.change_hero = function (hero_name) {
-            // поиск имени "героя"
-//            if (hero_name.length > 1) {
-//                $http.get('/api/search_hero?hero=' + hero_name).success(function (data) {
-//                    $scope.heroes = data.results;
-//                });
-//            } else {
-//                $scope.heroes = [];
-//            }
-        };
-
-        $scope.change_actor = function (actor_name) {
-            if (actor_name.length > 1) {
-                $http.get('/api/search_creator?creator=' + actor_name).success(function (data) {
-                    $scope.actors = data.results;
-                });
-            } else {
-                $scope.actors = [];
-            }
-        };
-
         $http.get('/api/heroes?product=' + id).success(function (data) {
             $scope.heroes = data.results;
         });
-        $scope.statuses = ['Add To List', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
-
-        $scope.submit_hero = function () {
-            $scope.hero.product = id;
-            $scope.hero.actors = $scope.hero.actor;
-            console.log($scope.hero);
-            $scope.uploader.queue[0].alias = "avatar";
-            $scope.uploader.onSuccessItem = function () {
-//                window.location.pathname = window.location.pathname;
-            };
-            $scope.uploader.queue[0].headers = {'Authorization': 'Token ' + window.localStorage.token};
-            $scope.uploader.queue[0].formData.push($scope.hero);
-            $scope.uploader.queue[0].url = "/api/heroes";
-            $scope.uploader.uploadAll();
-        }
     }]);
 
 
@@ -680,6 +616,61 @@ defaultApp.controller('CreatorFormCtrl', ['$scope', '$http', 'FileUploader', '$l
                     $scope.uploader.uploadAll();
                 }
             }
+        };
+    }
+]);
+
+
+defaultApp.controller('HeroFormCtrl', ['$scope', '$http', 'FileUploader', '$location',
+    function ($scope, $http, FileUploader, $location) {
+        $scope.uploader = new FileUploader();
+        $scope.uploader_enable = true;
+
+        $scope.add_form_visible = false;
+        $scope.uploader = new FileUploader();
+
+        $scope.change_hero = function () {
+            if ($scope.hero.name.length > 1) {
+                $http.get('/api/search_hero?hero=' + $scope.hero.name).success(function (data) {
+                    $scope.heroees = data.results;
+                });
+            } else {
+                $scope.heroees = [];
+            }
+        };
+
+        $scope.select_hero = function (hero) {
+            $scope.hero = hero;
+            $scope.heroess = [];
+        };
+
+        $scope.change_actor = function () {
+            if ($scope.actor.name.length > 1) {
+                $http.get('/api/search_creator?creator=' + $scope.actor.name).success(function (data) {
+                    $scope.creators = data.results;
+                });
+            } else {
+                $scope.creators = [];
+            }
+        };
+
+        $scope.select_creator = function (actor) {
+            $scope.actor = actor;
+            $scope.creators = [];
+        };
+
+        $scope.add_hero = function () {
+            // Загрузка нового персонажа с существующим актёром
+            $scope.hero.product = $location.path().split('/')[2].split('-')[0];
+            $scope.hero.actor = $scope.actor.id;
+            $scope.uploader.queue[0].alias = "avatar";
+            $scope.uploader.onSuccessItem = function () {
+                alert('Succes');
+            };
+            $scope.uploader.queue[0].headers = {'Authorization': 'Token ' + window.localStorage.token};
+            $scope.uploader.queue[0].formData.push($scope.hero);
+            $scope.uploader.queue[0].url = "/api/heroes";
+            $scope.uploader.uploadAll();
         };
     }
 ]);

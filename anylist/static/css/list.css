@@ -139,6 +139,9 @@ figure figcaption {
     margin-left: 1em;
     width: 90%;
 }
+.creator_form {
+    z-index: 15;
+}
 .creator_form input[type='file'] {
     margin-left: 5em;
 }
@@ -156,4 +159,10 @@ figure figcaption {
 }
 #creator_list {
     margin-right: 10em;
+}
+.creator_form input[type='text'] {
+    margin-left: 1em;
+    width: 90%;
+    border: none;
+    border-bottom: 1px solid #E3E3E3;
 }

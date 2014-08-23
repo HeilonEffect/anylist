@@ -1,5 +1,3 @@
-from django.contrib.auth.models import User
-
 from rest_framework import serializers
 
 from .models import *
@@ -42,10 +40,11 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class UpdateProductSerializer(serializers.ModelSerializer):
     avatar = serializers.ImageField()
+
     class Meta:
         model = Product
         fields = ('id', 'title', 'description', 'avatar', 'old_limit',
-                    'category', 'genres',)
+                  'category', 'genres',)
 
 
 class GenreGroupSerializer(serializers.ModelSerializer):
@@ -71,14 +70,6 @@ class UsersSerializer(serializers.ModelSerializer):
         fields = ('username',)
 
 
-class UserListSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField()
-
-    class Meta:
-        model = UserList
-        fields = ('user', 'score', 'status', 'product',)
-
-
 class SeriesSerializer(serializers.ModelSerializer):
     start_date = serializers.DateField(input_formats=['%d.%m.%Y, %H:%M:%S', '%Y-%m-%d'],
                                        required=False)
@@ -97,15 +88,19 @@ class SeasonsSerializer(serializers.ModelSerializer):
 
 
 class UserListSerializer(serializers.ModelSerializer):
-    ''' user не выдаётся, т.к. каждый может получить только свой список '''
+    '''
+    user не выдаётся, т.к. каждый может получить только свой список
+    '''
     product = serializers.Field(source='product._values')
     series = serializers.Field(source='serielist_set.count')
+
     class Meta:
         model = UserList
         fields = ('id', 'product', 'score', 'status', 'series',)
 
 
 class SerieListSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = SerieList
         fields = ('id', 'serie', 'user_list', 'like',)
@@ -114,6 +109,7 @@ class SerieListSerializer(serializers.ModelSerializer):
 class SearchSerializer(serializers.ModelSerializer):
     name = serializers.Field(source='title')
     link = serializers.Field(source='get_absolute_url')
+
     class Meta:
         model = Product
         fields = ('name', 'link',)
@@ -129,6 +125,7 @@ class UserStatisticSerializer(serializers.Serializer):
 class CreatorSerializer(serializers.ModelSerializer):
     url = serializers.Field(source='get_absolute_url')
     avatar_path = serializers.Field(source='avatar_path')
+
     class Meta:
         model = Creator
         fields = ('name', 'avatar', 'url', 'avatar_path',)
@@ -139,6 +136,7 @@ class CreatorEmploysSerializer(serializers.ModelSerializer):
     avatar_path = serializers.Field(source='creator.avatar_path')
     employ = serializers.Field(source='employ.name')
     url = serializers.Field(source='creator.get_absolute_url')
+
     class Meta:
         model = CreatorEmploys
         fields = ('name', 'avatar_path', 'employ', 'url',)
@@ -149,12 +147,14 @@ class HeroSerializer(serializers.ModelSerializer):
     url = serializers.Field(source='get_absolute_url')
     avatar_path = serializers.Field(source='avatar_path')
     description = serializers.CharField(required=False)
+
     class Meta:
         model = Hero
-        fields = ('name', 'description', 'avatar', 'is_main_hero', 'actor', 'url', 'avatar_path',)
+        fields = ('name', 'description', 'avatar', 'actor', 'url', 'avatar_path',)
 
 
 class EmploySerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Employ
         fields = ('id', 'name',)
@@ -162,12 +162,14 @@ class EmploySerializer(serializers.ModelSerializer):
 
 class SearchCreatorSerializer(serializers.ModelSerializer):
     avatar = serializers.Field(source='avatar_path')
+
     class Meta:
         model = Creator
         fields = ('id', 'name', 'avatar',)
 
 
 class SearchHeroSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Hero
         fields = ('id', 'name',)

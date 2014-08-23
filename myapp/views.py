@@ -402,10 +402,12 @@ class HeroView(generics.ListCreateAPIView):
         return result
 
     def post(self, request, *args, **kwargs):
+        ''' Добавление нового персонажа с существующим актёром '''
         serializer = self.serializer_class(data=request.DATA,
                                            files=request.FILES)
         if serializer.is_valid():
             p = serializer.save()
+            print(serializer.data)
             print(p)
             Product.objects.get(id=request.DATA['product']).heroes.add(p)
             return Response(serializer.data, status=status.HTTP_200_OK)

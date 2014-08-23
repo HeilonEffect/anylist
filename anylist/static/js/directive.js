@@ -110,3 +110,13 @@ anylistApp.directive('creatorForm', [
         }
     }
 ]);
+
+anylistApp.directive('heroForm', [
+    function () {
+        return {
+            restrict: 'E',
+            templateUrl: 'heroForm.html',
+            replace: true
+        }
+    }
+]);
