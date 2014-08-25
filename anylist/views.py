@@ -1,16 +1,15 @@
 # -*- encoding: utf-8 -*-
 import logging.config
 
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from django.views.generic.detail import DetailView
+
+from myapp.forms import RegisterForm
 
 from rest_framework.authtoken.models import Token
 
-from myapp.models import Product
 
 from .dicLog import LOGGING
 
@@ -30,21 +29,21 @@ def main_page(request):
     return HttpResponse(open('anylist/templates/base.html').read())
 
 
-# @require_http_methods(['POST'])
-# def register(request):
-#     ''' Регистрация нового пользователя '''
-#     form = RegisterForm(request.POST)
-#     if form.is_valid():
-#         cd = form.cleaned_data
-#         user = User.objects.create_user(**cd)
-#         user.save()
-#         token = Token.objects.create(user=user)
-#         return HttpResponse({'token': token, 'username': user.username},
-#                             content_type='application/json')
-#     return HttpResponse(form.errors)
+@require_http_methods(['POST'])
+@csrf_exempt
+def register(request):
+    ''' Регистрация нового пользователя '''
+    form = RegisterForm(request.POST)
+    if form.is_valid():
+        cd = form.cleaned_data
+        user = User.objects.create_user(**cd)
+        user.save()
+        token = Token.objects.create(user=user)
+        return HttpResponse({'token': token, 'username': cd['username']},
+                            content_type='application/json')
+    print(form.errors)
+    return HttpResponse(form.errors)
 
 
-# def error404(request):
-#     context = {}
-#     context['nav_groups'] = CategoryGroup.objects.all()
-#     return render(request, 'error.html', context)
+def error404(request):
+    return HttpResponse(open('anylist/templates/error.html').read())

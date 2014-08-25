@@ -19,6 +19,7 @@ INSTALLED_APPS = (
     'easy_thumbnails',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_swagger',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -67,7 +68,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATIC_URL = '/static/'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),

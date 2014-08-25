@@ -14,12 +14,13 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^$', main_page),
     url(r'^admin/', include(admin.site.urls)),
-    # url(r'^(?P<url>.*)register/$', register),
+    url(r'^register$', register),
 
     # API
     url(r'^api-token-auth/$', 'rest_framework.authtoken.views.obtain_auth_token'),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api/', include('myapp.urls')),
+    url(r'^api-docs/', include('rest_framework_swagger.urls')),
 
     url(r'^(?P<path>.*)[.]html$', partials),
 )

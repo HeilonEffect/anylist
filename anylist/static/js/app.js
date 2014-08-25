@@ -7,7 +7,8 @@ var anylistApp = angular.module('anylistApp', [
 
 anylistApp.config(['$routeProvider', '$locationProvider',
     function ($routeProvider, $locationProvider) {
-        $locationProvider.html5Mode(true);
+//        $locationProvider.html5Mode(true);
+        $locationProvider.hashPrefix('!');
         $routeProvider.
             when('/', {
                 templateUrl: 'index.html',
@@ -57,6 +58,7 @@ anylistApp.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'error.html'
             }).
             otherwise({
-                redirectTo: '/'
+                redirectTo: '/404'
             });
-    }]);
+    }
+]);

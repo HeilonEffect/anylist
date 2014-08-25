@@ -14,7 +14,7 @@
 	<link rel="stylesheet" href="/static/css/series.css">
 	<link rel="stylesheet" href="/static/css/header.css">
     <link rel="stylesheet" media="only screen and (max-width: 480px), only screen and (max-device-width: 480px), only (handheld)" href="/static/css/mobile.css" />
-    <!--<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">-->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
 	<link rel="stylesheet" href="/static/lib/ng-quick-date.css">
 	<script src="/static/lib/ng-quick-date.min.js"></script>
@@ -28,6 +28,7 @@
     <script src="/static/js/services/workGenres.js"></script>
     <script src="/static/js/directive.js"></script>
 	<script src="/static/js/controllers.js"></script>
+    <!--<script src="/static/js/fakeBrowser.js"></script>-->
 </head>
 <body ng-controller="DefaultCtrl">
 	<header>
@@ -40,10 +41,10 @@
 				</nav>
 			</div>
 			<img src="/static/img/main_menu.svg" ng-click="show_menu()">
-			<span ng-click="show_user_menu()"ng-if="token">{[{username}]}</span>
+			<span ng-click="show_user_menu()" ng-if="username">{[{username}]}</span>
             <img src="/static/img/usr_menu.svg" ng-click="show_user_menu()" class="isr_menu">
 			<div class="user_menu" ng-show="visibility_user">
-				<a href="/user/profile/"><p>Profile</p></a>
+				<a href="/#!/user/profile/"><p>Profile</p></a>
 				<a href=""><p>Settings</p></a>
 				<a href="" ng-click="logout()"><p>Log Out</p></a>
 			</div>
@@ -64,7 +65,7 @@
 		<nav>
             <ul>
                 <li ng-repeat="category in categories">
-                    <a ng-href="{[{category.url}]}">
+                    <a ng-href="/#!{[{category.url}]}">
                         <figure>
                             <img ng-src="{[{category.icon}]}">
                             <figcaption>{[{category.name}]}</figcaption>
@@ -75,7 +76,6 @@
 		</nav>
 		<div ng-click="show_menu()"></div>
 	</div>
-
     <div ng-view></div>
 
 </body>

@@ -4,7 +4,6 @@
 anylistApp.factory('userList', ['$http', '$q', 'authProvider',
     function ($http, $q, authProvider) {
         var service = {};
-        var statuses = ["", "Planned", "Watch", "ReWatching", "Watched", "Deffered", "Dropped"];
         var promise;
         var token_value = authProvider.getTokenValue();
         if (token_value && token_value != 'undefined')
@@ -26,6 +25,7 @@ anylistApp.factory('userList', ['$http', '$q', 'authProvider',
 
         service.get_dict_by_category = function (category_id) {
             var deferred = $q.defer();
+
             promise.success(function (data) {
                 var result = {};
                 data.results.filter(function (item) {
@@ -33,7 +33,19 @@ anylistApp.factory('userList', ['$http', '$q', 'authProvider',
                 }).forEach(function (item) {
                     result['' + item.product.id] = item;
                 });
-                deferred.resolve(result);
+                if (data.next)
+                    $http.get(data.next, {
+                        headers: {
+                            'Authorization': authProvider.getToken()
+                        }
+                    }).success(function (data) {
+                        data.results.filter(function (item) {
+                            return item.product.category == category_id;
+                            }).forEach(function (item) {
+                                result['' + item.product.id] = item;
+                            });
+                        deferred.resolve(result);
+                    });
             });
             return deferred.promise;
         };

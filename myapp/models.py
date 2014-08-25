@@ -1,4 +1,3 @@
-from abc import ABCMeta, abstractmethod
 import re
 
 from django.contrib.auth import get_user_model
@@ -44,14 +43,14 @@ class Category(TemplateModel):
     group = models.ForeignKey(CategoryGroup)
 
     def avatar_path(self):
-        options = {'size': (320, 480), 'crop': True}
-        thumb_url = get_thumbnailer(self.avatar).get_thumbnail(options).url
-        return '/media/' + thumb_url.split('/')[-1]
+        #options = {'size': (320, 480), 'crop': True}
+        #thumb_url = get_thumbnailer(self.avatar).get_thumbnail(options).url
+        return '/media/' + self.avatar.url.split('/')[-1]#thumb_url.split('/')[-1]
 
     def icon_path(self):
-        options = {'size': (75, 75), 'crop': True}
-        thumb_url = get_thumbnailer(self.icon).get_thumbnail(options).url
-        return '/media/' + thumb_url.split('/')[-1]
+        #options = {'size': (75, 75), 'crop': True}
+        #thumb_url = get_thumbnailer(self.icon).get_thumbnail(options).url
+        return '/media/' + self.icon.url.split('/')[-1]#thumb_url.split('/')[-1]
 
     def get_absolute_url(self):
         return '/%s' % ''.join(self.name.lower().split(' '))

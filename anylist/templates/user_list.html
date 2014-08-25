@@ -1,7 +1,7 @@
 <main>
     <ul class="user_product_list">
         <li ng-repeat="item in user_list">
-            <span class="title"><a href="{[{item.production.url}]}">{[{item.product.title}]}</a></span>
+            <span class="title"><a href="/#!{[{item.product.url}]}">{[{item.product.title}]}</a></span>
             <span class="status">
                 <select>
                     <option ng-repeat="status in statuses" ng-selected="status==statuses[item.status]" ng-click="status_move(

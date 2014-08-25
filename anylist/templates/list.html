@@ -10,16 +10,16 @@
     <p></p>
 	<ul>
 		<li ng-repeat="product in products">
-			<a ng-href="{[{product.url}]}" ng-mouseenter="mouse_over(this)" ng-mouseleave="mouse_leave(this)">
+			<a ng-href="/#!{[{product.url}]}" ng-mouseenter="mouse_over(this)" ng-mouseleave="mouse_leave(this)">
 				<div class="product_status" ng-if="user_list[product.id]">
-					<p>{[{user_list[product.id].status}]}</p>
+					<p>{[{status[user_list[product.id].status - 1]}]}</p>
 				</div>
                 <div ng-if="token">
 				    <img src="/static/img/add_w.png" class="add_to_list" ng-show="product.edit_btn" ng-click="add_to_list(this, $event, user_list)" ng-if="!user_list[product.id]">
 				
 				    <img src="/static/img/edit_w.png" class="edit_in_list" ng-show="product.edit_btn" ng-click="show_editing(product, $event)">
                 </div>
-				<div class="tooltip" ng-show="product.edit_btn">
+				<!--<div class="tooltip" ng-show="product.edit_btn">
                     <div class="description">
 					    <p>{[{product.description}]}</p>
                     </div>
@@ -27,7 +27,7 @@
                         Raiting: {[{product.limit}]}
                         Genres: <span ng-repeat="genre in product.genres_list">{[{genre.name}]} </span>
                     </div>
-				</div>
+				</div>-->
 				<figure>
 					<img ng-src="{[{product.avatar_path}]}">
 					<figcaption>{[{product.title}]}</figcaption>

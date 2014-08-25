@@ -2,7 +2,7 @@
     <div ng-repeat="category in user_list" class="user_categories">
         <span ng-repeat="item in category.items" ng-if="category.count != 0">
             <span ng-if="item.count != 0">
-                <a href="{[{item.url}]}">{[{item.status}]} ({[{item.count}]})</a>
+                <a href="/#!{[{item.url}]}">{[{item.status}]} ({[{item.count}]})</a>
             </span>
         </span>
         <h3 ng-if="category.count != 0">{[{category.name}]}</h3>

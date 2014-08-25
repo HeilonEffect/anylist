@@ -22,14 +22,23 @@ defaultApp.controller('DefaultCtrl', ['$scope', 'authProvider', 'workCategories'
 			$scope.visibility_user = true;
 		};
 
-        $scope.categories = workCategories.getCategories();
+        workCategories.getCategories().then(function (data) {
+            $scope.categories = data;
+        });
 
         $scope.logout = function () {
             authProvider.logout();
+            $scope.username = undefined;
+            $scope.token = undefined;
+            $scope.visibility_user = false;
         };
 
 		$scope.auth_me = function () {
-            authProvider.login($scope.auth);
+            authProvider.login($scope.auth).then(function (data){
+                $scope.username = data['username'];
+                $scope.token = data['token'];
+                $scope.visibility_form = false;
+            });
 		};
 
 		$scope.login = function () {
@@ -50,6 +59,7 @@ defaultApp.controller('DefaultCtrl', ['$scope', 'authProvider', 'workCategories'
 defaultApp.controller('ListCtrl', ['$scope', '$http', 'urlFilters', 'workCategories', 'authProvider', 'oldLimits', 'userList', 'workGenres',
 	function ($scope, $http, urlFilters, workCategories, authProvider, oldLimits, userList, workGenres) {
         var filters = urlFilters.getFilters();
+        $scope.status = ['Planned', 'Watch', 'ReWatching', 'Watched', 'Deferred', 'Dropped'];
 
         $scope.panel_visibility = false;
 		$scope.add_form_visible = false;
@@ -57,8 +67,6 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', 'urlFilters', 'workCategor
         $scope.select_genre = function (genre) {
             $scope.product_genres['' + genre.id] = genre.name;
         };
-        var category_name = workCategories.getCategoryNameByUrl();
-        var category = workCategories.getCategoryId(category_name);
 
         $scope.mouse_over = function (elem) {
 			elem.product.edit_btn = true;
@@ -68,23 +76,26 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', 'urlFilters', 'workCategor
 			elem.product.edit_btn = false;
 		};
 
-        workGenres.get_genres_by_category(category).then(function (data) {
-            $scope.genre_groups = data.map(function (group) {
-                return {'genres': group.genres.map(function (genre) {
-                    if (filters.genres.indexOf(genre.name) != -1)
-                        genre.checked = true;
-                    return genre;
-                })};
+        workCategories.getCategoryIdByUrl().then(function (category_id) {
+            workGenres.get_genres_by_category(category_id).then(function (data) {
+                $scope.genre_groups = data.map(function (group) {
+                    return {'genres': group.genres.map(function (genre) {
+                        if (filters.genres.indexOf(genre.name) != -1)
+                            genre.checked = true;
+                        return genre;
+                    })};
+                });
             });
         });
-
         $scope.show_editing = function (product, event) {
             $scope.add_form_visible = !$scope.add_form_visible;
             $scope.editing_product = true;
-            workGenres.get_genre_objects_by_ids(product.genres, category).then(function (data) {
-                product.genres = data;
+            workCategories.getCategoryIdByUrl().then(function (category_id) {
+                workGenres.get_genre_objects_by_ids(product.genres, category_id).then(function (data) {
+                    product.genres = data;
+                });
+                $scope.product = product;
             });
-            $scope.product = product;
             event.preventDefault();
         };
 
@@ -108,12 +119,16 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', 'urlFilters', 'workCategor
                     filters['old_limit'] = filters.old_limit.filter(function (data) {
                         return data != old_limit.name;
                     });
-            urlFilters.forward_by_filters(filters, workCategories.getCategoryUrlByName(category_name));
+            workCategories.getCategoryNameByUrl().then(function (category_name) {
+                urlFilters.forward_by_filters(filters, workCategories.getCategoryUrlByName(category_name));
+            });
         };
 
-		$http.get('/api/products?category=' + category + "&genres=" + filters.genres.join(',') + "&old_limit=" + filters.old_limit.join(',')).success(function (data) {
-			$scope.products = data.results;
-		});
+        workCategories.getCategoryIdByUrl().then(function (category_id) {
+            $http.get('/api/products?category=' + category_id + "&genres=" + filters.genres.join(',') + "&old_limit=" + filters.old_limit.join(',')).success(function (data) {
+                $scope.products = data.results;
+            });
+        });
 
 		$scope.show_panel = function () {
 			$scope.panel_visibility = !$scope.panel_visibility;
@@ -132,8 +147,10 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', 'urlFilters', 'workCategor
         };
 
         // Получение списка просмотренного
-        userList.get_dict_by_category(category).then(function (data) {
-            $scope.user_list = data;
+        workCategories.getCategoryIdByUrl().then(function (category_id) {
+            userList.get_dict_by_category(category_id).then(function (data) {
+                $scope.user_list = data;
+            });
         });
 	}
 ]);
@@ -141,8 +158,8 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', 'urlFilters', 'workCategor
 /*
 	Отображает описание продукта
 */
-defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', 'oldLimits', 'workGenres',
-	function ($scope, $http, $location, oldLimits, workGenres) {
+defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', 'oldLimits', 'workGenres', 'workCategories',
+	function ($scope, $http, $location, oldLimits, workGenres, workCategories) {
         $scope.statuses = ['Add To List', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
 
         var id = $location.path().split('/')[2].split('-')[0];
@@ -151,7 +168,11 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', 'oldLimits'
         $http.get('/api/products/id:' + id).success(function (data) {
             oldLimits.getRaiting_name_by_id(data.old_limit).then(function (limit) {
                 data.old_limit = limit;
+                $scope.old_limit = limit;
                 $scope.product = data;
+                workCategories.getCategoryUrlById($scope.product.category).then(function (data) {
+                    $scope.category = data;
+                });
             });
         });
 
@@ -176,10 +197,10 @@ defaultApp.controller('DetailCtrl', ['$scope', '$http', '$location', 'oldLimits'
 ]);
 
 
-defaultApp.controller('SeriesController', ['$http', '$scope', 'authProvider',
-    function ($http, $scope, authProvider) {
+defaultApp.controller('SeriesController', ['$http', '$scope', 'authProvider', '$location',
+    function ($http, $scope, authProvider, $location) {
         $scope.token = authProvider.getTokenValue();
-        var id = window.location.pathname.split('/')[2].split('-')[0];
+        var id = $location.path().split('/')[2].split('-')[0];
 
         $http.get('/api/seasons?product=' + id).success(function (data) {
             $scope.seasons = data.results;
@@ -336,13 +357,13 @@ defaultApp.controller('UserCtrl', ['$scope', '$http', '$location', 'workCategori
         $scope.statuses_lower = ['', 'planned', 'watch', 'rewatching', 'watched', 'deffered', 'dropped'];
         var status = $scope.statuses_lower.indexOf($location.path().split('/')[4]);
 
-        var category = workCategories.getCategoryId(workCategories.getCategoryNameByUrl($location.path().split('/')[3]));
-
-        $http.get('/api/userlist?status=' + status + '&category=' + category, {headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Token ' + localStorage.token
-        }}).success(function (data) {
-            $scope.user_list = data.results;
+        workCategories.getCategoryIdByUrl($location.path().split('/')[3]).then(function (category_id) {
+            $http.get('/api/userlist?status=' + status + '&category=' + category_id, {headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + localStorage.token
+            }}).success(function (data) {
+                $scope.user_list = data.results;
+            });
         });
 
         $scope.status_move = function (product, status) {};
@@ -412,10 +433,10 @@ defaultApp.controller('addProductCtrl', ['$scope', 'oldLimits', 'FileUploader', 
             $scope.raiting = data.results;
         });
 
-        var category = workCategories.getCategoryId(workCategories.getCategoryNameByUrl());
-
-        workGenres.get_genre_list_by_category(category).then(function (data) {
-            $scope.genres = data;
+        workCategories.getCategoryIdByUrl().then(function (category_id) {
+            workGenres.get_genre_list_by_category(category_id).then(function (data) {
+                $scope.genres = data;
+            });
         });
 
         $scope.remove_image = function () {
@@ -448,34 +469,41 @@ defaultApp.controller('addProductCtrl', ['$scope', 'oldLimits', 'FileUploader', 
         };
 
         $scope.add_product = function () {
-			$scope.product['category'] = category;
-            $scope.uploader.onSuccessItem = function (data) {
-                $location.path(data.url);
-            };
-            $scope.uploader.onErrorItem = function (data) {
-                console.log(data);
-            };
-            $scope.product['genres'] = $scope.product['genres'].map(function (item) {
-                return item.id;
+            workCategories.getCategoryIdByUrl().then(function (category_id) {
+                $scope.product['category'] = category_id;
+
+                $scope.uploader.onSuccessItem = function (item, response, status, headers) {
+                    console.log(item);
+                    console.log(response);
+                    console.log(status);
+                    console.log(headers);
+//                    $location.path(response);
+                };
+                $scope.uploader.onErrorItem = function (data) {
+                    console.log(data);
+                };
+                $scope.product['genres'] = $scope.product['genres'].map(function (item) {
+                    return item.id;
+                });
+                $scope.product['old_limit'] = Number.parseInt($scope.product.old_limit);
+                if ($scope.editing_product) {
+                    $scope.uploader.queue[0].method = "PUT";
+                    $scope.uploader.queue[0].url = '/api/products/id:' + $scope.product.id;
+                } else {
+                    $scope.uploader.queue[0].url = "/api/products";
+                }
+                $scope.uploader.queue[0].alias = "avatar";
+                $scope.uploader.queue[0].headers = {'Authorization': authProvider.getToken()};
+                $scope.uploader.queue[0].formData.push({'data': JSON.stringify($scope.product)});
+                $scope.uploader.uploadAll();
             });
-            $scope.product['old_limit'] = Number.parseInt($scope.product.old_limit);
-            if ($scope.editing_product) {
-                $scope.uploader.queue[0].method = "PUT";
-                $scope.uploader.queue[0].url = '/api/products/id:' + $scope.product.id;
-            } else {
-			    $scope.uploader.queue[0].url = "/api/products";
-            }
-			$scope.uploader.queue[0].alias = "avatar";
-            $scope.uploader.queue[0].headers = {'Authorization': authProvider.getToken()};
-			$scope.uploader.queue[0].formData.push({'data': JSON.stringify($scope.product)});
-			$scope.uploader.uploadAll();
 		};
     }
 ]);
 
 anylistApp.controller('OptionsCtrl', ['$scope', '$http', '$location', 'userList', 'urlFilters', 'authProvider',
     function ($scope, $http, $location, userList, urlFilters, authProvider) {
-        var url = urlFilters.get_product_pathname($location.path());
+        var url = '/#!' + urlFilters.get_product_pathname($location.path());
         $scope.statuses = ['', 'Planned', 'Watch', 'ReWatching', 'Watched', 'Deffered', 'Dropped'];
 
         userList.get_object_by_product_id(urlFilters.get_product_id_by_url($location.path())).then(function (data) {

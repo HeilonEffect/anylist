@@ -21,9 +21,6 @@ BASE_DIR = os.path.dirname(__file__)
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'j!p49a*j4e+!7&s&cx(&orq=s@u-pd&)i3u#p=$h$@)9-p!qo!'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
 # Application definition
 
 INSTALLED_APPS = (
@@ -38,6 +35,7 @@ INSTALLED_APPS = (
     'easy_thumbnails',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_swagger',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -91,7 +89,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATIC_URL = '/static/'
 
-ALLOWED_HOSTS = []
+DEBUG = True
+ALLOWED_HOSTS = ['*']
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
