@@ -274,7 +274,7 @@ defaultApp.controller('SeriesController', ['$http', '$scope', 'authProvider', '$
 				data: data,
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': 'Token ' + $scope.token
+                    'Authorization': authProvider.getToken()
 				}
 			}).success(function (data) {
                 if (data.start_date)
@@ -342,7 +342,7 @@ defaultApp.controller('SeriesController', ['$http', '$scope', 'authProvider', '$
                 url: "/api/series/id:" + serie.id,
                 data: data,
                 headers: {
-                    'Authorization': 'Token ' + localStorage.token,
+                    'Authorization': authProvider.getToken(),
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }).success(function (data) {
@@ -402,17 +402,13 @@ defaultApp.controller('CreatorController', ['$scope', '$http', '$location',
     }]
 );
 
-defaultApp.controller('HeroController', ['$scope', 'FileUploader', '$http', '$location',
-    function ($scope, FileUploader, $http, $location) {
+defaultApp.controller('HeroController', ['$scope', '$http', '$location',
+    function ($scope, $http, $location) {
 
         var id = $location.path().split('/')[2].split('-')[0];
 
         $scope.add_form = function () {
             $scope.add_form_visible = !$scope.add_form_visible;
-        };
-
-        $scope.remove_image = function () {
-            $scope.uploader.removeFromQueue(0);
         };
 
         $http.get('/api/heroes?product=' + id).success(function (data) {
@@ -421,9 +417,9 @@ defaultApp.controller('HeroController', ['$scope', 'FileUploader', '$http', '$lo
     }]);
 
 
-defaultApp.controller('SingleCreatorController', ['$scope', '$http', '$window',
-    function ($scope, $http, $window) {
-        var id = $window.location.pathname.split('/')[2].split('-')[0];
+defaultApp.controller('SingleCreatorController', ['$scope', '$http', '$location',
+    function ($scope, $http, $location) {
+        var id = $location.path().split('/')[2].split('-')[0];
         $http.get('/api/creators/id:' + id).success(function (data) {
             $scope.creator = data;
         });
@@ -431,9 +427,9 @@ defaultApp.controller('SingleCreatorController', ['$scope', '$http', '$window',
 ]);
 
 
-defaultApp.controller('SingleHeroController', ['$scope', '$http', '$window',
-    function ($scope, $http, $window) {
-        var id = $window.location.pathname.split('/')[2].split('-')[0];
+defaultApp.controller('SingleHeroController', ['$scope', '$http', '$location',
+    function ($scope, $http, $location) {
+        var id = $location.path().split('/')[2].split('-')[0];
         $http.get('/api/heroes/id:' + id).success(function (data) {
             $scope.hero = data;
         });
@@ -632,6 +628,13 @@ defaultApp.controller('CreatorFormCtrl', ['$scope', '$http', 'FileUploader', '$l
                     employ = item.id;
                     return false;
                 });
+
+                $scope.uploader.onSuccessItem = function (item, response) {
+                    $location.path(response.url);
+                };
+                $scope.uploader.onErrorItem = function (data) {
+                    console.log(data);
+                };
                 // Если мы добавляем существующего персонажа
                 if ($scope.creator.id) {
                     var data = 'id=' + $scope.creator.id + '&employ=' + employ;
@@ -702,10 +705,14 @@ defaultApp.controller('HeroFormCtrl', ['$scope', '$http', 'FileUploader', '$loca
         $scope.add_hero = function () {
             // Загрузка нового персонажа с существующим актёром
             $scope.hero.product = $location.path().split('/')[2].split('-')[0];
-            $scope.hero.actor = $scope.actor.id;
+            if ($scope.actor)
+                $scope.hero.actor = $scope.actor.id;
             $scope.uploader.queue[0].alias = "avatar";
-            $scope.uploader.onSuccessItem = function () {
-                alert('Succes');
+            $scope.uploader.onSuccessItem = function (item, response) {
+                $location.path(response.url);
+            };
+            $scope.uploader.onErrorItem = function (data) {
+                console.log(data);
             };
             $scope.uploader.queue[0].headers = {'Authorization': 'Token ' + window.localStorage.token};
             $scope.uploader.queue[0].formData.push($scope.hero);

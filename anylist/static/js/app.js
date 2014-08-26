@@ -14,6 +14,9 @@ anylistApp.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'index.html',
                 controller: 'DefaultCtrl'
             }).
+            when('/404', {
+                templateUrl: 'error.html'
+            }).
             when('/user/profile', {
                 templateUrl: 'profile.html',
                 controller: 'ProfileController'
@@ -53,9 +56,6 @@ anylistApp.config(['$routeProvider', '$locationProvider',
             when('/creator/:creator', {
                 templateUrl: 'creator.html',
                 controller: 'SingleCreatorController'
-            }).
-            when('/404', {
-                templateUrl: 'error.html'
             }).
             otherwise({
                 redirectTo: '/404'

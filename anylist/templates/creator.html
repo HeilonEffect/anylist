@@ -1,4 +1,16 @@
 <main ng-controller="SingleCreatorController">
     <h1>{[{creator.name}]}</h1>
     <img src="{[{creator.avatar_path}]}">
+    <h2>Roles</h2>
+    <ul>
+        <li ng-repeat="role in creator.roles">
+            <p>{[{role.role}]}</p>
+            <a ng-href="/#!{[{role.url}]}">
+                <figure>
+                    <img ng-src="{[{role.avatar_path}]}">
+                    <figcaption>{[{role.title}]}</figcaption>
+                </figure>
+            </a>
+        </li>
+    </ul>
 </main>

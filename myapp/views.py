@@ -386,13 +386,13 @@ class CreatorView(generics.ListCreateAPIView):
 
                     Product.objects.get(
                         id=request.DATA['product']).creators.add(c[0])
-                    return Response('', status=status.HTTP_201_CREATED)
+                    return JSONResponse(serializer.data, status=status.HTTP_201_CREATED)
                 except Exception as e:
                     print(e)
                     return Response('', status=status.HTTP_200_OK)
             else:
-                return Response('', status=status.HTTP_400_BAD_REQUEST)
-        return Response('', status=status.HTTP_200_OK)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # return Response('', status=status.HTTP_200_OK)
 
 
 class HeroView(generics.ListCreateAPIView):
@@ -414,12 +414,10 @@ class HeroView(generics.ListCreateAPIView):
                                            files=request.FILES)
         if serializer.is_valid():
             p = serializer.save()
-            print(serializer.data)
-            print(p)
             Product.objects.get(id=request.DATA['product']).heroes.add(p)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        print(serializer.errors)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return JSONResponse(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class EmployView(generics.ListAPIView):

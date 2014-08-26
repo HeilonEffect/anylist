@@ -31,10 +31,12 @@ anylistApp.factory('urlFilters', ['$location', function ($location) {
     service.forward_by_filters = function (filters, category) {
         var result = '';
         for (var key in filters)
-            if (filters[key].length > 0)
+            if (filters[key].length > 0) {
                 result += '/' + key + '/' + filters[key].join(',');
+            }
         if (result.length > 0)
             result = '/filter' + result;
+        category = category.replace(' ', '', 'g');
         $location.path('/' + category + result);
     };
 

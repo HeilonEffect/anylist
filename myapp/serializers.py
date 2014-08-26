@@ -122,13 +122,22 @@ class UserStatisticSerializer(serializers.Serializer):
     url = serializers.CharField()
 
 
+class EmployProductSerializer(serializers.ModelSerializer):
+    ''' Предназначен для показа роли служебного персонажа в каждом
+    конкретном продукте '''
+    url = serializers.Field(source='get_absolute_url')
+    class Meta:
+        model = Product
+        fiels = ('title', 'avatar_path', 'url', 'role',)
+
 class CreatorSerializer(serializers.ModelSerializer):
     url = serializers.Field(source='get_absolute_url')
-    avatar_path = serializers.Field(source='avatar_path')
+    avatar_path = serializers.Field()
+    roles = serializers.Field()
 
     class Meta:
         model = Creator
-        fields = ('name', 'avatar', 'url', 'avatar_path',)
+        fields = ('name', 'avatar', 'url', 'avatar_path', 'roles',)
 
 
 class CreatorEmploysSerializer(serializers.ModelSerializer):
@@ -143,14 +152,15 @@ class CreatorEmploysSerializer(serializers.ModelSerializer):
 
 
 class HeroSerializer(serializers.ModelSerializer):
-    actor = serializers.PrimaryKeyRelatedField()
+    actor = serializers.PrimaryKeyRelatedField(required=False)
     url = serializers.Field(source='get_absolute_url')
     avatar_path = serializers.Field(source='avatar_path')
     description = serializers.CharField(required=False)
+    roles = serializers.Field()
 
     class Meta:
         model = Hero
-        fields = ('name', 'description', 'avatar', 'actor', 'url', 'avatar_path',)
+        fields = ('name', 'description', 'avatar', 'actor', 'url', 'avatar_path', 'roles',)
 
 
 class EmploySerializer(serializers.ModelSerializer):

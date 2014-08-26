@@ -1,5 +1,16 @@
 <main>
-    <h1>{[{hero.name}]}</h1>
+    <h2>{[{hero.name}]}</h2>
     <img src="{[{hero.avatar_path}]}">
     <p>{[{hero.description}]}</p>
+    <h2>Roles</h2>
+    <ul>
+        <li ng-repeat="role in hero.roles">
+            <a ng-href="/#!{[{role.url}]}">
+                <figure>
+                    <img ng-src="{[{role.avatar_path}]}">
+                    <figcaption>{[{role.title}]}</figcaption>
+                </figure>
+            </a>
+        </li>
+    </ul>
 </main>

@@ -98,6 +98,24 @@ class Creator(models.Model):
     def __str__(self):
         return self.name
 
+    def roles(self):
+        ''' Список продуктов, к созанию которых данный персонаж имеет
+        отношение и его роль в них '''
+        p = list(map(lambda item: item['id'],
+                     self.creatoremploys_set.values('id')))
+        p = Product.objects.filter(creators__in=p)
+
+        def mapper(item):
+            result = {}
+            result['url'] = item.get_absolute_url()
+            result['avatar_path'] = item.avatar_path()
+            result['title'] = item.title
+            result['role'] = item.creators.get(creator=self).employ.name
+            return result
+
+        p = map(mapper, p)
+        return p
+
     def avatar_path(self):
         return '/media/%s' % str(self.avatar).split('/')[-1]
 
@@ -127,6 +145,19 @@ class Hero(models.Model):
 
     def avatar_path(self):
         return '/media/%s' % str(self.avatar).split('/')[-1]
+
+    def roles(self):
+        p = self.product_set.all()
+
+        def f(item):
+            result = {}
+            result['title'] = item.title
+            result['avatar_path'] = item.avatar_path()
+            result['url'] = item.get_absolute_url()
+            return result
+
+        p = map(f, p)
+        return p
 
     def get_absolute_url(self):
         return '/hero/%d-%s/' % (self.id, ''.join(
@@ -257,14 +288,6 @@ class UserList(models.Model):
             return p
         except ObjectDoesNotExist as e:
             pass
-        # if self.product.seriesgroup_set.exists(kwargs['serie'].season):
-        #     p = SerieList.objects.create(user_list=self,
-        #                                  serie=kwargs['serie'],
-        #                                  like=kwargs.get('like'))
-        #     self.serielist_set.add(p)
-        #     return p
-        # else:
-        #     raise Exception('Serie no related with current product')
 
     def del_watched_serie(self, **kwargs):
         ''' Удаляем серию из списка просмотренных '''
