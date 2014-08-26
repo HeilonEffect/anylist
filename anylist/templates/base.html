@@ -37,7 +37,7 @@
 				<input type="search" placeholder="Search" ng-change="searcher()" ng-model="search_data">
 				<img src="/static/img/search.jpg">
 				<nav>
-					<a ng-repeat="item in search_result" ng-href="{[{item.link}]}"><p>{[{item.name}]}</p></a>
+					<a ng-repeat="item in search_result" ng-href="/#!{[{item.link}]}"><p>{[{item.name}]}</p></a>
 				</nav>
 			</div>
 			<img src="/static/img/main_menu.svg" ng-click="show_menu()">
