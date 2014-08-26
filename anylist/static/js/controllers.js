@@ -19,7 +19,7 @@ defaultApp.controller('DefaultCtrl', ['$scope', 'authProvider', 'workCategories'
 		};
 
 		$scope.show_user_menu = function () {
-			$scope.visibility_user = true;
+			$scope.visibility_user = !$scope.visibility_user;
 		};
 
         workCategories.getCategories().then(function (data) {
@@ -35,6 +35,7 @@ defaultApp.controller('DefaultCtrl', ['$scope', 'authProvider', 'workCategories'
 
 		$scope.auth_me = function () {
             authProvider.login($scope.auth).then(function (data){
+                console.log(data);
                 $scope.username = data['username'];
                 $scope.token = data['token'];
                 $scope.visibility_form = false;

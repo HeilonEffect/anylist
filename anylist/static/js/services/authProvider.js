@@ -8,15 +8,17 @@ anylistApp.factory('authProvider', ['$http', '$window', '$q',
         // data = {'username': <String>, 'password': <String>}
         service.login = function (data) {
             var deferred = $q.defer();
+            var username = data.username;
+            console.log(username);
             if (data.is_reg) {
-                $http.post('/register', data, {
+                $http.post('/register', 'username=' + data.username + '&password=' + data.password, {
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/x-www-form-urlencoded'
                     }
                 }).success(function (token) {
                     deferred.resolve({'username': token['username'], 'token': token['token']});
                     $window.localStorage['token'] = token['token'];
-                    $window.localStorage['username'] = data['username'];
+                    $window.localStorage['username'] = token['username'];
                 });
             } else {
                 $http.post('/api-token-auth/', data, {
@@ -24,9 +26,9 @@ anylistApp.factory('authProvider', ['$http', '$window', '$q',
                         'Content-Type': 'application/json'
                     }
                 }).success(function (token) {
-                    deferred.resolve({'username': token['username'], 'token': token['token']});
+                    deferred.resolve({'username': username, 'token': token['token']});
                     $window.localStorage['token'] = token['token'];
-                    $window.localStorage['username'] = data['username'];
+                    $window.localStorage['username'] = username;
                 });
             }
             return deferred.promise;

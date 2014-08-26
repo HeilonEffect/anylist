@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+import json
 import logging.config
 
 from django.contrib.auth.models import User
@@ -33,15 +34,15 @@ def main_page(request):
 @csrf_exempt
 def register(request):
     ''' Регистрация нового пользователя '''
+    print(request.POST)
     form = RegisterForm(request.POST)
     if form.is_valid():
         cd = form.cleaned_data
         user = User.objects.create_user(**cd)
-        user.save()
-        token = Token.objects.create(user=user)
-        return HttpResponse({'token': token, 'username': cd['username']},
+        token = Token.objects.get(user=user)
+        return HttpResponse(json.dumps({'token': token.key,
+                             'username': cd['username']}),
                             content_type='application/json')
-    print(form.errors)
     return HttpResponse(form.errors)
 
 
