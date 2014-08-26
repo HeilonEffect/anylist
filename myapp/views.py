@@ -90,6 +90,7 @@ class GenreGroupList(generics.ListAPIView):
 
 
 class ProductDetail(generics.RetrieveUpdateAPIView):
+    ''' Одиночный продукт '''
     model = Product
     serializer_class = ProductSerializer
 
@@ -161,6 +162,7 @@ class SeriesView(generics.ListCreateAPIView):
 
 
 class UserListView(generics.ListCreateAPIView):
+    ''' Действия со списком пользователей '''
     serializer_class = UserListSerializer
     model = UserList
     permission_classes = (IsAuthenticated,)
@@ -243,19 +245,11 @@ class SerieListView(generics.ListCreateAPIView):
         return result
 
     def post(self, request, *args, **kwargs):
-        ''' Добавление серии в список просмотренных '''
+        ''' Добавление единичной серии в список просмотренных '''
         cd = {'serie': request.DATA['serie'], 'like': None}
-        try:
-            user_list = UserList.objects.get(
-                user=request.user, product__id=request.DATA['product'])
-            cd['user_list'] = user_list.id
-        except Exception as e:
-            p = Product.objects.get(id=request.DATA['product'])
-            st = Status.objects.get(name='Watch')
-            user_list = UserList.objects.create(
-                user=request.user, product=p, status=st
-            )
-            cd['user_list'] = user_list.id
+        cd['user_list'] = UserList.manager.get_or_create(
+            user=request.user, product__id=request.DATA['product'])[0].id
+
         serializer = self.serializer_class(data=cd)
         if serializer.is_valid():
             serializer.save()
@@ -449,50 +443,36 @@ class ProductCreator(APIView):
 
 
 class SeriesCount(generics.UpdateAPIView):
+    ''' Отмечает/удаляет серии, если известно только их новое число.
+    Если серий отмечено больше, чем от самой последней просмотренной до конца,
+    то излишек будет проигнорирован '''
     model = SerieList
     permission_classes = (IsAuthenticated,)
 
     def put(self, request, *args, **kwargs):
-        ''' Изменяет число просмотренных серий на значение, указанное
-         в запросе
-         TODO: посмотреть с учётом нескольких сезонов
-         '''
         number = int(request.DATA['series'])
         product = Product.objects.get(id=kwargs['pk'])
-        st = Status.objects.get(name='Watch')
-
-        # Получаем, либо создаём запись статуса произведения,
-        # находяегося в списке у пользователя
-        try:
-            user_list = UserList.objects.get(user=request.user,
-                                             product=product)
-        except Exception as e:
-            user_list = UserList.objects.create(user=request.user,
-                                                product=product,
-                                                status=st)
-        qs = SerieList.objects.filter(user_list__user = request.user,
-                                                user_list=user_list
-        ).order_by('serie__number')
-        watch_series = qs.count()
-        # Если мы ещё ничего не смотрели
-        if watch_series == 0:
-            for serie in Serie.objects.all().order_by('number')[:number]:
-                SerieList.objects.create(serie=serie, like=None,
-                                         user_list=user_list)
-        # Если мы увеличиваем число просмотров
-        elif number > watch_series:
-            serie = qs.last().serie   # Получаем последнюю серию
-            series = Serie.objects.filter(
-                season__product=product).order_by('number'
-            )[serie.number:number]
+        user_list = UserList.manager.get_or_create(user=request.user,
+                                                   product=product)[0]
+        watched_series = SerieList.manager.watched_series(user=request.user,
+                                                          product=product)
+        if not watched_series:
+            series = Serie.manager.all_series(product).reverse()[:number]
             for serie in series:
-               SerieList.objects.create(serie=serie, like=None,
-                                        user_list=user_list)
-        else:
-            # Если мы уменьшаем число просмотров
-            SerieList.objects.filter(pk__in=qs.order_by('-serie__number').values_list(
-                'pk')[:watch_series - number]).delete()
-        return Response(number, status=status.HTTP_200_OK)
+                user_list.add_watched_serie(serie=serie, like=None)
+
+        elif number > watched_series.count():
+            p = Serie.objects.filter(id__gt=watched_series.first().serie.id
+            )[:number - watched_series.count()].reverse()
+            for serie in p:
+                user_list.add_watched_serie(serie=serie, like=None)
+
+        elif number < watched_series.count():
+            ids = list(map(lambda item: item.id,
+                           watched_series[:watched_series.count() - number]))
+            SerieList.objects.filter(id__in=ids).delete()
+
+        return Response('', status=status.HTTP_200_OK)
 
 
 class CreatorDetailView(generics.RetrieveUpdateAPIView):

@@ -5,11 +5,6 @@ from django_dynamic_fixture import G
 
 from .views import *
 
-class TestOriginal(TestCase):
-    def test_plus(self):
-        self.assertEqual(2, 1 + 1)
-
-
 class TestHeader(TestCase):
     '''
     Проверяем работоспособность функций, доступной с каждой страницы:
@@ -53,3 +48,14 @@ class TestHeader(TestCase):
         result = list(map(lambda item: item.id, response.data['results']))
         self.assertIn(cat1.id, result)
         self.assertIn(cat2.id, result)
+
+
+class TestAddDeleteSerie(TestCase):
+    def setUp(self):
+        self.product = G(Product)
+        self.user_list = G(UserList, product=self.product)
+        self.serie_group = G(SeriesGroup, product=self.product)
+        self.serie = G(Product, season=self.serie_group)
+
+    def test_add_watch_serie(self):
+        pass

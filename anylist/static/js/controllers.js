@@ -251,7 +251,9 @@ defaultApp.controller('SeriesController', ['$http', '$scope', 'authProvider', '$
         // Добавление новой серии
 		$scope.create_serie = function (season) {
 			// Добавляем отсутсвующий ноль
-			var start_date = season.new_serie.start_date.toLocaleString().split(' ').join(' 0') || "";
+            var start_date = '';
+            if (season.new_serie.start_date)
+			    start_date = season.new_serie.start_date.toLocaleString().split(' ').join(' 0');
 
 			var data = "number=" + season.new_serie.number + "&name=" + season.new_serie.name +
 				"&start_date=" + start_date + "&length=" + season.new_serie.length;
@@ -266,7 +268,8 @@ defaultApp.controller('SeriesController', ['$http', '$scope', 'authProvider', '$
                     'Authorization': 'Token ' + $scope.token
 				}
 			}).success(function (data) {
-                data.start_date = data.start_date.slice(0, 10);
+                if (data.start_date)
+                    data.start_date = data.start_date.slice(0, 10);
                 season.series.unshift(data);
 			});
 		};
@@ -320,7 +323,9 @@ defaultApp.controller('SeriesController', ['$http', '$scope', 'authProvider', '$
 
         // Редактирование серии
         $scope.submit_serie = function (serie) {
-            var start_date = serie.new_version.start_date.toLocaleString().split(' ').join(' 0') || "";
+            var start_date = '';
+            if (serie.new_version.start_date)
+                start_date = serie.new_version.start_date.toLocaleString().split(' ').join(' 0') || "";
             var data = "number=" + serie.new_version.number + "&name=" + serie.new_version.name + "&start_date=" +
                 start_date + "&length=" + serie.new_version.length + "&season=" + serie.season_id;
             $http({
@@ -335,7 +340,8 @@ defaultApp.controller('SeriesController', ['$http', '$scope', 'authProvider', '$
                 serie.editing = false;
                 serie.number = data.number;
                 serie.name = data.name;
-                serie.start_date = data.start_date.slice(0, 10);
+                if (serie.start_date)
+                    serie.start_date = data.start_date.slice(0, 10);
                 serie['length'] = serie.new_version['length'];
                 serie.new_version = None;
             });

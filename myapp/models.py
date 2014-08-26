@@ -4,9 +4,10 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 from django.dispatch import receiver
 
-from easy_thumbnails.files import get_thumbnailer
+# from easy_thumbnails.files import get_thumbnailer
 from rest_framework.authtoken.models import Token
 
 from anylist.settings import MEDIA_ROOT
@@ -146,8 +147,8 @@ class Product(models.Model):
     heroes = models.ManyToManyField(Hero)
 
     def series_count(self):
-        return sum([
-            item.serie_set.count() for item in self.seriesgroup_set.all()])
+       return sum([
+           item.serie_set.count() for item in self.seriesgroup_set.all()])
 
     def _values(self):
         return {'title': self.title, 'id': self.id, 'description': self.description,
@@ -194,6 +195,13 @@ class SeriesGroup(models.Model):
         return '%s: season %d' % (self.product, self.number)
 
 
+class SerieManager(models.Manager):
+
+    def all_series(self, product):
+        return Serie.objects.filter(season__product=product).order_by(
+            '-season__number', '-number')
+
+
 class Serie(models.Model):
     number = models.PositiveSmallIntegerField(null=True, blank=True)
     season = models.ForeignKey(SeriesGroup, null=True, blank=True)
@@ -201,15 +209,31 @@ class Serie(models.Model):
     start_date = models.DateTimeField(blank=True, null=True)
     length = models.PositiveSmallIntegerField(blank=True, null=True)
 
+    objects = models.Manager()
+    manager = SerieManager()
+
     class Meta:
         ordering = ('-number', )
 
     def __str__(self):
-        return 'Serie: %s' % (self.number)
+        return 'Serie: %s' % self.number
 
 
 class Status(TemplateModel):
     pass
+
+
+class UserListManager(models.Manager):
+    def get_or_create(self, **kwargs):
+        try:
+            p = self.get(**kwargs)
+            return (p, False,)
+        except ObjectDoesNotExist as e:
+            kwargs['product'] = Product.objects.get(id=kwargs['product__id'])
+            kwargs['status'] = Status.objects.get(name='Watch')
+            del kwargs['product__id']
+            p = self.create(**kwargs)
+            return  (p, True,)
 
 
 class UserList(models.Model):
@@ -218,18 +242,55 @@ class UserList(models.Model):
     status = models.ForeignKey(Status)
     product = models.ForeignKey(Product)
 
-    def _series(self):
-        return SerieList.objects.filter(user_list=self)
-    series = property(_series)
+    objects = models.Manager()
+    manager = UserListManager()
+
+    def add_watched_serie(self, **kwargs):
+        ''' Добавляем одну серию в список просмотренных.
+        Возвращаем экземпляр объекта SerieList '''
+        try:
+            self.product.seriesgroup_set.filter(id=kwargs['serie'].season.id)
+            p = SerieList.objects.create(user_list=self,
+                                         serie=kwargs['serie'],
+                                         like=kwargs.get('like'))
+            self.serielist_set.add(p)
+            return p
+        except ObjectDoesNotExist as e:
+            pass
+        # if self.product.seriesgroup_set.exists(kwargs['serie'].season):
+        #     p = SerieList.objects.create(user_list=self,
+        #                                  serie=kwargs['serie'],
+        #                                  like=kwargs.get('like'))
+        #     self.serielist_set.add(p)
+        #     return p
+        # else:
+        #     raise Exception('Serie no related with current product')
+
+    def del_watched_serie(self, **kwargs):
+        ''' Удаляем серию из списка просмотренных '''
+        SerieList.objects.filter(user_list=self,
+                                 serie=kwargs['serie']).delete()
+
+    def series(self):
+       return SerieList.objects.filter(user_list=self)
 
     def __str__(self):
         return '%s: %s' % (self.status.name, self.product.title)
+
+
+class SerieListManager(models.Manager):
+    def watched_series(self, user, product):
+        return self.filter(user_list__user=user, user_list__product=product
+        ).order_by('-serie__season__number', '-serie__number')
 
 
 class SerieList(models.Model):
     serie = models.ForeignKey(Serie)
     user_list = models.ForeignKey(UserList)
     like = models.NullBooleanField()
+
+    objects = models.Manager()
+    manager = SerieListManager()
 
     def __str__(self):
         return str(self.serie)
