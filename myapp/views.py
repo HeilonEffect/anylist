@@ -3,13 +3,22 @@ import json
 import operator
 
 from django.db.models import Q
+from django.http import HttpResponse
 
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import *
+
+
+class JSONResponse(HttpResponse):
+    def __init__(self, data, **kwargs):
+        content = JSONRenderer().render(data)
+        kwargs['content_type'] = 'application/json'
+        super(JSONResponse, self).__init__(content, **kwargs)
 
 
 class CategoriesList(generics.ListAPIView):
@@ -29,12 +38,16 @@ class ProductList(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticatedOrReadOnly, )
 
     def post(self, request, *args, **kwargs):
+        ''' Создаёт новый "продукт". Для создания необходимо указать им
+        занимаемый раздел, название (должно быть уникальным), описание
+        (опционально), аватар,  '''
         data = json.loads(request.DATA['data'])
         serializer = ProductSerializer(data=data, files=request.FILES)
         if serializer.is_valid():
-            p = serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer.save()
+            return JSONResponse(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         '''

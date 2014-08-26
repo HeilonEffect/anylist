@@ -37,20 +37,20 @@
 				<input type="search" placeholder="Search" ng-change="searcher()" ng-model="search_data">
 				<img src="/static/img/search.jpg">
 				<nav>
-					<a ng-repeat="item in search_result" ng-href="/#!{[{item.link}]}"><p>{[{item.name}]}</p></a>
+					<a ng-repeat="item in search_result" ng-href="/#!{[{item.link}]}" ng-click="hide_search()"><p>{[{item.name}]}</p></a>
 				</nav>
 			</div>
 			<img src="/static/img/main_menu.svg" ng-click="show_menu()">
 			<span ng-click="show_user_menu()" ng-if="username">{[{username}]}</span>
             <img src="/static/img/usr_menu.svg" ng-click="show_user_menu()" class="isr_menu">
 			<div class="user_menu" ng-show="visibility_user">
-				<a href="/#!/user/profile/"><p>Profile</p></a>
+				<a href="/#!/user/profile/" ng-click="click_category(Profile)"><p>Profile</p></a>
 				<a href=""><p>Settings</p></a>
 				<a href="" ng-click="logout()"><p>Log Out</p></a>
 			</div>
 			<button ng-click="login()" ng-if="!token">Log In</button>
 		</menu>
-		<h1><a href="/">A</a></h1>
+		<h1><a href="/">A</a><span ng-show="paragraph"> > <a ng-href="{[{paragraph.url}]}">{[{paragraph.name}]}</a></span></h1>
 			<form ng-submit="auth_me()" ng-show="visibility_form" ng-click="login()">
 				<div ng-click="login()">
 					<input ng-model="auth.username" placeholder="Username" type="text"><br>
@@ -65,7 +65,7 @@
 		<nav>
             <ul>
                 <li ng-repeat="category in categories">
-                    <a ng-href="/#!{[{category.url}]}">
+                    <a ng-href="/#!{[{category.url}]}" ng-click="click_category(category.name)">
                         <figure>
                             <img ng-src="{[{category.icon}]}">
                             <figcaption>{[{category.name}]}</figcaption>

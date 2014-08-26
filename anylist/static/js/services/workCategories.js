@@ -16,7 +16,7 @@ anylistApp.factory('workCategories', ['$http', '$location', '$q',
             return deferred.promise;
         };
 
-        service.getCategoryId = function (name) {
+        service.getCategoryId = function () {
             var deferred = $q.defer();
 
             promise.success(function (data) {
@@ -49,11 +49,6 @@ anylistApp.factory('workCategories', ['$http', '$location', '$q',
             var deferred = $q.defer();
             promise.success(function (data) {
                 var result = {};
-//                data.results.every(function (item) {
-//                    console.log(item);
-//                    if (item.id != id)
-//                    return true;
-//                });
                 data.results.forEach(function (item) {
                     result['' + item.id] = item.name;
                 });
@@ -61,7 +56,6 @@ anylistApp.factory('workCategories', ['$http', '$location', '$q',
             });
             return deferred.promise;
         };
-
 
         service.getCategoryNameByUrl = function (url) {
             var deferred = $q.defer();

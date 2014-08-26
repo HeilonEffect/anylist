@@ -18,6 +18,11 @@ defaultApp.controller('DefaultCtrl', ['$scope', 'authProvider', 'workCategories'
 			$scope.hidden_menu = !$scope.hidden_menu;
 		};
 
+        $scope.click_category = function () {
+            $scope.hidden_menu = false;
+            $scope.visibility_user = false;
+        };
+
 		$scope.show_user_menu = function () {
 			$scope.visibility_user = !$scope.visibility_user;
 		};
@@ -31,6 +36,10 @@ defaultApp.controller('DefaultCtrl', ['$scope', 'authProvider', 'workCategories'
             $scope.username = undefined;
             $scope.token = undefined;
             $scope.visibility_user = false;
+        };
+
+        $scope.hide_search = function () {
+            $scope.search_result = [];
         };
 
 		$scope.auth_me = function () {
@@ -479,12 +488,8 @@ defaultApp.controller('addProductCtrl', ['$scope', 'oldLimits', 'FileUploader', 
             workCategories.getCategoryIdByUrl().then(function (category_id) {
                 $scope.product['category'] = category_id;
 
-                $scope.uploader.onSuccessItem = function (item, response, status, headers) {
-                    console.log(item);
-                    console.log(response);
-                    console.log(status);
-                    console.log(headers);
-//                    $location.path(response);
+                $scope.uploader.onSuccessItem = function (item, response) {
+                    $location.path(response.url);
                 };
                 $scope.uploader.onErrorItem = function (data) {
                     console.log(data);
