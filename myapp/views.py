@@ -31,8 +31,8 @@ class CategoriesList(generics.ListAPIView):
 class ProductList(generics.ListCreateAPIView):
     '''
     Список медийных продуктов, читать могут все, править -
-     зарегестрированные пользователи
-     '''
+    зарегестрированные пользователи
+    '''
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, )

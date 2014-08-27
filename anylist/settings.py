@@ -61,6 +61,13 @@ DATABASES = {
         'NAME': 'product_db',
         'USER': 'ctulhu',
         'PASSWORD': ''
+    },
+    'slave': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'product_db',
+        'USER': 'ctulhu',
+        'PASSWORD': '',
+        'TEST_MIRROR': 'default'
     }
 }
 
