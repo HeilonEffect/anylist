@@ -5,7 +5,7 @@ from .views import *
 
 urlpatterns = patterns('myapp.views',
     url(r'profile$', UserStatistic.as_view()),
-    url(r'categories/$', CategoriesList.as_view()),
+    url(r'categories/$', CategoriesList.as_view()), # test
 
     url(r'products$', ProductList.as_view()),
     url(r'products/id:(?P<pk>\d+)$', ProductDetail.as_view()),

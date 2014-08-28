@@ -155,3 +155,5 @@ CACHEOPS = {
     'myapp': (),
     'myapp.Product': ('filter', 60 * 2)
 }
+
+DDF_DEFAULT_DATA_FIXTURE = 'random'

@@ -97,7 +97,7 @@ class GenreGroupList(generics.ListAPIView):
         result = GenreGroup.objects.all()
         category_id = self.request.QUERY_PARAMS.get('category')
         category_name = Category.objects.filter(id=category_id)
-        if category_id:
+        if category_id and category_name.first():
             result = result.filter(category=category_name.first().group)
         return result
 

@@ -170,10 +170,17 @@ class SmokeTestsAPI(TestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
         response = self.client.get('/api/userlist')
         self.assertEqual(response.status_code, 200)
-        self.client.credentials()
 
         result = list(map(lambda item: item['id'], response.data['results']))
         self.assertIn(user_list.id, result)
+
+        response = self.client.get('/api/userlist?category=%d&status=%d' % (
+            category.id, status.id))
+        self.assertEqual(response.status_code, 200)
+
+        result = list(map(lambda item: item['id'], response.data['results']))
+        self.assertIn(user_list.id, result)
+        self.client.credentials()
 
     def test_product_series(self):
         '''
@@ -202,7 +209,7 @@ class SmokeTestsAPI(TestCase):
 
     def test_product_creators(self):
         '''
-        Проверяем доступность и соответсвие формату
+        Проверяем доступность и соответсвие формату служебных персонажей
         '''
         creator = G(Creator)
         employ = G(Employ)
@@ -222,4 +229,113 @@ class SmokeTestsAPI(TestCase):
             lambda item: item['url'], response.data['results']))[0], urls[0])
 
         response = self.client.get('/#!%s'% urls[0])
+        self.assertEqual(response.status_code, 200)
+
+    def test_product_heroes(self):
+        '''
+        Доступность действующих лиц произведения
+        '''
+        hero = G(Hero)
+        product = G(Product)
+        product.heroes.add(hero)
+
+        response = self.client.get('/api/heroes?product=%d' % product.id)
+        self.assertEqual(response.status_code, 200)
+
+        urls = list(map(lambda item: item['url'], response.data['results']))
+
+        response = self.client.get('/#!' + urls[0])
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get('/api/heroes')
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(urls[0], list(map(lambda item: item['url'],
+                           response.data['results']))[0])
+
+    def test_limits(self):
+        '''
+        Доступность возрастных ограничений
+        '''
+        limit = G(Raiting)
+        response = self.client.get('/api/raitings/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(limit.id, response.data['results'][0]['id'])
+
+    def test_products(self):
+        '''
+        Тестирование фильтров на разные продукты
+        '''
+        genre1 = G(Genre)
+        genre2 = G(Genre)
+        genre3 = G(Genre)
+
+        limit1 = G(Raiting)
+        limit2 = G(Raiting)
+
+        product1 = G(Product)
+        product2 = G(Product)
+
+        product1.genres.add(genre1)
+        product1.genres.add(genre2)
+        product1.old_limit = limit1
+
+        product2.genres.add(genre2)
+        product2.genres.add(genre3)
+        product1.old_limit = limit2
+
+        response = self.client.get('/api/products?genres=%d&old_limit=%s' % (
+            genre1.id, '%d,%d' % (limit1.id, limit2.id)))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get('/api/products?genres=%s&old_limit=%d' % (
+            '%d,%d' % (genre1.id, genre2.id), limit1.id))
+        self.assertEqual(response.status_code, 200)
+
+    def test_genres(self):
+        category1 = G(CategoryGroup)
+
+        genre1 = G(Genre)
+        genre2 = G(Genre)
+        genre3 = G(Genre)
+
+        group = G(GenreGroup, category=category1)
+        group.genres.add(genre1)
+        group.genres.add(genre2)
+
+        response = self.client.get('/api/genres')
+        self.assertEqual(response.status_code, 200)
+        results = list(map(lambda item: item['id'],
+                           response.data['results'][0]['genres']))
+        self.assertIn(genre1.id, results)
+        self.assertIn(genre2.id, results)
+
+        response = self.client.get('/api/genres?category=%d' % category1.id)
+        self.assertEqual(response.status_code, 200)
+        results = list(map(lambda item: item['id'],
+                           response.data['results'][0]['genres']))
+        self.assertIn(genre1.id, results)
+        self.assertIn(genre2.id, results)
+        self.assertNotIn(genre3.id, results)
+
+    def test_product_detail(self):
+        product = G(Product)
+
+        response = self.client.get('/api/products/id:%d' % product.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['id'], product.id)
+
+    def test_user_statistic(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        category1 = G(Category)
+        category2 = G(Category)
+
+        status = G(Status)
+
+        product1 = G(Product, category=category1)
+        product2 = G(Product, category=category2)
+
+        list1 = G(UserList, product=product1, status=status)
+
+        response = self.client.get('/api/profile')
         self.assertEqual(response.status_code, 200)
