@@ -1,5 +1,5 @@
 <main class="cards">
-	<img src="/static/img/add.svg" class="add_season" ng-click="add_form()" ng-if="token" ng-hide="add_form_visible">
+	<img src="/static/img/add.svg" class="add_season" ng-click="show_for_add()" ng-if="token" ng-hide="add_form_visible">
     <div class="add_product_form_parent" ng-show="add_form_visible" ng-click="add_form()">
         <product-form ng-click="add_form()"></product-form>
     </div>
@@ -7,7 +7,11 @@
 
 
     <!-- Список продуктов -->
-    <p></p>
+    <p>
+    	<a ng-show="pages.previous" ng-href="{[{pages.previous}]}">Prev</a>
+    	<a ng-show="pages.next" ng-href="{[{pages.next}]}">Next</a>
+    	<span>| Number {[{pages.count}]}</span>
+    </p>
 	<ul>
 		<li ng-repeat="product in products">
 			<a ng-href="/#!{[{product.url}]}" ng-mouseenter="mouse_over(this)" ng-mouseleave="mouse_leave(this)">
@@ -17,7 +21,7 @@
                 <div ng-if="token">
 				    <img src="/static/img/add_w.svg" class="add_to_list" ng-show="product.edit_btn" ng-click="add_to_list(this, $event, user_list)" ng-if="!user_list[product.id]">
 				
-				    <img src="/static/img/edit_w.png" class="edit_in_list" ng-show="product.edit_btn" ng-click="show_editing(product, $event)">
+				    <img src="/static/img/edit.svg" class="edit_in_list" ng-show="product.edit_btn" ng-click="show_editing(product, $event)">
                 </div>
 				<figure>
 					<img ng-src="{[{product.avatar_path}]}">

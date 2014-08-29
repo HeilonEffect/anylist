@@ -2,6 +2,7 @@
 <html lang="ru" ng-app="anylistApp">
 <head>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
 	<title>Base title</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
     <script src="static/lib/angular-route.min.js"></script>
@@ -35,6 +36,7 @@
 		<menu>
 			<div class="search_block">
 				<input type="search" placeholder="Search" ng-change="searcher()" ng-model="search_data">
+				<img src="/static/img/close.svg" ng-show="search_result" ng-click="clear_search()">
 				<img src="/static/img/search.jpg">
 				<nav>
 					<a ng-repeat="item in search_result" ng-href="/#!{[{item.link}]}" ng-click="hide_search()"><p>{[{item.name}]}</p></a>

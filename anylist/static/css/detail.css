@@ -52,8 +52,9 @@ article h1 {
 }
 .edit_product {
 	width: 2em;
-	height: 2em;
+	height: 1.5em;
 	position: fixed;
+	padding-top: .5em;
 	top: 3em;
 	right: 4em;
 	background-color: #FFC107;

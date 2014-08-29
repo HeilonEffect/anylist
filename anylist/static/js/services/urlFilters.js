@@ -48,5 +48,12 @@ anylistApp.factory('urlFilters', ['$location', function ($location) {
         return Number.parseInt($location.path().split('/')[2].split('-')[0]);
     };
 
+    service.getCurrentPage = function () {
+        var url = Number.parseInt($location.path().split('/').pop());
+        if (!url)
+            return 1;
+        return url;
+    };
+
     return service;
 }]);

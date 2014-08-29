@@ -62,6 +62,17 @@ figure figcaption {
 	z-index: 20;
 	font-size: 28px;
 }
+.add_product_form pre span {
+	background-color: #ffeb3b;
+	margin-right: 1em;
+}
+.add_product_form pre span img {
+	height: 1em;
+	width: 1em;
+}
+.add_product_form pre span img:hover {
+	cursor: pointer;
+}
 .add_product_form_parent {
 	position: fixed;
 	top: 0;

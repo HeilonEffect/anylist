@@ -101,6 +101,17 @@ anylistApp.directive('ngEnter', function () {
     }
 });
 
+anylistApp.directive('ngDown', function () {
+    return function (scope, element, attrs) {
+        element.bind("keypress", function (event) {
+            if (event.which === 40)
+                scope.$apply(function () {
+                    scope.$eval(attrs.ngEnter);
+                });
+        });
+    }
+});
+
 anylistApp.directive('creatorForm', [
     function () {
         return {

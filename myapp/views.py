@@ -6,7 +6,8 @@ from django.db.models import Q
 from django.http import HttpResponse
 
 from rest_framework import generics, status
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import (
+    IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly)
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,6 +16,7 @@ from .serializers import *
 
 
 class JSONResponse(HttpResponse):
+
     def __init__(self, data, **kwargs):
         content = JSONRenderer().render(data)
         kwargs['content_type'] = 'application/json'
@@ -22,6 +24,7 @@ class JSONResponse(HttpResponse):
 
 
 class CategoriesList(generics.ListAPIView):
+
     ''' Список разделов сайта '''
     model = Category
     serializer_class = CategorySerializer
@@ -29,6 +32,7 @@ class CategoriesList(generics.ListAPIView):
 
 
 class ProductList(generics.ListCreateAPIView):
+
     '''
     Список медийных продуктов, читать могут все, править -
     зарегестрированные пользователи
@@ -45,9 +49,11 @@ class ProductList(generics.ListCreateAPIView):
         serializer = ProductSerializer(data=data, files=request.FILES)
         if serializer.is_valid():
             serializer.save()
-            return JSONResponse(serializer.data, status=status.HTTP_201_CREATED)
+            return JSONResponse(serializer.data,
+                                status=status.HTTP_201_CREATED)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         '''
@@ -74,7 +80,7 @@ class ProductList(generics.ListCreateAPIView):
         if raitings:
             query_set = functools.reduce(operator.or_,
                                          map(lambda item: Q(
-                                             old_limit__name=item),raitings))
+                                             old_limit__name=item), raitings))
             result = result.filter(query_set)
         if genres:
             for genre in genres:
@@ -94,15 +100,17 @@ class GenreGroupList(generics.ListAPIView):
     permission_classes = (AllowAny,)
 
     def get_queryset(self):
+        ''' Если указана id категории, то '''
         result = GenreGroup.objects.all()
         category_id = self.request.QUERY_PARAMS.get('category')
-        category_name = Category.objects.filter(id=category_id)
-        if category_id and category_name.first():
-            result = result.filter(category=category_name.first().group)
+        if category_id:
+            result = result.filter(
+                category=Category.objects.get(id=category_id).group)
         return result
 
 
 class ProductDetail(generics.RetrieveUpdateAPIView):
+
     ''' Одиночный продукт '''
     model = Product
     serializer_class = ProductSerializer
@@ -146,8 +154,9 @@ class SeasonsView(generics.ListCreateAPIView):
         num_season = self.model.objects.filter(
             product__id=product).count() + 1
         a = self.model.objects.create(number=num_season,
-                                  product=Product.objects.get(id=product))
-        d = {'id': a.id, 'product': a.product.id, 'name': a.name, 'number': a.number}
+                                      product=Product.objects.get(id=product))
+        d = {'id': a.id, 'product': a.product.id,
+             'name': a.name, 'number': a.number}
         serializer = self.serializer_class(data=d)
         if serializer.is_valid():
             return Response(serializer.data, status.HTTP_201_CREATED)
@@ -175,6 +184,7 @@ class SeriesView(generics.ListCreateAPIView):
 
 
 class UserListView(generics.ListCreateAPIView):
+
     ''' Действия со списком пользователей '''
     serializer_class = UserListSerializer
     model = UserList
@@ -190,12 +200,12 @@ class UserListView(generics.ListCreateAPIView):
                 if item.get_absolute_url()[1:-1] == category:
                     category = item
             result = result.filter(user=self.request.user,
-                                             product__category=category)
+                                   product__category=category)
         if product:
             result = result.filter(product=product, user=self.request.user)
         if status:
             result = result.filter(status=status)
-        return  result
+        return result
 
     def post(self, request, *args, **kwargs):
         ''' Обрабатывает такие случаи, как
@@ -215,6 +225,7 @@ class UserListView(generics.ListCreateAPIView):
 
 
 class UserListUpdate(generics.RetrieveUpdateDestroyAPIView):
+
     ''' Одиночные действия со списком продуктов:
      - добавить в список
      - обновить статус '''
@@ -226,7 +237,7 @@ class UserListUpdate(generics.RetrieveUpdateDestroyAPIView):
         ''' Обновляет статус продукта '''
         st = Status.objects.get(name=request.DATA['name'])
         p = UserList.objects.get(product__id=kwargs['id'],
-                                user=request.user)
+                                 user=request.user)
         p.status = st
         p.save()
         return Response('', status=status.HTTP_200_OK)
@@ -242,6 +253,7 @@ class UserListUpdate(generics.RetrieveUpdateDestroyAPIView):
 
 
 class SerieListView(generics.ListCreateAPIView):
+
     ''' Действия со списоком серий (с множеством объектов) '''
     model = SerieList
     serializer_class = SerieListSerializer
@@ -301,6 +313,7 @@ class SearchHeroView(generics.ListAPIView):
 
 
 class SingleSerieListView(generics.RetrieveUpdateDestroyAPIView):
+
     ''' Действия над единичным объектом из списка серий, отмеченных юзером '''
     model = SerieList
     serializer_class = SerieListSerializer
@@ -324,10 +337,12 @@ class SingleSerieView(generics.RetrieveUpdateAPIView):
             Serie.objects.filter(id=kwargs['id']).update(**serializer.data)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserStatistic(APIView):
+
     ''' Отображает сколько произведений на какой стадии у пользователя '''
     model = Product
     permission_classes = (IsAuthenticated,)
@@ -386,12 +401,14 @@ class CreatorView(generics.ListCreateAPIView):
 
                     Product.objects.get(
                         id=request.DATA['product']).creators.add(c[0])
-                    return JSONResponse(serializer.data, status=status.HTTP_201_CREATED)
+                    return JSONResponse(serializer.data,
+                                        status=status.HTTP_201_CREATED)
                 except Exception as e:
                     print(e)
                     return Response('', status=status.HTTP_200_OK)
             else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(serializer.errors,
+                                status=status.HTTP_400_BAD_REQUEST)
         # return Response('', status=status.HTTP_200_OK)
 
 
@@ -417,7 +434,8 @@ class HeroView(generics.ListCreateAPIView):
             Product.objects.get(id=request.DATA['product']).heroes.add(p)
             return JSONResponse(serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class EmployView(generics.ListAPIView):
@@ -426,14 +444,8 @@ class EmployView(generics.ListAPIView):
     permission_classes = (AllowAny,)
 
 
-class UpdateNumSeriveView(APIView):
-    ''' Если мы указываем, что мы просмотрли N серий, то данные об этом
-     шлются сюда'''
-    def post(self, request, *args, **kwargs):
-        pass
-
-
 class ProductCreator(APIView):
+
     '''
     Привязывает/отвязывает лиц, связанных с созданием продукта
     к продукту. Предназначен для уже созданных персонажей. Если
@@ -454,6 +466,7 @@ class ProductCreator(APIView):
 
 
 class SeriesCount(generics.UpdateAPIView):
+
     ''' Отмечает/удаляет серии, если известно только их новое число.
     Если серий отмечено больше, чем от самой последней просмотренной до конца,
     то излишек будет проигнорирован '''
@@ -474,7 +487,8 @@ class SeriesCount(generics.UpdateAPIView):
 
         elif number > watched_series.count():
             p = Serie.objects.filter(id__gt=watched_series.first().serie.id
-            )[:number - watched_series.count()].reverse()
+                                     )[:number - watched_series.count(
+                                     )].reverse()
             for serie in p:
                 user_list.add_watched_serie(serie=serie, like=None)
 

@@ -9,7 +9,9 @@
     <select ng-model="product.old_limit">
         <option ng-repeat="limit in raiting" value="{[{limit.id}]}">{[{limit.name}]}</option>
     </select>
-    <pre><span ng-repeat="item in product.genres">{[{item.name}]},</span></pre>
+    
+    <pre><span ng-repeat="item in product.genres">{[{item.name}]} <img src="/static/img/close.svg" ng-click="del_genre(item)"></span></pre>
+    
     <input type="search" ng-change="select_genres(s_genre)" ng-model="s_genre" placeholder="Input Genres">
     <ul ng-show="search_genres.length > 0">
         <li ng-repeat="item in search_genres" ng-click="click_genre(item)">{[{item.name}]}</li>

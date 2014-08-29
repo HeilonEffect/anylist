@@ -60,6 +60,11 @@ defaultApp.controller('DefaultCtrl', ['$scope', 'authProvider', 'workCategories'
                 $scope.search_result = data;
             });
         };
+
+        $scope.clear_search = function () {
+            $scope.search_result = [];
+            $scope.search_data = '';
+        }
 	}
 ]);
 
@@ -135,14 +140,32 @@ defaultApp.controller('ListCtrl', ['$scope', '$http', 'urlFilters', 'workCategor
         };
 
         workCategories.getCategoryIdByUrl().then(function (category_id) {
-            $http.get('/api/products?category=' + category_id + "&genres=" + filters.genres.join(',') + "&old_limit=" + filters.old_limit.join(',')).success(function (data) {
+            var currentPage = urlFilters.getCurrentPage();
+            $http.get('/api/products?category=' + category_id + "&genres=" + filters.genres.join(',') + "&old_limit=" + filters.old_limit.join(',') + "&page=" + currentPage).success(function (data) {
                 $scope.products = data.results;
+                delete data.results;
+                $scope.pages = {};
+                workCategories.getCategoryNameByUrl().then(function (category_name) {
+                    if (data.next)
+                        $scope.pages.next = '/#!/' + category_name.toLowerCase() + '/page/' + (currentPage + 1);
+                    if (currentPage != 1)
+                        $scope.pages.previous = '/#!/' + category_name.toLowerCase() + '/page/' + (currentPage - 1);
+                    if (currentPage == 2)
+                        $scope.pages.previous = '/#!/' + category_name.toLowerCase();
+                });
+                $scope.pages = data;
             });
         });
 
 		$scope.show_panel = function () {
 			$scope.panel_visibility = !$scope.panel_visibility;
 		};
+
+        $scope.show_for_add = function () {
+            // Открываем форму для создания нового продукта
+            $scope.add_form_visible = true;
+            $scope.product = {};
+        };
 		
 		$scope.add_form = function () {
 			$scope.add_form_visible = !$scope.add_form_visible;
@@ -477,6 +500,12 @@ defaultApp.controller('addProductCtrl', ['$scope', 'oldLimits', 'FileUploader', 
                 $scope.search_genres = [];
                 $scope.s_genre = '';
                 return false;
+            });
+        };
+
+        $scope.del_genre = function (genre) {
+            $scope.product.genres = $scope.product.genres.filter(function (item) {
+                return genre.id != item.id;
             });
         };
 

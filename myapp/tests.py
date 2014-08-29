@@ -1,15 +1,23 @@
+import json
+import os
+import random
+
 from django.test import TestCase
 
 from rest_framework.test import APIRequestFactory, APIClient
 from django_dynamic_fixture import G
 
 from .views import *
+from anylist.settings import MEDIA_ROOT
+
 
 class SmokeTestsPages(TestCase):
+
     '''
     Проверяем базовую работоспособность функций, типа - на каждый корректный
     запрос получен корректный код и какие-то данные
     '''
+
     def setUp(self):
         user = User.objects.create_user(username='first', password='123456')
         self.client = APIClient()
@@ -44,7 +52,8 @@ class SmokeTestsPages(TestCase):
         response = self.client.get('/#!%s/series' % product.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get('/#!%s/creators' % product.get_absolute_url())
+        response = self.client.get(
+            '/#!%s/creators' % product.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get('/#!%s/heroes' % product.get_absolute_url())
@@ -59,6 +68,7 @@ class SmokeTestsPages(TestCase):
 
 
 class SmokeTestsAPI(TestCase):
+
     def setUp(self):
         self.user = User.objects.create_user(username='first',
                                              password='123456')
@@ -228,7 +238,7 @@ class SmokeTestsAPI(TestCase):
         self.assertEqual(list(map(
             lambda item: item['url'], response.data['results']))[0], urls[0])
 
-        response = self.client.get('/#!%s'% urls[0])
+        response = self.client.get('/#!%s' % urls[0])
         self.assertEqual(response.status_code, 200)
 
     def test_product_heroes(self):
@@ -251,7 +261,7 @@ class SmokeTestsAPI(TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertEqual(urls[0], list(map(lambda item: item['url'],
-                           response.data['results']))[0])
+                                           response.data['results']))[0])
 
     def test_limits(self):
         '''
@@ -293,13 +303,14 @@ class SmokeTestsAPI(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_genres(self):
-        category1 = G(CategoryGroup)
+        category = G(CategoryGroup)
+        category1 = G(Category, season=category)
 
         genre1 = G(Genre)
         genre2 = G(Genre)
         genre3 = G(Genre)
 
-        group = G(GenreGroup, category=category1)
+        group = G(GenreGroup, category=category)
         group.genres.add(genre1)
         group.genres.add(genre2)
 
@@ -310,8 +321,9 @@ class SmokeTestsAPI(TestCase):
         self.assertIn(genre1.id, results)
         self.assertIn(genre2.id, results)
 
-        response = self.client.get('/api/genres?category=%d' % category1.id)
+        response = self.client.get('/api/genres?category=%d' % category.id)
         self.assertEqual(response.status_code, 200)
+        print(response.data['results'])
         results = list(map(lambda item: item['id'],
                            response.data['results'][0]['genres']))
         self.assertIn(genre1.id, results)
@@ -339,3 +351,56 @@ class SmokeTestsAPI(TestCase):
 
         response = self.client.get('/api/profile')
         self.assertEqual(response.status_code, 200)
+        self.client.credentials()
+
+    def test_add_product(self):
+        category = G(Category)
+        old_limit = G(Raiting)
+        genre1 = G(Genre)
+        genre2 = G(Genre)
+        js = {'title': 'sda',
+              'description': 'sasasasasas',
+              'old_limit': old_limit.id,
+              'genres': '%d,%d' % (genre1.id, genre2.id),
+              'category': category.id}
+        avatar = random.choice(os.listdir(MEDIA_ROOT))
+
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        response = self.client.post('/api/products',
+            {'data': json.dumps(js)})
+        self.assertEqual(response.status_code, 400)
+
+        response = self.client.post('/api/products',
+            {'data': json.dumps(js), 'avatar': avatar})
+        print(response.content)
+
+    def test_add_creator(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        response = self.client.post('/api/creators', {'name': '12345'})
+        self.assertEqual(response.status_code, 400)
+
+    def test_search_hero(self):
+        hero = G(Hero)
+        response = self.client.get('/api/search_hero?hero=%s' % hero.name)
+        self.assertEqual(response.status_code, 200)
+
+        result = list(map(lambda item: item['name'],
+            response.data['results']))
+        self.assertIn(hero.name, result)
+        
+    def test_search_creator(self):
+        creator = G(Creator)
+        response = self.client.get(
+            '/api/search_creator?creator=%s' % creator.name)
+        self.assertEqual(response.status_code, 200)
+
+        result = list(map(lambda item: item['name'],
+            response.data['results']))
+        self.assertIn(creator.name, result)
+
+    def test_product_in_user_list(self):
+        product1 = G(Product)
+        product2 = G(Product)
+
+        userlist = G(UserList, product=product1)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)

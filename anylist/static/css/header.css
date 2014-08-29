@@ -66,6 +66,9 @@ input[type="search"] {
 	width: 1.5em;
 	height: 1.5em;
 }
+.search_block img:first-of-type {
+	cursor: pointer;
+}
 header > menu > img {
 	margin-top: 0.2em;
 	padding: .8em;
@@ -165,7 +168,7 @@ header menu nav p a {
 	height: 100%;
 }
 header menu nav p:hover {
-	background-color: rgba(0, 0, 0, .1);
+	background-color: #ffff8d;
 }
 .user_menu {
 	position: fixed;
