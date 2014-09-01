@@ -60,7 +60,8 @@ anylistApp.directive('noUnique', ['appSearch', function (appSearch) {
                         return noUnique;
                     } else {
                         ctrl.$setValidity('noUnique', true);
-                        return undefined;
+                        scope.product.title = noUnique;
+                        return noUnique;
                     }
                 });
             });

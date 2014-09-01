@@ -1,13 +1,16 @@
+{% spaceless %}
 <!doctype html>
 <html lang="ru" ng-app="anylistApp">
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
 	<title>Base title</title>
+	{% load compress %}
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
     <script src="static/lib/angular-route.min.js"></script>
 	<script src="/static/lib/angular-file-upload.min.js"></script>
-    <!--<script src="/static/lib/ng-infinite-scroll.js"></script>-->
+	<script src="/static/lib/ng-quick-date.min.js"></script>
+	{% compress css %}
 	<link rel="stylesheet" href="/static/css/main_page.css">
 	<link rel="stylesheet" href="/static/css/list.css">
 	<link rel="stylesheet" href="/static/css/detail.css">
@@ -15,10 +18,11 @@
 	<link rel="stylesheet" href="/static/css/series.css">
 	<link rel="stylesheet" href="/static/css/header.css">
     <link rel="stylesheet" media="only screen and (max-width: 480px), only screen and (max-device-width: 480px), only (handheld)" href="/static/css/mobile.css" />
+	{% endcompress %}
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-
 	<link rel="stylesheet" href="/static/lib/ng-quick-date.css">
-	<script src="/static/lib/ng-quick-date.min.js"></script>
+	
+	{% compress js %}
     <script src="/static/js/app.js"></script>
     <script src="/static/js/services/authProvider.js"></script>
     <script src="/static/js/services/oldLimits.js"></script>
@@ -29,7 +33,7 @@
     <script src="/static/js/services/workGenres.js"></script>
     <script src="/static/js/directive.js"></script>
 	<script src="/static/js/controllers.js"></script>
-    <!--<script src="/static/js/fakeBrowser.js"></script>-->
+	{% endcompress %}
 </head>
 <body ng-controller="DefaultCtrl">
 	<header>
@@ -82,3 +86,4 @@
 
 </body>
 </html>
+{% endspaceless %}

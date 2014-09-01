@@ -1,3 +1,4 @@
+{% spaceless %}
 <main class="series">
 	<img src="/static/img/add.svg" class="add_season" ng-click="create_season(seasons)">
 	<div ng-repeat="season in seasons" class="series_block">
@@ -38,3 +39,4 @@
 	</div>
 	<panel id="detail"></panel>
 </main>
+{% endspaceless %}

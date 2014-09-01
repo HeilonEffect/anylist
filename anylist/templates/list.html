@@ -1,3 +1,4 @@
+{% spaceless %}
 <main class="cards">
 	<img src="/static/img/add.svg" class="add_season" ng-click="show_for_add()" ng-if="token" ng-hide="add_form_visible">
     <div class="add_product_form_parent" ng-show="add_form_visible" ng-click="add_form()">
@@ -47,3 +48,4 @@
 		<div ng-repeat-end></div>
 	</nav>
 </main>
+{% endspaceless %}

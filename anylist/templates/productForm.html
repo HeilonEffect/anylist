@@ -1,20 +1,30 @@
-<form class="add_product_form" ng-controller="addProductCtrl" ng-submit="add_product()">
-    <input type="text" ng-model="product.title" placeholder="Enter Title">
-    <input type="text" ng-model="product.description" placeholder="Description" aria-multiline="4">
+{% spaceless %}
+<form class="add_product_form" ng-controller="addProductCtrl" ng-submit="add_product()" name="productForm">
+    <input type="text" ng-model="product.title" placeholder="Enter Title" no-unique>
+    <span class="empty_field_error" ng-show="invalid.title" ng-if="!product.title">Enter Title!</span>
+    
+    <input type="text" ng-model="product.description" placeholder="Description" aria-multiline="4" ng-change="validate_title()">
+    
     <input type="file" ng-model="product.avatar" nv-file-select uploader="uploader" ng-if="uploader.queue.length == 0">
-    <img src="/static/img/cancel.png" style="width: 50px;height: 50px" ng-click="remove_image()" ng-if="uploader.queue.length == 1">
+    <img src="/static/img/close.svg" style="width: 50px;height: 50px" ng-click="remove_image()" ng-if="uploader.queue.length == 1">
+    <span class="empty_field_error" ng-show="invalid.avatar" ng-if="uploader.queue.length == 0">Load avatar!</span>
 	<span ng-repeat="item in uploader.queue">
 		<span ng-show="uploader.isHTML5" ng-thumb="{file: item._file, height: 150}"></span>
 	</span>
+    
     <select ng-model="product.old_limit">
         <option ng-repeat="limit in raiting" value="{[{limit.id}]}">{[{limit.name}]}</option>
     </select>
+    <span class="empty_field_error" ng-show="invalid.old_limit" ng-if="!product.old_limit">Select old limitation!</span>
     
     <pre><span ng-repeat="item in product.genres">{[{item.name}]} <img src="/static/img/close.svg" ng-click="del_genre(item)"></span></pre>
+    <span class="empty_field_error" ng-show="invalid.genres" ng-if="!product.genres || product.genres.length == 0">Select genres!</span>
     
     <input type="search" ng-change="select_genres(s_genre)" ng-model="s_genre" placeholder="Input Genres">
     <ul ng-show="search_genres.length > 0">
         <li ng-repeat="item in search_genres" ng-click="click_genre(item)">{[{item.name}]}</li>
     </ul>
+    <button ng-click="clear($event)" class="reset_product">Clear</button>
     <input type="submit" value="Create">
 </form>
+{% endspaceless %}

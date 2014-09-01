@@ -1,3 +1,4 @@
+{% spaceless %}
 <main>
     <div ng-repeat="category in user_list" class="user_categories">
         <span ng-repeat="item in category.items" ng-if="category.count != 0">
@@ -8,3 +9,4 @@
         <h3 ng-if="category.count != 0">{[{category.name}]}</h3>
     </div>
 </main>
+{% endspaceless %}

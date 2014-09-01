@@ -40,6 +40,7 @@ defaultApp.controller('DefaultCtrl', ['$scope', 'authProvider', 'workCategories'
 
         $scope.hide_search = function () {
             $scope.search_result = [];
+            $scope.search_data = '';
         };
 
 		$scope.auth_me = function () {
@@ -459,14 +460,23 @@ defaultApp.controller('SingleHeroController', ['$scope', '$http', '$location',
     }
 ]);
 
-defaultApp.controller('addProductCtrl', ['$scope', 'oldLimits', 'FileUploader', 'workGenres', 'workCategories', 'authProvider', '$location',
-    function ($scope, oldLimits, FileUploader, workGenres, workCategories, authProvider, $location) {
+defaultApp.controller('addProductCtrl', ['$scope', 'oldLimits', 'FileUploader', 'workGenres', 'workCategories',
+    'authProvider', '$location', 'appSearch',
+    function ($scope, oldLimits, FileUploader, workGenres, workCategories, authProvider, $location, appSearch) {
         $scope.uploader = new FileUploader();
         $scope.uploader.queueLimit = 1;
 
         oldLimits.getRaiting().success(function (data) {
             $scope.raiting = data.results;
         });
+
+        var first_titile_validate = true;
+
+        $scope.clear = function (event) {
+            $scope.product = {};
+            $scope.uploader.removeFromQueue(0);
+            event.preventDefault();
+        };
 
         workCategories.getCategoryIdByUrl().then(function (category_id) {
             workGenres.get_genre_list_by_category(category_id).then(function (data) {
@@ -489,6 +499,7 @@ defaultApp.controller('addProductCtrl', ['$scope', 'oldLimits', 'FileUploader', 
         };
 
         $scope.click_genre = function (genre) {
+            $scope.invalid = {};
             if (!$scope.product)
                 $scope.product = {};
             if (!$scope.product.genres)
@@ -510,30 +521,52 @@ defaultApp.controller('addProductCtrl', ['$scope', 'oldLimits', 'FileUploader', 
         };
 
         $scope.add_product = function () {
-            workCategories.getCategoryIdByUrl().then(function (category_id) {
-                $scope.product['category'] = category_id;
+            $scope.invalid = {};
+            $scope.valid = true;
+            if (!$scope.product.title) {
+                $scope.invalid.title = true;
+                $scope.valid = false;
+            }
+            if (!$scope.uploader.queue[0]) {
+                $scope.invalid.avatar = true;
+                $scope.valid = false;
+            }
+            if (!$scope.product.old_limit) {
+                $scope.invalid.old_limit = true;
+                $scope.valid = false;
+            }
+            if (!$scope.product.genres || $scope.product.genres.length == 0) {
+                $scope.invalid.genres = true;
+                $scope.valid = false;
+            }
+            if ($scope.valid){
+                workCategories.getCategoryIdByUrl().then(function (category_id) {
+                    $scope.product['category'] = category_id;
 
-                $scope.uploader.onSuccessItem = function (item, response) {
-                    $location.path(response.url);
-                };
-                $scope.uploader.onErrorItem = function (data) {
-                    console.log(data);
-                };
-                $scope.product['genres'] = $scope.product['genres'].map(function (item) {
-                    return item.id;
+                    $scope.uploader.onSuccessItem = function (item, response) {
+                        $location.path(response.url);
+                    };
+                    $scope.uploader.onErrorItem = function (data) {
+                        console.log(data);
+                    };
+                    $scope.product['genres'] = $scope.product['genres'].map(function (item) {
+                        return item.id;
+                    });
+                    $scope.product['old_limit'] = Number.parseInt($scope.product.old_limit);
+                    
+                    if ($scope.editing_product) {
+                        $scope.uploader.queue[0].method = "PUT";
+                        $scope.uploader.queue[0].url = '/api/products/id:' + $scope.product.id;
+                    } else {
+                        $scope.uploader.queue[0].url = "/api/products";
+                    }
+                    $scope.uploader.queue[0].alias = "avatar";
+                    $scope.uploader.queue[0].headers = {'Authorization': authProvider.getToken()};
+
+                    $scope.uploader.queue[0].formData.push({'data': JSON.stringify($scope.product)});
+                    $scope.uploader.uploadAll();
                 });
-                $scope.product['old_limit'] = Number.parseInt($scope.product.old_limit);
-                if ($scope.editing_product) {
-                    $scope.uploader.queue[0].method = "PUT";
-                    $scope.uploader.queue[0].url = '/api/products/id:' + $scope.product.id;
-                } else {
-                    $scope.uploader.queue[0].url = "/api/products";
-                }
-                $scope.uploader.queue[0].alias = "avatar";
-                $scope.uploader.queue[0].headers = {'Authorization': authProvider.getToken()};
-                $scope.uploader.queue[0].formData.push({'data': JSON.stringify($scope.product)});
-                $scope.uploader.uploadAll();
-            });
+            }
 		};
     }
 ]);

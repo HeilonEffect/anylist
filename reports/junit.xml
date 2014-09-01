@@ -1,0 +1,38 @@
+<testsuite errors="1" failures="0" name="Django Project Tests" skips="0" tests="23" time="1.999"><testcase classname="myapp.tests.SmokeTestsAPI" name="test_add_product" time="0.119677"><system-out>b'{"avatar": ["This field is required."], "genres": ["Incorrect type.  Expected pk value, received str."]}'
+</system-out></testcase><testcase classname="myapp.tests.SmokeTestsAPI" name="test_content_header" time="0.059865" /><testcase classname="myapp.tests.SmokeTestsAPI" name="test_data_product_available" time="0.083189" /><testcase classname="myapp.tests.SmokeTestsAPI" name="test_data_product_list_available" time="0.105896" /><testcase classname="myapp.tests.SmokeTestsAPI" name="test_data_search_product" time="0.070467" /><testcase classname="myapp.tests.SmokeTestsAPI" name="test_genres" time="0.086945"><error message="Category matching query does not exist." type="myapp.models.DoesNotExist">Traceback (most recent call last):
+  File "/home/ctulhu/anylist/myapp/tests.py", line 324, in test_genres
+    response = self.client.get('/api/genres?category=%d' % category.id)
+  File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/rest_framework/test.py", line 84, in get
+    return self.generic('GET', path, **r)
+  File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/rest_framework/compat.py", line 489, in generic
+    return self.request(**r)
+  File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/rest_framework/test.py", line 155, in request
+    return super(APIClient, self).request(**kwargs)
+  File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/rest_framework/test.py", line 107, in request
+    request = super(APIRequestFactory, self).request(**kwargs)
+  File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/django/test/client.py", line 444, in request
+    six.reraise(*exc_info)
+  File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/django/utils/six.py", line 550, in reraise
+    raise value
+  File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/django/core/handlers/base.py", line 112, in get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/django/views/decorators/csrf.py", line 57, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/rest_framework/views.py", line 400, in dispatch
+    response = self.handle_exception(exc)
+  File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/rest_framework/views.py", line 397, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/rest_framework/generics.py", line 425, in get
+    return self.list(request, *args, **kwargs)
+  File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/rest_framework/mixins.py", line 76, in list
+    self.object_list = self.filter_queryset(self.get_queryset())
+  File "/home/ctulhu/anylist/myapp/views.py", line 108, in get_queryset
+    category=Category.objects.get(id=category_id).group)
+  File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/django/db/models/manager.py", line 151, in get
+    return self.get_queryset().get(*args, **kwargs)
+  File "/home/ctulhu/anylist/virt/lib/python3.4/site-packages/django/db/models/query.py", line 310, in get
+    self.model._meta.object_name)
+myapp.models.DoesNotExist: Category matching query does not exist.
+</error></testcase><testcase classname="myapp.tests.SmokeTestsAPI" name="test_get_categories" time="0.065830" /><testcase classname="myapp.tests.SmokeTestsAPI" name="test_limits" time="0.053485" /><testcase classname="myapp.tests.SmokeTestsAPI" name="test_product_creators" time="0.140383" /><testcase classname="myapp.tests.SmokeTestsAPI" name="test_product_detail" time="0.071239" /><testcase classname="myapp.tests.SmokeTestsAPI" name="test_product_heroes" time="0.099990" /><testcase classname="myapp.tests.SmokeTestsAPI" name="test_product_in_user_list" time="0.072042" /><testcase classname="myapp.tests.SmokeTestsAPI" name="test_product_series" time="0.079564" /><testcase classname="myapp.tests.SmokeTestsAPI" name="test_products" time="0.102270" /><testcase classname="myapp.tests.SmokeTestsAPI" name="test_search_creator" time="0.057091" /><testcase classname="myapp.tests.SmokeTestsAPI" name="test_search_hero" time="0.064928" /><testcase classname="myapp.tests.SmokeTestsAPI" name="test_search_product_available" time="0.071532" /><testcase classname="myapp.tests.SmokeTestsAPI" name="test_user_list_available" time="0.093075" /><testcase classname="myapp.tests.SmokeTestsAPI" name="test_user_statistic" time="0.085315" /><testcase classname="myapp.tests.SmokeTestsPages" name="test_detail_product_pages_available" time="0.088488" /><testcase classname="myapp.tests.SmokeTestsPages" name="test_list_product_page_available" time="0.065966" /><testcase classname="myapp.tests.SmokeTestsPages" name="test_main_page_available" time="0.067003" /><testcase classname="myapp.tests.SmokeTestsPages" name="test_profile_available" time="0.055188" /></testsuite>

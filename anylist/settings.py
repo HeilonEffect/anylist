@@ -23,6 +23,17 @@ SECRET_KEY = 'j!p49a*j4e+!7&s&cx(&orq=s@u-pd&)i3u#p=$h$@)9-p!qo!'
 
 # Application definition
 
+import djcelery
+os.environ["CELERY_LOADER"] = "django"
+djcelery.setup_loader()
+
+AMQP_HOST = 'localhost'
+BROKER_HOST = 'localhost'
+BROKER_PORT = 5672
+BROKER_USER = 'ctulhu'
+BROKER_PASSWORD = 'ShockiNg'
+BROKEN_VHOST = 'myvhost'
+
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -36,6 +47,9 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_swagger',
+    'djcelery',
+    'compressor',
+    'django_jenkins',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -87,8 +101,10 @@ USE_TZ = True
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'django.contrib.staticfiles.finders.FileSystemFinder',
+    'compressor.finders.CompressorFinder',
 )
 
+COMPRESS_ENABLED = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
@@ -112,9 +128,18 @@ MEDIA_URL = '/media/'
 
 THUMBNAIL_ALIASES = {
     '': {
-        'avatar': {'size': (50,50), 'crop': True},
+        'icon': {'size': (75,75), 'crop': True},
+        'avatar': {'size': (240, 320), 'crop': True},
     },
 }
+
+
+JENKINS_TASKS = (
+    'django_jenkins.tasks.run_pep8',
+    'django_jenkins.tasks.run_pyflakes',
+    'django_jenkins.tasks.run_csslint',    
+    'django_jenkins.tasks.run_sloccount'
+)
 
 SOUTH_MIGRATION_MODULES = {
     'easy_thumbnails': 'easy_thumbnails.south_migrations',
@@ -151,9 +176,9 @@ CACHEOPS_REDIS = {
     'socket_timeout': 3
 }
 
-CACHEOPS = {
-    'myapp': (),
-    'myapp.Product': ('filter', 60 * 2)
-}
+# CACHEOPS = {
+#     'myapp': (),
+#     'myapp.Product': ('filter', 60 * 2)
+# }
 
 DDF_DEFAULT_DATA_FIXTURE = 'random'

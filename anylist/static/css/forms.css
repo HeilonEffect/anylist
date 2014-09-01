@@ -70,3 +70,16 @@ form div ul li {
     border-bottom: 1px solid #444;
     display: block;
 }
+.reset_product {
+	position: inherit;
+	left: 30%;
+	height: 3em;
+	bottom: 5em;
+	width: 10em;
+	background-color: #F36C60;
+	border: medium none;
+}
+.empty_field_error {
+	color: red;
+	margin-top: 0;
+}

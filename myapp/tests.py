@@ -374,10 +374,10 @@ class SmokeTestsAPI(TestCase):
             {'data': json.dumps(js), 'avatar': avatar})
         print(response.content)
 
-    def test_add_creator(self):
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
-        response = self.client.post('/api/creators', {'name': '12345'})
-        self.assertEqual(response.status_code, 400)
+    # def test_add_creator(self):
+    #     self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+    #     response = self.client.post('/api/creators', {'name': '12345'})
+    #     self.assertEqual(response.status_code, 400)
 
     def test_search_hero(self):
         hero = G(Hero)

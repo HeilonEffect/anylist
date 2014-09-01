@@ -1,3 +1,4 @@
+{% spaceless %}
 <main class="list">
     <div class="add_product_form_parent" ng-click="add_form()" ng-show="add_form_visible" >
         <hero-form ng-click="add_form()" ></hero-form>
@@ -15,3 +16,4 @@
     <panel id="detail"></panel>
     <img src="/static/img/add.svg" class="add_season" ng-click="add_form()" ng-if="token" ng-hide="add_form_visible">
 </main>
+{% endspaceless %}

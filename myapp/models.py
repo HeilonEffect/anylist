@@ -7,7 +7,8 @@ from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.dispatch import receiver
 
-# from easy_thumbnails.files import get_thumbnailer
+# from cacheops import cached_as
+from easy_thumbnails.signals import saved_file
 from rest_framework.authtoken.models import Token
 
 from anylist.settings import MEDIA_ROOT
@@ -18,6 +19,11 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
 
+@receiver(saved_file)
+def generate_thumbnails_async(sender, fieldfile, **kwargs):
+    tasks.generate_thumbnails.delay(
+        model=sender, pk=fieldfile.instance.pk,
+        field=fieldfile.field.name)
 
 class TemplateModel(models.Model):
     name = models.CharField(max_length=40, unique=True)
@@ -44,14 +50,10 @@ class Category(TemplateModel):
     group = models.ForeignKey(CategoryGroup)
 
     def avatar_path(self):
-        #options = {'size': (320, 480), 'crop': True}
-        #thumb_url = get_thumbnailer(self.avatar).get_thumbnail(options).url
-        return '/media/' + self.avatar.url.split('/')[-1]#thumb_url.split('/')[-1]
+        return '/media/' + self.avatar.url.split('/')[-1]
 
     def icon_path(self):
-        #options = {'size': (75, 75), 'crop': True}
-        #thumb_url = get_thumbnailer(self.icon).get_thumbnail(options).url
-        return '/media/' + self.icon.url.split('/')[-1]#thumb_url.split('/')[-1]
+        return '/media/' + self.icon.url.split('/')[-1]
 
     def get_absolute_url(self):
         return '/%s' % ''.join(self.name.lower().split(' '))

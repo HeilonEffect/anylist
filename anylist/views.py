@@ -4,6 +4,7 @@ import logging.config
 
 from django.contrib.auth.models import User
 from django.http import HttpResponse
+from django.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
@@ -24,10 +25,10 @@ def partials(request, path):
     result = path
     if '/' in path:
         result = path.split('/')[-1]
-    return HttpResponse(open('anylist/templates/%s.html' % result).read())
+    return render_to_response('%s.html' % result)
 
 def main_page(request):
-    return HttpResponse(open('anylist/templates/base.html').read())
+    return render_to_response('base.html')
 
 
 @require_http_methods(['POST'])

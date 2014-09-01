@@ -1,3 +1,4 @@
+{% spaceless %}
 <form ng-submit="add_hero()" ng-controller="HeroFormCtrl" class="creator_form">
     <input type="search" placeholder="Hero" ng-change="change_hero()" ng-model="hero.name">
     <ul>
@@ -18,3 +19,4 @@
            ng-show="uploader_enable">
     <input type="submit" value="Add">
 </form>
+{% endspaceless %}
