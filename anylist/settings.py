@@ -23,17 +23,6 @@ SECRET_KEY = 'j!p49a*j4e+!7&s&cx(&orq=s@u-pd&)i3u#p=$h$@)9-p!qo!'
 
 # Application definition
 
-import djcelery
-os.environ["CELERY_LOADER"] = "django"
-djcelery.setup_loader()
-
-AMQP_HOST = 'localhost'
-BROKER_HOST = 'localhost'
-BROKER_PORT = 5672
-BROKER_USER = 'ctulhu'
-BROKER_PASSWORD = 'ShockiNg'
-BROKEN_VHOST = 'myvhost'
-
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -51,6 +40,19 @@ INSTALLED_APPS = (
     'compressor',
     'django_jenkins',
 )
+
+import djcelery
+os.environ["CELERY_LOADER"] = "django"
+djcelery.setup_loader()
+
+# AMQP_HOST = 'localhost'
+# BROKER_HOST = 'localhost'
+# BROKER_PORT = 5672
+# BROKER_USER = 'ctulhu'
+# BROKER_PASSWORD = 'ShockiNg'
+# BROKEN_VHOST = 'myvhost'
+BROKEN_URL = 'amqp://ctulhu:ShockiNg@localhost:5672//'
+CELERY_ACCEPT_CONTENT = ['json']
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -137,8 +139,12 @@ THUMBNAIL_ALIASES = {
 JENKINS_TASKS = (
     'django_jenkins.tasks.run_pep8',
     'django_jenkins.tasks.run_pyflakes',
-    'django_jenkins.tasks.run_csslint',    
-    'django_jenkins.tasks.run_sloccount'
+    'django_jenkins.tasks.run_csslint',
+    'django_jenkins.tasks.with_coverage',
+)
+
+PROJECT_APPS = (
+    'myapp',
 )
 
 SOUTH_MIGRATION_MODULES = {

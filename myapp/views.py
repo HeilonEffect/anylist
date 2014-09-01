@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import *
+from .tasks import generate_thumbnails
 
 
 class JSONResponse(HttpResponse):
@@ -48,7 +49,8 @@ class ProductList(generics.ListCreateAPIView):
         data = json.loads(request.DATA['data'])
         serializer = ProductSerializer(data=data, files=request.FILES)
         if serializer.is_valid():
-            serializer.save()
+            p = serializer.save()
+            generate_thumbnails(Product, p.pk, 'avatar')
             return JSONResponse(serializer.data,
                                 status=status.HTTP_201_CREATED)
         else:
